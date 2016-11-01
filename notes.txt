@@ -1,0 +1,12 @@
+Calls
+--getSchemaFields
+--Let user decide which fileds to use
+--Send facet request for all
+--display options
+
+
+
+
+Helps
+http://stackoverflow.com/questions/21029999/react-js-identifying-different-inputs-with-one-onchange-handler
+http://localhost:8983/solr/wso2_data/schema/fields
