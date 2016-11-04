@@ -1,4 +1,5 @@
 import React from 'react';
+import { ListGroup,ListGroupItem,Badge,Grid,Row,Col, Panel } from 'react-bootstrap';
 
 //Single entry inside a field
 var Facet = React.createClass( {
@@ -11,14 +12,9 @@ var Facet = React.createClass( {
 	},
 	render:function(){
 		return(
-			<tr onClick={this.handleClick} value={this.props.value}>
-				<td>
-				{this.props.value}
-				</td>
-				<td>
-				{this.props.count}
-				</td>
-			</tr>
+			<ListGroupItem href="#" onClick={this.handleClick}>
+				{this.props.value}<Badge>{this.props.count}</Badge>
+			</ListGroupItem>
 		)
 		;}
 	});
@@ -34,9 +30,10 @@ var FacetField = React.createClass( {
 	},
 	render:function(){
 	return (
-		<div>
-			{this.props.field}
-		<table>
+
+			<ListGroup>
+      <ListGroupItem href="#" active>{this.props.field}</ListGroupItem>
+
 			{this.props.facets.map((facet,index)=>
 				<Facet
 					{...facet}
@@ -44,9 +41,8 @@ var FacetField = React.createClass( {
 					indexValue={index+1}
 					onClickFacet={this.onClickFacet} />
 			)}
-		</table>
-		<br/>
-	</div>
+		</ListGroup>
+
 	);}
 });
 
@@ -61,17 +57,23 @@ var AvailableFacetFields = React.createClass( {
 	},
 	render:function(){
 	return (
-		<div>
-			Facets
-			{this.props.fields.map((field,index)=>
-				<FacetField
-					{...field}
-					key={index}
-					indexValue={index+1}
-					onClickFacet={this.onClickFacet}
-					 />
-			)}
-		</div>
+
+<Panel  bsStyle="info" header="Drilldown Options">
+			    <Row className="show-grid">
+					{this.props.fields.map((field,index)=>
+
+				 	<Col xs={12} md={3} key={index}>
+						<FacetField
+							{...field}
+							key={index}
+							indexValue={index+1}
+							onClickFacet={this.onClickFacet}
+							 />
+					 </Col>
+					)}
+
+		  </Row>
+	</Panel>
 	);}
 });
 

@@ -1,6 +1,6 @@
 Calls
---getSchemaFields
---Let user decide which fileds to use
+--getSchemaFields - Done!
+--Let user decide which fileds to use - Done!
 --Send facet request for all
 --display options
 
