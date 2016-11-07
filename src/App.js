@@ -33,6 +33,7 @@ class App extends Component {
         this.submitTest = this.submitTest.bind(this);
         this.requestFields = this.requestFields.bind(this);
         this.requestFacets = this.requestFacets.bind(this);
+        this.requestFacetsSingleField = this.requestFacetsSingleField.bind(this);
         this.requestData = this.requestData.bind(this);
 
         //Text Listen
@@ -63,46 +64,64 @@ class App extends Component {
   // }
 
   //Handler for test query submission
-  componentDidMount()
-  {
-      this.requestFields();
-  }
+    componentDidMount()
+    {
+        this.requestFields();
+    }
 
-  submitTest()
-  {
+    submitTest()
+    {
         this.solrClient.getQuery(this.state.query)
         .then(body=>{
          this.setState(pre=>({code:body}));
         });
-  }
+    }
 
-  requestFields()
-  {
+    requestFields()
+    {
     //   this.solrClient.getFields
-    this.resetState();
-    this.solrClient.getFields()
-    .then(data=>{
-     this.setState(pre=>({availableFields:data}));
-     this.requestData(0,this.state.loadedData.rows);
-    });
-  }
+        this.resetState();
+        this.solrClient.getFields()
+        .then(data=>{
+         this.setState(pre=>({availableFields:data}));
+         this.requestData(0,this.state.loadedData.rows);
+        });
+    }
 
-  requestFacets()
-  {
-     var fieldList = [];
-     for(let fld of this.selectedAvailableFields)
-     {
+    requestFacets()
+    {
+        var fieldList = [];
+        for(let fld of this.selectedAvailableFields)
+        {
          if(this.blockedFields.has(fld)) continue;
          fieldList.push(fld);
-     }
+        }
 
-    //append to the promise
-    this.solrClient.getFacets(fieldList,this.addedFilters)
-    .then(data=>{
-     this.setState(pre=>({availableFacetFields:data}));
-     this.requestData(0,this.state.loadedData.rows);
-    });
-  }
+        //append to the promise
+        this.solrClient.getFacetsForAllFields(fieldList,this.addedFilters)
+        .then(data=>{
+        this.setState(pre=>({availableFacetFields:data}));
+        this.requestData(0,this.state.loadedData.rows);
+        });
+    }
+
+    requestFacetsSingleField(searchRequest)
+    {
+        this.solrClient.getFacetsForSingleField(searchRequest.field,this.addedFilters,searchRequest.text)
+        .then( result=>{
+            for(var i of this.state.availableFacetFields)
+                if(i.field==searchRequest.field)
+                    i.facets = result.facets;
+                    //this.state.availableFacetFields.push(result);
+            this.setState(pre=>({
+                availableFacetFields:this.state.availableFacetFields
+            }));
+        });
+
+        console.log(":D :D")
+    }
+
+
 
     requestData(offset,count)
     {
@@ -113,14 +132,14 @@ class App extends Component {
         });
     }
 
-  handleChange(event) {
-      this.setState({query: event.target.value});
-  }
+    handleChange(event) {
+        this.setState({query: event.target.value});
+    }
 
-  baseUrlChange(event) {
-      this.solrClient.setBaseUrl(event.target.value);
-      this.setState({baseUrl: event.target.value});
-  }
+    baseUrlChange(event) {
+        this.solrClient.setBaseUrl(event.target.value);
+        this.setState({baseUrl: event.target.value});
+    }
 
   //When user clicks on schema selection
   onSchemaSelectionChange(fieldName,state)
@@ -164,6 +183,7 @@ class App extends Component {
 
   onClickFacet(field,value){
     this.addedFilters.add({field:field, value:value});
+    //TODO comment to dinable field dissapiar:
     this.blockedFields.add(field);
     this.setState(pre=>({addedFilters: Array.from(this.addedFilters)}));
     // console.log(JSON.stringify(Array.from(this.addedFilters)));
@@ -195,7 +215,11 @@ class App extends Component {
 
             <AvailableFields fields={this.state.availableFields} onSelectionChange={this.onSchemaSelectionChange} onRequestFacets={this.requestFacets} />
 
-            <AvailableFacetFields onClickFacet={this.onClickFacet} fields={this.state.availableFacetFields}/>
+            <AvailableFacetFields
+                onClickFacet={this.onClickFacet}
+                onSearchTextChange={this.requestFacetsSingleField}
+
+                 fields={this.state.availableFacetFields}/>
 
 
             <AddedFilters addedFilters={this.state.addedFilters} onRemoveClick={this.onRemoveFilterClick} />

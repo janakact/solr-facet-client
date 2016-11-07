@@ -1,5 +1,6 @@
 import React from 'react';
 import { ListGroup,ListGroupItem,Badge,Grid,Row,Col, Panel } from 'react-bootstrap';
+import Typeahead from 'react-bootstrap-typeahead';
 
 //Single entry inside a field
 var Facet = React.createClass( {
@@ -23,16 +24,25 @@ var Facet = React.createClass( {
 var FacetField = React.createClass( {
 	getInitialState: function () {
 		return {
+			searchText:""
 		}
 	},
+	handleChangeSeachText(event) {
+		this.props.onSearchTextChange({field:this.props.field,text:event.target.value});
+    },
 	onClickFacet(value) {
-		this.props.onClickFacet(this.props.field,value)
+		this.props.onClickFacet(this.props.field,value);
 	},
 	render:function(){
 	return (
 
 			<ListGroup>
       <ListGroupItem href="#" active>{this.props.field}</ListGroupItem>
+      <ListGroupItem href="#" active>{this.state.searchText}</ListGroupItem>
+      <ListGroupItem ><input type="text" onChange={this.handleChangeSeachText}></input></ListGroupItem>
+
+
+
 
 			{this.props.facets.map((facet,index)=>
 				<Facet
@@ -68,7 +78,7 @@ var AvailableFacetFields = React.createClass( {
 							key={index}
 							indexValue={index+1}
 							onClickFacet={this.onClickFacet}
-							 />
+							onSearchTextChange={this.props.onSearchTextChange} />
 					 </Col>
 					)}
 
