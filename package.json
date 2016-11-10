@@ -7,11 +7,18 @@
   },
   "dependencies": {
     "bootstrap": "^3.3.7",
+    "fixed-data-table": "^0.6.3",
+    "immutable": "^3.8.1",
     "jquery": "^3.1.1",
+    "leaflet": "0.7.7",
+    "mapbox-gl": "^0.26.0",
+    "r-dom": "^2.3.1",
     "react": "^15.3.2",
     "react-bootstrap": "^0.30.6",
     "react-bootstrap-typeahead": "^0.10.2",
     "react-dom": "^15.3.2",
+    "react-leaflet": "^0.12.3",
+    "react-map-gl": "^1.7.2",
     "whatwg-fetch": "^1.0.0"
   },
   "scripts": {

@@ -1,6 +1,6 @@
 import React from 'react';
-import { ListGroup,ListGroupItem,Badge,Grid,Row,Col, Panel } from 'react-bootstrap';
-import Typeahead from 'react-bootstrap-typeahead';
+import { ListGroup,ListGroupItem,Badge,Row,Col, Panel } from 'react-bootstrap';
+import LoadingIcon from './LoadingIcon';
 
 //Single entry inside a field
 var Facet = React.createClass( {
@@ -14,7 +14,7 @@ var Facet = React.createClass( {
 	render:function(){
 		return(
 			<ListGroupItem href="#" onClick={this.handleClick}>
-				{this.props.value}<Badge>{this.props.count}</Badge>
+				<p>{this.props.value} <Badge>{this.props.count}</Badge></p>
 			</ListGroupItem>
 		)
 		;}
@@ -24,34 +24,44 @@ var Facet = React.createClass( {
 var FacetField = React.createClass( {
 	getInitialState: function () {
 		return {
-			searchText:""
+			searchText:"",
+			loading:false
 		}
 	},
 	handleChangeSeachText(event) {
+		this.setState({searchText:event.target.value, loading:true})
 		this.props.onSearchTextChange({field:this.props.field,text:event.target.value});
     },
 	onClickFacet(value) {
 		this.props.onClickFacet(this.props.field,value);
 	},
+	componentWillReceiveProps(nextProps)
+	{
+		if(this.state.searchText===nextProps.searchText)
+		{
+			this.setState({searchText:nextProps.searchText, loading:false});
+		}
+	},
 	render:function(){
 	return (
 
-			<ListGroup>
-      <ListGroupItem href="#" active>{this.props.field}</ListGroupItem>
-      <ListGroupItem href="#" active>{this.state.searchText}</ListGroupItem>
-      <ListGroupItem ><input type="text" onChange={this.handleChangeSeachText}></input></ListGroupItem>
 
+	<Panel collapsible defaultExpanded header={this.props.field} >
+		<input type="text" onChange={this.handleChangeSeachText} value={this.state.searchText}></input>
+		<LoadingIcon visible={this.state.loading}/>
 
-
-
-			{this.props.facets.map((facet,index)=>
-				<Facet
-					{...facet}
-					key={index}
-					indexValue={index+1}
-					onClickFacet={this.onClickFacet} />
-			)}
+		<div  className="facet-list-scroll" >
+		<ListGroup fill>
+				{!this.state.loading && this.props.facets.map((facet,index)=>
+					<Facet
+						{...facet}
+						key={index}
+						indexValue={index+1}
+						onClickFacet={this.onClickFacet} />
+				)}
 		</ListGroup>
+		</div>
+	</Panel>
 
 	);}
 });
@@ -68,7 +78,6 @@ var AvailableFacetFields = React.createClass( {
 	render:function(){
 	return (
 
-<Panel  bsStyle="info" header="Drilldown Options">
 			    <Row className="show-grid">
 					{this.props.fields.map((field,index)=>
 
@@ -83,7 +92,6 @@ var AvailableFacetFields = React.createClass( {
 					)}
 
 		  </Row>
-	</Panel>
 	);}
 });
 

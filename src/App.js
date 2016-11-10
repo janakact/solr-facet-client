@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, Panel } from 'react-bootstrap';
 // import logo from './logo.svg';
 import './App.css';
 import AddedFilters from './AddedFilters';
@@ -22,9 +22,9 @@ class App extends Component {
         addedFilters: [],//Array(9).fill({field:"field", value:"value"}),
         availableFields: [], //Array(3).fill({name:"Unknown", type:"uk"}),
         availableFacetFields:[],
-        loadedData:{rows:10},
+        loadedData:{start:0,rows:10, columnNames:[], docs:[]},
         query:"select?indent=on&q=*:*&wt=json",
-        baseUrl:"http://localhost:8983/solr/wso2_data/"
+        baseUrl:"http://localhost:8983/solr/new_core1/"
         };
         this.solrClient = new SolrClient();
         this.solrClient.setBaseUrl(this.state.baseUrl);
@@ -53,7 +53,7 @@ class App extends Component {
             addedFilters: [],//Array(9).fill({field:"field", value:"value"}),
             availableFields: [], //Array(3).fill({name:"Unknown", type:"uk"}),
             availableFacetFields:[],
-            loadedData:{rows:10}
+            loadedData:{start:0,rows:10, columnNames:[], docs:[]}
         })
     }
 
@@ -101,7 +101,6 @@ class App extends Component {
         this.solrClient.getFacetsForAllFields(fieldList,this.addedFilters)
         .then(data=>{
         this.setState(pre=>({availableFacetFields:data}));
-        this.requestData(0,this.state.loadedData.rows);
         });
     }
 
@@ -110,15 +109,18 @@ class App extends Component {
         this.solrClient.getFacetsForSingleField(searchRequest.field,this.addedFilters,searchRequest.text)
         .then( result=>{
             for(var i of this.state.availableFacetFields)
-                if(i.field==searchRequest.field)
+                if(i.field===searchRequest.field)
+                {
                     i.facets = result.facets;
+                    i.searchText = result.searchText;
+
+                    break;
+                }
                     //this.state.availableFacetFields.push(result);
             this.setState(pre=>({
                 availableFacetFields:this.state.availableFacetFields
             }));
         });
-
-        console.log(":D :D")
     }
 
 
@@ -130,6 +132,7 @@ class App extends Component {
         .then((data)=>{
         this.setState(pre=>({loadedData:data}));
         });
+        console.log("sent data request: "+new Date()+ new Date().getMilliseconds());
     }
 
     handleChange(event) {
@@ -188,6 +191,7 @@ class App extends Component {
     this.setState(pre=>({addedFilters: Array.from(this.addedFilters)}));
     // console.log(JSON.stringify(Array.from(this.addedFilters)));
     this.requestFacets();
+    this.requestData(0,this.state.loadedData.rows);
   }
 
   onRemoveFilterClick(fl)
@@ -196,6 +200,7 @@ class App extends Component {
       this.blockedFields.delete(fl.field);
       this.setState(pre=>({addedFilters: Array.from(this.addedFilters)}));
       this.requestFacets();
+      this.requestData(0,this.state.loadedData.rows);
   }
 
   render() {
@@ -205,7 +210,6 @@ class App extends Component {
     //   </div>
     return (
       <div className="App">
-        <div>
             <input type="text"
             placeholder="Base URL"
             value={this.state.baseUrl}
@@ -213,33 +217,36 @@ class App extends Component {
 
         <Button bsStyle="primary" onClick={this.requestFields}>Request Fields</Button><br/><br/>
 
-            <AvailableFields fields={this.state.availableFields} onSelectionChange={this.onSchemaSelectionChange} onRequestFacets={this.requestFacets} />
-
-            <AvailableFacetFields
-                onClickFacet={this.onClickFacet}
-                onSearchTextChange={this.requestFacetsSingleField}
-
-                 fields={this.state.availableFacetFields}/>
+            <AvailableFields
+                fields={this.state.availableFields}
+                onSelectionChange={this.onSchemaSelectionChange}
+                onRequestFacets={this.requestFacets} />
 
 
-            <AddedFilters addedFilters={this.state.addedFilters} onRemoveClick={this.onRemoveFilterClick} />
 
+            <Panel  bsStyle="info" header="Drilldown Options">
+                <AddedFilters
+                    addedFilters={this.state.addedFilters}
+                    onRemoveClick={this.onRemoveFilterClick} />
+
+                <AvailableFacetFields
+                    onClickFacet={this.onClickFacet}
+                    onSearchTextChange={this.requestFacetsSingleField}
+                    fields={this.state.availableFacetFields} />
+            </Panel>
 
 
 
             <DataBrowser data={this.state.loadedData} onPageSelect={this.requestData}> </DataBrowser>
-                <input type="text"
+
+
+            {/*
+            <input type="text"
                 placeholder="Hello!"
                 value={this.state.query}
                 onChange={this.handleChange} className="Input" />
-
-
             <button onClick={this.submitTest}>Test</button>
-
-
-        </div>
-
-        <pre> {this.state.code}</pre>
+            <pre> {this.state.code}</pre>*/}
 
       </div>
     );

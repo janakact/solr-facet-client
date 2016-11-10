@@ -1,5 +1,7 @@
 import React from 'react';
-import { Panel } from 'react-bootstrap';
+// import ReactCSSTransitionGroup from 'react-addons-css-transition-group' // ES6
+
+// import { Panel } from 'react-bootstrap';
 
 
 var AddedFilter = React.createClass({
@@ -18,13 +20,11 @@ var AddedFilters = React.createClass({
     render:function()
     {
       return (
-          <Panel  bsStyle="info" header="Applied Filters">
   			<ul>
               {this.props.addedFilters.map((filter,index)=>
               <AddedFilter filter={filter} key={index} indexValue={index+1} onRemoveClick={this.props.onRemoveClick} />
               )}
             </ul>
-        </Panel>
         );
     }
 })

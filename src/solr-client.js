@@ -2,42 +2,43 @@ import 'whatwg-fetch';
 
 class SolrClient
 {
-  baseUrl = "";
-  fieldsSufix = "schema/fields";
-  facetSuffix = "select?facet=on&indent=on&q=*:*&wt=json&rows=0";
-  dataSuffix = "select?indent=on&q=*:*&wt=json";
-  specialChars = new Set(['+','-','&', '|', '!', '(', ')', '{', '}', '[', ']', '^', '"', '~', '*', '?', ':', '\\' ]);
-  constructor()
-  {
-    this.callConfig = { method: 'GET',
+    baseUrl = "";
+    fieldsSufix = "schema/fields";
+    facetSuffix = "select?facet=on&indent=on&q=*:*&wt=json&rows=0";
+    dataSuffix = "select?indent=on&q=*:*&wt=json";
+    specialChars = new Set(['+','-','&', '|', '!', '(', ')', '{', '}', '[', ']', '^', '"', '~', '*', '?', ':', '\\', ' ' ]);
+    constructor()
+    {
+        this.callConfig = { method: 'GET',
                   mode: 'cors',
                   cache: 'default',
                    dataType: 'jsonp',
                    jsonp: 'json.wrf',
                    crossDomain: true,
                   withCredentials: true};
-    // this.baseUrl = "http://localhost:8983/solr/wso2_data/";
+        // this.baseUrl = "http://localhost:8983/solr/wso2_data/";
 
-  }
+    }
 
 
-  getFields()
-  {
-    var promise = new Promise(resolve => {
-      fetch(this.baseUrl+this.fieldsSufix,this.callConfig)
-      .then(response => {
-        return response.text()
-      }).then(body =>{
-        //Todo: Add code to extract field details and send them
-        var fields = JSON.parse(body).fields;
-        resolve(fields)
-      });
-    });
-    return promise;
-  }
+    getFields()
+    {
+        var promise = new Promise(resolve => {
+          fetch(this.baseUrl+this.fieldsSufix,this.callConfig)
+          .then(response => {
+            return response.text()
+          }).then(body =>{
+            //Todo: Add code to extract field details and send them
+            var fields = JSON.parse(body).fields;
+            resolve(fields)
+          });
+        });
+        return promise;
+    }
 
     getFacetsForSingleField(field,filterQueries,searchText)
     {
+    var promise = new Promise(resolve => {
       //Generate the request
       var facetText = this.facetSuffix;
       facetText+="&facet.field="+field;
@@ -49,13 +50,13 @@ class SolrClient
       facetText+=this.generateFilterQuery(filterQueries);
 
       //make promise
-      var promise = new Promise(resolve => {
         fetch(this.baseUrl+facetText,this.callConfig)
         .then(response => {
           return response.text()
         }).then(body =>{
           //Convert data into a object list list
           let facetFields = this.extractFacetsFromData(body);
+          facetFields[0].searchText = searchText;
           resolve(facetFields[0]) // it has results only for one field. We sends only that data. No need of an array
         });
       });
@@ -64,6 +65,7 @@ class SolrClient
 
     getFacetsForAllFields(fields,filterQueries)
     {
+        var promise = new Promise(resolve => {
         //Generate the request
         var facetText = this.facetSuffix;
         for(let field of fields)
@@ -74,7 +76,6 @@ class SolrClient
         facetText+=this.generateFilterQuery(filterQueries);
 
         //make promise
-        var promise = new Promise(resolve => {
           fetch(this.baseUrl+facetText,this.callConfig)
           .then(response => {
             return response.text()
@@ -112,7 +113,7 @@ class SolrClient
                     if(facetArray[i+1]>0)
                         facets.push({value:facetArray[i],count:facetArray[i+1]})
                 }
-                facetFields.push({field:facetField,facets:facets});
+                facetFields.push({field:facetField,facets:facets, searchText:""});
             }
         }
         return facetFields;
@@ -120,24 +121,45 @@ class SolrClient
 
     getData(filterQueries,start,rows)
     {
-        let dataText = this.dataSuffix;
-        for(let fq of filterQueries)
-        {
-          dataText+="&fq="+fq.field+":"+ this.encodeForSolr(fq.value);
-        }
 
-        dataText+="&rows="+rows;
-        dataText+="&start="+start;
-
-        var numFound = 0;
         var promise = new Promise(resolve => {
+            let dataText = this.dataSuffix;
+            for(let fq of filterQueries)
+            {
+              dataText+="&fq="+fq.field+":"+ this.encodeForSolr(fq.value);
+            }
+
+            dataText+="&rows="+rows;
+            dataText+="&start="+start;
+
           fetch(this.baseUrl+dataText,this.callConfig)
           .then(response => {
             return response.text()
           }).then(body =>{
             //Todo: Add code to extract field details and send them
-            numFound = JSON.parse(body).response.numFound;
-            resolve({text:body,url:this.baseUrl+dataText,numFound:numFound, start:start, rows:rows})
+            console.log("data recieved"+new Date()+new Date().getMilliseconds());
+            let jsonObject = JSON.parse(body);
+            //Find columns
+            let columns = new Set();
+            for(let record of jsonObject.response.docs)
+            {
+                for(let fieldName in record)
+                {
+                    if(record.hasOwnProperty(fieldName))
+                        columns.add(fieldName)
+                }
+                //console.log(JSON.stringify(Array.from(columns)));
+            }
+            console.log(jsonObject.response.docs.length);
+            console.log("Returning data:"+new Date()+new Date().getMilliseconds());
+            resolve({
+                text:body,
+                url:this.baseUrl+dataText,
+                numFound:jsonObject.response.numFound,
+                start:start,
+                rows:rows,
+                docs:jsonObject.response.docs,
+                columnNames:Array.from(columns) })
           });
         });
         return promise;
