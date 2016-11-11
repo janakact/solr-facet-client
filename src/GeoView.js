@@ -24,7 +24,7 @@ const DocMarker = ({children, doc, field, fields}) => (
 	<Popup>
 		<ul>
 		{ fields.map((fieldName)=>
-			<li>
+			<li key={fieldName}>
 				<b>{fieldName}</b>:{doc[fieldName]}
 			</li>)
 		}
@@ -47,10 +47,10 @@ var GeoView = React.createClass({
 	render(){
 		return (<div>
 			<select onChange={this.handleLocationFieldChange} value={this.state.locationField}>
-				{this.props.fields.map((field,index) => <option value={field}>{field}</option> )}
+				{this.props.fields.map((field,index) => <option key={field} value={field}>{field}</option> )}
 			</select>
 
-			<Map center={position} zoom={1}>
+			<Map center={position} zoom={1} animate={true}>
 			    <TileLayer
 			      url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
 			      attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
