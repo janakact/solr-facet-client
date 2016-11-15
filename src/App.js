@@ -23,8 +23,9 @@ class App extends Component {
         availableFields: [], //Array(3).fill({name:"Unknown", type:"uk"}),
         availableFacetFields:[],
         loadedData:{start:0,rows:10, columnNames:[], docs:[]},
+        geoOverview:{},
         query:"select?indent=on&q=*:*&wt=json",
-        baseUrl:"http://localhost:8983/solr/new_core1/"
+        baseUrl:"http://localhost:8983/solr/gettingstarted/"
         };
         this.solrClient = new SolrClient();
         this.solrClient.setBaseUrl(this.state.baseUrl);
@@ -35,6 +36,7 @@ class App extends Component {
         this.requestFacets = this.requestFacets.bind(this);
         this.requestFacetsSingleField = this.requestFacetsSingleField.bind(this);
         this.requestData = this.requestData.bind(this);
+        this.requestOverview = this.requestOverview.bind(this);
 
         //Text Listen
         this.handleChange = this.handleChange.bind(this);
@@ -53,7 +55,8 @@ class App extends Component {
             addedFilters: [],//Array(9).fill({field:"field", value:"value"}),
             availableFields: [], //Array(3).fill({name:"Unknown", type:"uk"}),
             availableFacetFields:[],
-            loadedData:{start:0,rows:10, columnNames:[], docs:[]}
+            loadedData:{start:0,rows:10, columnNames:[], docs:[]},
+            geoOverview:{}
         })
     }
 
@@ -133,6 +136,18 @@ class App extends Component {
         this.setState(pre=>({loadedData:data}));
         });
         console.log("sent data request: "+new Date()+ new Date().getMilliseconds());
+
+        this.requestOverview();
+    }
+
+    requestOverview()
+    {
+        this.solrClient.getGeoOverview(this.addedFilters,"Location")
+        .then( data=> {
+
+            console.log("At Request:-\n"+ JSON.stringify(data));
+            this.setState(pre => ({geoOverview:data}));
+        });
     }
 
     handleChange(event) {
@@ -237,7 +252,10 @@ class App extends Component {
 
 
 
-            <DataBrowser data={this.state.loadedData} onPageSelect={this.requestData}> </DataBrowser>
+            <DataBrowser
+                data={this.state.loadedData}
+                onPageSelect={this.requestData}
+                geoOverview={this.state.geoOverview}> </DataBrowser>
 
 
             {/*

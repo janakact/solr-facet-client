@@ -5,6 +5,7 @@ class SolrClient
     baseUrl = "";
     fieldsSufix = "schema/fields";
     facetSuffix = "select?facet=on&indent=on&q=*:*&wt=json&rows=0";
+    geoHeatMapSufix = "select?facet=on&indent=on&q=*:*&wt=json&rows=0";
     dataSuffix = "select?indent=on&q=*:*&wt=json";
     specialChars = new Set(['+','-','&', '|', '!', '(', ')', '{', '}', '[', ']', '^', '"', '~', '*', '?', ':', '\\', ' ' ]);
     constructor()
@@ -124,10 +125,8 @@ class SolrClient
 
         var promise = new Promise(resolve => {
             let dataText = this.dataSuffix;
-            for(let fq of filterQueries)
-            {
-              dataText+="&fq="+fq.field+":"+ this.encodeForSolr(fq.value);
-            }
+
+            dataText+=this.generateFilterQuery(filterQueries);
 
             dataText+="&rows="+rows;
             dataText+="&start="+start;
@@ -165,6 +164,29 @@ class SolrClient
         return promise;
     }
 
+    getGeoOverview(filterQueries, heatField)
+    {
+        var promise = new Promise(resolve => {
+            let geoText = this.geoHeatMapSufix;
+            geoText+=this.generateFilterQuery(filterQueries);
+            geoText+="&facet.heatmap="+heatField;
+
+            fetch(this.baseUrl+geoText,this.callConfig)
+            .then(response => {
+              return response.text()
+            }).then(body =>{
+                //--- todo
+                console.log(body)
+                let heatMap = JSON.parse(body).facet_counts.facet_heatmaps[heatField];
+
+                console.log(heatMap);
+                resolve(heatMap)
+            });
+
+
+        });
+        return promise;
+    }
 
 
   getQuery(url)

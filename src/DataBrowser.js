@@ -2,6 +2,7 @@ import React from 'react';
 import { Panel,Well, Pagination, Row, Col, Tab, Tabs } from 'react-bootstrap';
 import {Table, Column, Cell} from 'fixed-data-table';
 import GeoView from './GeoView'
+import OverviewBrowser from './OverviewBrowser'
 
 var PageNav  = React.createClass({
   getInitialState() {
@@ -90,29 +91,34 @@ var TableView = React.createClass({
 var DataBrowser = React.createClass({
 	render:function(){
 		return(
-			<Panel  bsStyle="info" header="Data" >
-				<PageNav {...this.props.data} onPageSelect={this.props.onPageSelect}/>
-				<Well bsSize="small">URL: <a href={this.props.data.url}><code >{this.props.data.url}</code></a></Well>
+            <Tabs defaultActiveKey={1} id="data-tabs">
+                <Tab eventKey={1} title="Table">
+                    <Panel  bsStyle="info" header="Data" >
+        				<PageNav {...this.props.data} onPageSelect={this.props.onPageSelect}/>
+            				<Well bsSize="small">URL: <a href={this.props.data.url}><code >{this.props.data.url}</code></a></Well>
 
-                    <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
-                    <Tab eventKey={1} title="Table">
-                        <TableView columnNames={this.props.data.columnNames} docs={this.props.data.docs} start={this.props.data.start}/>
-                    </Tab>
+                            <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
+                                <Tab eventKey={1} title="Table">
+                                    <TableView columnNames={this.props.data.columnNames} docs={this.props.data.docs} start={this.props.data.start}/>
+                                </Tab>
 
-                    <Tab eventKey={2} title="JSON Response">
-    					<pre className="pre-scrollable">
-    					{this.props.data.text}
-    					</pre>
-                    </Tab>
+                                <Tab eventKey={2} title="JSON Response">
+                					<pre className="pre-scrollable">
+                					{this.props.data.text}
+                					</pre>
+                                </Tab>
 
-                    <Tab eventKey={3} title="Map">
-                        <GeoView docs={this.props.data.docs} field="Location" fields={this.props.data.columnNames}/>
-                    </Tab>
+                                <Tab eventKey={3} title="Map">
+                                    <GeoView docs={this.props.data.docs} field="Location" fields={this.props.data.columnNames}/>
+                                </Tab>
+                            </Tabs>
+        			</Panel>
+            </Tab>
 
-
-
-                    </Tabs>
-			</Panel>
+                <Tab eventKey={2} title="Overview">
+                    <OverviewBrowser geoOverview={this.props.data.docs}  />
+                </Tab>
+        </Tabs>
 		)
 	}
 });

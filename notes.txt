@@ -6,9 +6,15 @@ Calls
 
 
 use
-&stats=true&stats.field=contentid 
+&stats=true&stats.field=contentid
 to get stats of Numaric ranges
 
 Helps
 http://stackoverflow.com/questions/21029999/react-js-identifying-different-inputs-with-one-onchange-handler
 http://localhost:8983/solr/wso2_data/schema/fields
+
+
+
+To Solve
+-- Multi valued fields for map specially
+-- 
