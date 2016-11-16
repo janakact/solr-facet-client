@@ -9,6 +9,9 @@ use
 &stats=true&stats.field=contentid
 to get stats of Numaric ranges
 
+Start solr
+bin/solr start -e cloud -noprompt
+
 Helps
 http://stackoverflow.com/questions/21029999/react-js-identifying-different-inputs-with-one-onchange-handler
 http://localhost:8983/solr/wso2_data/schema/fields
@@ -17,4 +20,15 @@ http://localhost:8983/solr/wso2_data/schema/fields
 
 To Solve
 -- Multi valued fields for map specially
--- 
+--
+
+
+TODO
+Send updates to engineering group
+talk to Mohan CEP http://wso2.com/about/team/vivekanandalingam-mohanadarshan/
+
+
+In the morning convert to a data model
+--- Make a full data model
+--- add onChange functionality for solr client
+--- read async load in redux

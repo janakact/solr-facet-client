@@ -99,6 +99,7 @@ var DataBrowser = React.createClass({
 
                             <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
                                 <Tab eventKey={1} title="Table">
+                                    <h4>Airport_Details</h4>
                                     <TableView columnNames={this.props.data.columnNames} docs={this.props.data.docs} start={this.props.data.start}/>
                                 </Tab>
 
@@ -116,7 +117,7 @@ var DataBrowser = React.createClass({
             </Tab>
 
                 <Tab eventKey={2} title="Overview">
-                    <OverviewBrowser geoOverview={this.props.data.docs}  />
+                    <OverviewBrowser geoOverview={this.props.geoOverview}  />
                 </Tab>
         </Tabs>
 		)
