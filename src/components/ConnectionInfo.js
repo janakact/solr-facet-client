@@ -1,23 +1,24 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { setBaseUrl } from '../actions'
+import { requestFields } from '../actions'
 
 let ConnectionInfo = ({ dispatch }) => {
-  let input
+  let input = "http://localhost:8983/solr/gettingstarted/";
 
   return (
     <div>
       <form
           onSubmit={e => {
             e.preventDefault()
-            if (!input.value.trim()) {
+            if (!input.trim()) {
               return
             }
-            dispatch(setBaseUrl(input.value))
-            input.value = '--'
+            dispatch(requestFields(input))
       }}>
-        <input ref={node => {
-          input = node
+        <input
+            value = {input}
+            ref={node => {
+            input = node.value
         }} />
         <button type="submit">
           Connect

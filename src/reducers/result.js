@@ -1,7 +1,7 @@
 import types from '../constants/ActionTypes';
 
 const initialState = {
-	availableFields:[]
+	fields:[]
 }
 
 const result = (state=initialState, action) => {
