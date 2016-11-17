@@ -136,7 +136,7 @@ class SolrClient
             return response.text()
           }).then(body =>{
             //Todo: Add code to extract field details and send them
-            console.log("data recieved"+new Date()+new Date().getMilliseconds());
+            //console.log("data recieved"+new Date()+new Date().getMilliseconds());
             let jsonObject = JSON.parse(body);
             //Find columns
             let columns = new Set();
@@ -149,8 +149,8 @@ class SolrClient
                 }
                 //console.log(JSON.stringify(Array.from(columns)));
             }
-            console.log(jsonObject.response.docs.length);
-            console.log("Returning data:"+new Date()+new Date().getMilliseconds());
+            //console.log(jsonObject.response.docs.length);
+            //console.log("Returning data:"+new Date()+new Date().getMilliseconds());
             resolve({
                 text:body,
                 url:this.baseUrl+dataText,
@@ -176,10 +176,10 @@ class SolrClient
               return response.text()
             }).then(body =>{
                 //--- todo
-                console.log(body)
+                //console.log(body)
                 let heatMap = JSON.parse(body).facet_counts.facet_heatmaps[heatField];
 
-                console.log(heatMap);
+                //console.log(heatMap);
                 resolve(heatMap)
             });
 

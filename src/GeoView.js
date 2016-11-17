@@ -61,7 +61,7 @@ var GeoView = React.createClass({
 			    />
 			{this.props.docs.map((doc,index)=>
 				<DocMarker
-					key = {index}
+					key={index}
 					doc={doc}
 					field={this.state.locationField}
 					fields={this.props.fields}

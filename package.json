@@ -20,6 +20,7 @@
     "react-leaflet": "^0.12.3",
     "react-leaflet-heatmap-layer": "^0.2.3",
     "react-map-gl": "^1.7.2",
+    "react-redux": "^4.4.6",
     "whatwg-fetch": "^1.0.0"
   },
   "scripts": {

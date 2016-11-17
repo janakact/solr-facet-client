@@ -135,7 +135,6 @@ class App extends Component {
         .then((data)=>{
         this.setState(pre=>({loadedData:data}));
         });
-        console.log("sent data request: "+new Date()+ new Date().getMilliseconds());
 
         this.requestOverview();
     }
@@ -145,7 +144,7 @@ class App extends Component {
         this.solrClient.getGeoOverview(this.addedFilters,"Location")
         .then( data=> {
 
-            console.log("At Request:-\n"+ JSON.stringify(data));
+            // console.log("At Request:-\n"+ JSON.stringify(data));
             this.setState(pre => ({geoOverview:data}));
         });
     }

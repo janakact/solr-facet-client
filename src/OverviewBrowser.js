@@ -1,28 +1,28 @@
 import React from 'react';
-import { Panel,Well, Pagination, Row, Col, Tab, Tabs } from 'react-bootstrap';
-import { Map, CircleMarker, Popup, TileLayer } from 'react-leaflet';
-import HeatmapLayer from 'react-leaflet-heatmap-layer';
+import { Panel } from 'react-bootstrap';
+import { Map, TileLayer } from 'react-leaflet';
+// import HeatmapLayer from 'react-leaflet-heatmap-layer';
 
 const position = [0, 0];
 
-
-const mapToPoints = function(overView)
-{
-	let grid = overView[15];
-	if(grid==null) return []
-	let points = [];
-	for(let i=0; i<grid.length; i++)
-	{
-		if(grid[i]!=null){
-		for(let j=0; j<grid[i].length; j++)
-			points.push([i,j,grid[i][j]+1]);
-		}
-	}
-	//return [[1,1,1.0]]
-	return points;
-}
-
-const gradient = { '0.1': '#89BDE0', '0.2': '#96E3E6', '0.4': '#82CEB6', '0.6': '#FAF3A5', '0.8': '#F5D98B', '1.0': '#DE9A96'};
+// 
+// const mapToPoints = function(overView)
+// {
+// 	let grid = overView[15];
+// 	if(grid==null) return []
+// 	let points = [];
+// 	for(let i=0; i<grid.length; i++)
+// 	{
+// 		if(grid[i]!=null){
+// 		for(let j=0; j<grid[i].length; j++)
+// 			points.push([i,j,grid[i][j]+1]);
+// 		}
+// 	}
+// 	//return [[1,1,1.0]]
+// 	return points;
+// }
+//
+// const gradient = { '0.1': '#89BDE0', '0.2': '#96E3E6', '0.4': '#82CEB6', '0.6': '#FAF3A5', '0.8': '#F5D98B', '1.0': '#DE9A96'};
 
 var OverviewBrowser = React.createClass({
 	render:function(){return (
