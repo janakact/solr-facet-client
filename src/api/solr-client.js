@@ -17,7 +17,7 @@ const callConfig = { method: 'GET',
 
 class SolrClient
 {
-    query = {    };
+    state = {    };
     store = {};
     constructor()
     {
@@ -27,15 +27,14 @@ class SolrClient
     setStore(store){
         this.store = store;
         store.subscribe(()=>{
-            this.query = this.store.getState().query;
-            console.log(this.query)
+            this.state = this.store.getState();
         });
     }
 
 
     getFields()
     {
-        fetch(this.query.baseUrl+fieldsSufix,callConfig)
+        fetch(this.state.baseUrl+fieldsSufix,callConfig)
         .then(response => {
             return response.text()
           }).then(body =>{
@@ -46,32 +45,47 @@ class SolrClient
           });
     }
 
+    getFacetsForAllFields()
+    {
+        console.log("All")
+        let i = 1;
+        for(let field of this.state.fields){
+            if(field.selected==false) continue;
+            setTimeout(()=>this.getFacets(field.name), 100*i)
+            i+=1;
+        }
+    }
+
     getFacets(fieldName)
     {
         console.log("getFacet-"+fieldName)
-        if(!this.query.fields.find((field)=>(field.name===fieldName)).selected) {
-            console.log("Error---Requesting Facets for an unselected Field")
+        if(!this.state.fields.find((field)=>(field.name===fieldName)).selected) {
+            console.log("Error: request facets for not selected field")
             return
         };
 
       //Generate the request
       var facetText = facetSuffix;
+      let searchText = "";
+      if(this.state.facetsList[fieldName])
+        searchText = this.state.facetsList[fieldName].searchText;
+
       facetText+="&facet.field="+fieldName;
-    //   facetText+="&facet.contains="+this.encodeForSolr("");
+      facetText+="&facet.contains="+this.encodeForSolr(searchText)
       facetText+="&facet.contains.ignoreCase=true";
       facetText+="&facet.limit=10";
 
       //Add Filters
-      facetText+=this.generateFilterQuery(this.query.filters);
+      facetText+=this.generateFilterQuery(this.state.filters);
 
       //make promise
-        fetch(this.query.baseUrl+facetText,callConfig)
+        fetch(this.state.baseUrl+facetText,callConfig)
         .then(response => {
           return response.text()
         }).then(body =>{
           //Convert data into a object list list
           let facetFields = this.extractFacetsFromData(body);
-        //   facetFields[0].searchText = searchText;
+          facetFields[0].searchText = searchText;
           this.store.dispatch(actions.updateFacets(facetFields[0])) // it has results only for one field. We sends only that data. No need of an array
         });
     }
@@ -221,17 +235,6 @@ class SolrClient
   // }
   //
   //
-  // encodeForSolr(str)
-  // {
-  //     let newStr = "";
-  //     for(let ch of str)
-  //     {
-  //       if(this.specialChars.has(ch))
-  //           newStr+="\\";
-  //       newStr+=ch;
-  //     }
-  //     return newStr;
-  // }
 
 
   //Static Support Methods
@@ -240,7 +243,7 @@ class SolrClient
         let facetText = ""
         for(let fq of filterQueries)
         {
-            facetText+="&fq="+fq.field+":"+ this.encodeForSolr(fq.value);
+            facetText+="&fq="+fq.fieldName+":"+ this.encodeForSolr(fq.query);
         }
         return facetText;
     }
@@ -260,11 +263,24 @@ class SolrClient
                     if(facetArray[i+1]>0)
                         facets.push({value:facetArray[i],count:facetArray[i+1]})
                 }
-                facetFields.push({field:facetField,facets:facets, searchText:""});
+                facetFields.push({fieldName:facetField,facets:facets, searchText:""});
             }
         }
         return facetFields;
     }
+
+    encodeForSolr(str)
+    {
+        let newStr = "";
+        for(let ch of str)
+        {
+          if(specialChars.has(ch))
+              newStr+="\\";
+          newStr+=ch;
+        }
+        return newStr;
+    }
+
 
 
 }

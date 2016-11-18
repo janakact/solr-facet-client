@@ -46,3 +46,27 @@ export const updateFacets = (facets) => ({
     type:types.UPDATE_FACETS,
     facets
 })
+
+export const changeSearchTextFacets = (fieldName, text) => {
+    setTimeout(() => {solrClient.getFacets(fieldName);}, 100);
+    return({
+        type:types.CHANGE_SEARCHTEXT_FACETS,
+        fieldName,
+        text
+    });
+}
+
+export const addFilter = (filterObject) => {
+    setTimeout(() => {solrClient.getFacetsForAllFields();}, 100);
+    return({
+        type:types.ADD_FILTER,
+        filterObject
+    });
+}
+
+export const removeFilter = (filterObject) => {
+    return ({
+        type:types.REMOVE_FILTER,
+        filterObject
+    })
+}
