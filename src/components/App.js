@@ -4,21 +4,27 @@ import ConnectionInfo from '../components/ConnectionInfo'
 import FieldList from '../components/FieldList'
 import FacetsList from '../components/FacetsList'
 import FilterList from '../components/FilterList'
+import DataBrowser from '../components/DataBrowser'
 
 
-const mapStateToProps = (state, ownProps) => ({fields:state.fields, facetsList:state.facetsList, filters:state.filters});
+const mapStateToProps = (state, ownProps) => ({
+    fields:state.fields,
+    facetsList:state.facetsList,
+    filters:state.filters,
+    data:state.data});
 const mapDispatchToProps = (dispatch, ownProps) => ({
   // onClick: () => {
   //   dispatch(toggleSelectField(ownProps.field.name))
   // }
 });
-let App = ({fields,facetsList, filters}) => (
+let App = ({fields,facetsList, filters, data}) => (
   <div>
       lol
     <ConnectionInfo/>
     <FieldList fields={fields}/>
     <FilterList filters={filters} />
     <FacetsList facetsList={facetsList}/>
+    <DataBrowser data={data}/>
   </div>
 )
 App = connect(mapStateToProps, mapDispatchToProps)(App);

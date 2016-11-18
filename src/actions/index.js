@@ -65,8 +65,29 @@ export const addFilter = (filterObject) => {
 }
 
 export const removeFilter = (filterObject) => {
+    setTimeout(() => {solrClient.getFacetsForAllFields();}, 100);
     return ({
         type:types.REMOVE_FILTER,
         filterObject
+    })
+}
+
+
+
+
+
+export const updateData = (data) => {
+    return ({
+        type:types.UPDATE_DATA,
+        data
+    })
+}
+
+export const updatePagination = (start, rows) =>{
+    setTimeout(() => {solrClient.getData();}, 100);
+    return ({
+        type:types.UPDATE_PAGINATION,
+        start,
+        rows
     })
 }

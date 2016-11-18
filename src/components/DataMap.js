@@ -23,20 +23,15 @@ const DocMarker = ({children, doc, field, fields}) => (
 )
 
 
-var GeoView = React.createClass({
-	getInitialState() {
-		return {
-			locationField:"Location"
-		};
-	},
-	handleLocationFieldChange(event){
-		this.setState({locationField:event.target.value})
-	},
-	render(){
+var DataMap = ({data}) => {
+        let locationSelect = "Location";
 		return (<div>
-			<select onChange={this.handleLocationFieldChange} value={this.state.locationField}>
-				{this.props.fields.map((field,index) => <option key={field} value={field}>{field}</option> )}
-			</select>
+		<select ref={node => {
+                        locationSelect = node
+                    }}
+     defaultValue="Location">
+			{data.columnNames.map((field,index) => <option key={field} value={field}>{field}</option> )}
+		</select>
 
 			<Map
 				fitBoundsOnLoad
@@ -47,12 +42,12 @@ var GeoView = React.createClass({
 			      url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
 			      attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 			    />
-			{this.props.docs.map((doc,index)=>
+            {data.docs.map((doc,index)=>
 				<DocMarker
 					key={index}
 					doc={doc}
-					field={this.state.locationField}
-					fields={this.props.fields}
+					field={locationSelect}
+					fields={data.columnNames}
 					/>
 
 				)}
@@ -60,6 +55,5 @@ var GeoView = React.createClass({
 			</Map>
 		</div>)
 	}
-});
 
-export default GeoView;
+export default DataMap;

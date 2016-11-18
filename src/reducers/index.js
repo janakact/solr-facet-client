@@ -4,7 +4,16 @@ const initialState = {
     baseUrl:"http://localhost:8983/solr/gettingstarted/",
     fields:[],
     facetsList:{},
-	filters:[]
+	filters:[],
+    data:{
+        jsonResponse:"",
+        url:"",
+        numFound:0,
+        start:0,
+        rows:10,
+        docs:[],
+        columnNames:[]
+    }
 }
 
 const reducer = (state=initialState, action) => {
@@ -44,6 +53,14 @@ const reducer = (state=initialState, action) => {
             return {...state, filters:[...state.filters, action.filterObject ]}
         case types.REMOVE_FILTER:
             return {...state, filters:[...state.filters].filter((item)=>item.fieldName!=action.filterObject.fieldName)}
+
+
+
+        //DataBrowser
+        case types.UPDATE_DATA:
+            return {...state, data:action.data}
+        case types.UPDATE_PAGINATION:
+            return {...state, data:{...state.data,start:action.start, rows:action.rows}}
 
       default:
         return state;

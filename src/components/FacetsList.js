@@ -5,7 +5,7 @@ import {changeSearchTextFacets, addFilter} from '../actions'
 // import
 // import { request } from '../actions'
 
-
+//Single Facet Element. Query Oprtion
 let Facet = ({value,count, fieldName, dispatch}) => {
     return(
         <ListGroupItem href="#" onClick={()=>{dispatch(addFilter({fieldName:fieldName, query:value}))}}>

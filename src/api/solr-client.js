@@ -54,6 +54,8 @@ class SolrClient
             setTimeout(()=>this.getFacets(field.name), 100*i)
             i+=1;
         }
+        setTimeout(()=>this.getData(), 100);
+
     }
 
     getFacets(fieldName)
@@ -89,6 +91,49 @@ class SolrClient
           this.store.dispatch(actions.updateFacets(facetFields[0])) // it has results only for one field. We sends only that data. No need of an array
         });
     }
+
+
+      getData()
+      {
+          let dataText = dataSuffix;
+          let dataState = this.state.data;
+
+          dataText+=this.generateFilterQuery(this.state.filters);
+
+          dataText+="&rows="+dataState.rows;
+          dataText+="&start="+dataState.start;
+
+          fetch(this.state.baseUrl+dataText, callConfig)
+          .then(response => {
+              return response.text()
+          }).then(body =>{
+              //console.log("data recieved"+new Date()+new Date().getMilliseconds());
+              let jsonObject = JSON.parse(body);
+              //Find columns
+              let columns = new Set();
+              for(let record of jsonObject.response.docs)
+              {
+                  for(let fieldName in record)
+                  {
+                      if(record.hasOwnProperty(fieldName))
+                      columns.add(fieldName)
+                  }
+                  //console.log(JSON.stringify(Array.from(columns)));
+              }
+              //console.log(jsonObject.response.docs.length);
+              //console.log("Returning data:"+new Date()+new Date().getMilliseconds());
+              this.store.dispatch(actions.updateData({
+                  jsonResponse:body,
+                  url:this.state.baseUrl+dataText,
+                  numFound:jsonObject.response.numFound,
+                  start:dataState.start,
+                  rows:dataState.rows,
+                  docs:jsonObject.response.docs,
+                  columnNames:Array.from(columns) })
+              );
+
+          });
+  }
 
   //
   //   getFacetsForAllFields(fields,filterQueries)
