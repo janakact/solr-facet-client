@@ -30,9 +30,9 @@ let FieldList = ({fields},dispatch) =>  {
 	return (
 		<Panel  bsStyle="info" header="Available Fields">
 			<ul>
-			{fields.map((field,index)=>
+			{Object.keys(fields).map((fieldName,index)=>
 				<Field
-                    field={field}></Field>
+                    field={fields[fieldName]}></Field>
 			)}
 		</ul>
 	   </Panel>

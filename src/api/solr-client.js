@@ -1,5 +1,6 @@
 import 'whatwg-fetch';
 import * as actions from '../actions'
+import facetsTypes from '../constants/FacetsTypes'
 
 const fieldsSufix = "schema/fields";
 const facetSuffix = "select?facet=on&indent=on&q=*:*&wt=json&rows=0";
@@ -41,7 +42,12 @@ class SolrClient
             //Todo: Add code to extract field details and send them
             var fields = JSON.parse(body).fields;
             fields = fields.map(field=>({...field,selected:false}));
-            this.store.dispatch(actions.updateFields(fields));
+            var fieldsObject = {}
+            for(let field of fields){
+                fieldsObject[field.name] = field;
+
+            }
+            this.store.dispatch(actions.updateFields(fieldsObject));
           });
     }
 
@@ -49,8 +55,9 @@ class SolrClient
     {
         console.log("All")
         let i = 1;
-        for(let field of this.state.fields){
-            if(field.selected==false) continue;
+        for(let fieldName of Object.keys(this.state.fields)){
+            let field = this.state.fields[fieldName];
+            if( field.selected===false) continue;
             setTimeout(()=>this.getFacets(field.name), 100*i)
             i+=1;
         }
@@ -61,7 +68,7 @@ class SolrClient
     getFacets(fieldName)
     {
         console.log("getFacet-"+fieldName)
-        if(!this.state.fields.find((field)=>(field.name===fieldName)).selected) {
+        if(this.state.fields[fieldName] && !this.state.fields[fieldName].selected) {
             console.log("Error: request facets for not selected field")
             return
         };
@@ -295,7 +302,8 @@ class SolrClient
 
     extractFacetsFromData(data)
     {
-        var facetsData = JSON.parse(data).facet_counts.facet_fields;
+        var facetsDataAll = JSON.parse(data).facet_counts;
+        var facetsData = facetsDataAll.facet_fields;
         var facetFields = [];
         for(let facetField in facetsData)   //take facet data for a specific field
         {
@@ -308,9 +316,19 @@ class SolrClient
                     if(facetArray[i+1]>0)
                         facets.push({value:facetArray[i],count:facetArray[i+1]})
                 }
-                facetFields.push({fieldName:facetField,facets:facets, searchText:""});
+                facetFields.push({fieldName:facetField,facets:facets, searchText:"", type:facetsTypes.TEXT});
             }
         }
+
+        //Extract Heat maps
+        let heatMaps = facetsDataAll.facet_heatmaps;
+        for(let heatMapFieldName in heatMaps){
+            if(heatMaps.hasOwnProperty(heatMapFieldName)){
+                facetFields.push({fieldName:heatMapFieldName, facets:heatMaps[heatMapFieldName], type:facetsTypes.TEXT})
+            }
+        }
+
+
         return facetFields;
     }
 

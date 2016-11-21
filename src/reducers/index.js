@@ -2,7 +2,7 @@ import types from '../constants/ActionTypes';
 const initialState = {
     fetching:false,
     baseUrl:"http://localhost:8983/solr/gettingstarted/",
-    fields:[],
+    fields:{},
     facetsList:{},
 	filters:[],
     data:{
@@ -30,12 +30,18 @@ const reducer = (state=initialState, action) => {
         case types.UPDATE_FIELDS:
             return {...state,fields:action.fields, fetching:false}
         case types.TOGGLESELECT_FIELD:
+            //Delete facets
             let newFacetsList2 = {...state.facetsList}
             delete newFacetsList2[action.fieldName]
+
+            let fields2 = {...state.fields}
+            fields2[action.fieldName] = { ...fields2[action.fieldName], selected:!fields2[action.fieldName].selected }
+
+            //toggole field Name
             return {...state,
                 facetsList:newFacetsList2,
-                fields:state.fields.map((field)=>({...field,
-                    selected:action.fieldName===field.name?!field.selected:field.selected}))}
+                fields:fields2
+                }
 
         case types.REQUEST_FACETS:
             return {...state, fetching:true}
@@ -50,7 +56,10 @@ const reducer = (state=initialState, action) => {
             return {...state, fetching:true, facetsList:newFacetsListSearch}
 
         case types.ADD_FILTER:
-            return {...state, filters:[...state.filters, action.filterObject ]}
+            return {...state,
+                filters:[...state.filters, action.filterObject ],
+                data:{...state.data,start:0} //Reset start
+            }
         case types.REMOVE_FILTER:
             return {...state, filters:[...state.filters].filter((item)=>item.fieldName!=action.filterObject.fieldName)}
 
