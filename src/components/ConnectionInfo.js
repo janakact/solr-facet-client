@@ -17,7 +17,7 @@ let ConnectionInfo = ({ dispatch }) => {
             dispatch(requestFields(input.value))
       }}>
         <input
-            defaultValue = "http://localhost:8983/solr/gettingstarted/"
+            defaultValue="http://localhost:8983/solr/gettingstarted/"
             ref={node => {
             input = node
         }} />

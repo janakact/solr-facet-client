@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { removeFilter } from '../actions'
-import { Button,Panel } from 'react-bootstrap';
+import { Panel } from 'react-bootstrap';
 
 
 // Single Field
@@ -31,6 +31,7 @@ let FilterList = ({filters},dispatch) =>  {
 			<ul>
 			{filters.map((filter,index)=>
 				<Filter
+                    key={index}
                     filterObject={filter}></Filter>
 			)}
 		</ul>

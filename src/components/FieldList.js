@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { toggleSelectField } from '../actions'
-import { Button,Panel } from 'react-bootstrap';
+import { Panel } from 'react-bootstrap';
 
 
 // Single Field
@@ -32,6 +32,7 @@ let FieldList = ({fields},dispatch) =>  {
 			<ul>
 			{Object.keys(fields).map((fieldName,index)=>
 				<Field
+                    key={fieldName}
                     field={fields[fieldName]}></Field>
 			)}
 		</ul>

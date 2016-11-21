@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListGroup,ListGroupItem,Badge,Panel } from 'react-bootstrap';
+import { ListGroup,ListGroupItem,Badge,Row,Col, Panel } from 'react-bootstrap';
 import { connect } from 'react-redux'
 import {changeSearchTextFacets, addFilter} from '../../actions'
 

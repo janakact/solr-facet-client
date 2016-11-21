@@ -4,7 +4,7 @@ import facetsTypes from '../../constants/FacetsTypes'
 
 //Facets results for a single field
 let Facets = (props) => {
-    if(props.facets.type === facetsTypes.TEXT)
+    if(props.facets.type == facetsTypes.TEXT)
     return( <TextOptions {...props} />
     )
 }

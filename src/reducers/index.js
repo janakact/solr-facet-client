@@ -61,7 +61,7 @@ const reducer = (state=initialState, action) => {
                 data:{...state.data,start:0} //Reset start
             }
         case types.REMOVE_FILTER:
-            return {...state, filters:[...state.filters].filter((item)=>item.fieldName!=action.filterObject.fieldName)}
+            return {...state, filters:[...state.filters].filter((item)=>item.fieldName!==action.filterObject.fieldName)}
 
 
 

@@ -4,7 +4,7 @@ import facetsTypes from '../constants/FacetsTypes'
 
 const fieldsSufix = "schema/fields";
 const facetSuffix = "select?facet=on&indent=on&q=*:*&wt=json&rows=0";
-const geoHeatMapSufix = "select?facet=on&indent=on&q=*:*&wt=json&rows=0";
+// const geoHeatMapSufix = "select?facet=on&indent=on&q=*:*&wt=json&rows=0";
 const dataSuffix = "select?indent=on&q=*:*&wt=json";
 const specialChars = new Set(['+','-','&', '|', '!', '(', ')', '{', '}', '[', ']', '^', '"', '~', '*', '?', ':', '\\', ' ' ]);
 
@@ -20,11 +20,7 @@ class SolrClient
 {
     state = {    };
     store = {};
-    constructor()
-    {
-
-    }
-
+    
     setStore(store){
         this.store = store;
         store.subscribe(()=>{
