@@ -49,6 +49,13 @@ const reducer = (state=initialState, action) => {
             let newFacetsList = {...state.facetsList}
             newFacetsList[action.facets.fieldName] = action.facets;
             return {...state, fetching:false, facetsList:newFacetsList}
+
+        case types.UPDATE_STATS:
+            let newFields = state.fields;
+            for(let fieldName of Object.keys(action.stats)){
+                newFields[fieldName] = {...state.fields[fieldName], stats:action.stats[fieldName]}
+            }
+            return {...state, fields:newFields}
         //
         case types.CHANGE_SEARCHTEXT_FACETS:
             let newFacetsListSearch = {...state.facetsList}

@@ -19,7 +19,6 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 });
 let App = ({fields,facetsList, filters, data}) => (
   <div>
-      lol
     <ConnectionInfo/>
     <FieldList fields={fields}/>
     <FilterList filters={filters} />

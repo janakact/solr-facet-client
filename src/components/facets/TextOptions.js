@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListGroup,ListGroupItem,Badge,Panel } from 'react-bootstrap';
+import { ListGroup,ListGroupItem,Badge,Panel, Col } from 'react-bootstrap';
 import { connect } from 'react-redux'
 import {changeSearchTextFacets, addFilter} from '../../actions'
 
@@ -36,6 +36,8 @@ SearchBox = connect()(SearchBox);
 //Facets results for a single field
 let TextOptions = ({facets}) => {
     return(
+
+                  <Col xs={12} md={3} >
         <Panel collapsible defaultExpanded header={facets.fieldName} >
             <SearchBox fieldName={facets.fieldName}/>
             <div  className="facet-list-scroll" >
@@ -46,6 +48,7 @@ let TextOptions = ({facets}) => {
             </ListGroup>
             </div>
         </Panel>
+    </Col>
     )
 }
 

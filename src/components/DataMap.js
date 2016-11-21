@@ -37,7 +37,8 @@ var DataMap = ({data}) => {
 				fitBoundsOnLoad
 				center={position}
 				zoom={1}
-				animate={true}>
+				animate={true}
+				id='map'>
 			    <TileLayer
 			      url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
 			      attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'

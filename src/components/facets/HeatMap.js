@@ -6,11 +6,11 @@ import {addFilter} from '../../actions'
 
 
 //Facets results for a single field
-let Graph = ({facets}) => {
+let HeatMap = ({facets}) => {
     return(
-    <Col xs={12} md={3} >
+
+                  <Col xs={12} md={12} >
         <Panel collapsible defaultExpanded header={facets.fieldName} >
-            <SearchBox fieldName={facets.fieldName}/>
             <div  className="facet-list-scroll" >
                     {JSON.stringify(facets)}
             </div>
@@ -19,4 +19,4 @@ let Graph = ({facets}) => {
     )
 }
 
-export default Graph;
+export default HeatMap;

@@ -11,6 +11,7 @@ import solrClient from '../api/solr-client'
 //Fields
 export const requestFields = (url) =>{
     setTimeout(() => {solrClient.getFields();}, 100);
+    setTimeout(() => {solrClient.getFacetsForAllFields();}, 100);
     return {
         type:types.REQUEST_FIELDS,
         url
@@ -20,6 +21,11 @@ export const requestFields = (url) =>{
 export const updateFields = (fields) =>({
     type:types.UPDATE_FIELDS,
     fields
+})
+
+export const updateStats = (stats) =>({
+    type:types.UPDATE_STATS,
+    stats
 })
 
 export const toggleSelectField = (fieldName) =>{

@@ -2,11 +2,16 @@ import 'whatwg-fetch';
 import * as actions from '../actions'
 import facetsTypes from '../constants/FacetsTypes'
 
-const fieldsSufix = "schema/fields";
-const facetSuffix = "select?facet=on&indent=on&q=*:*&wt=json&rows=0";
-// const geoHeatMapSufix = "select?facet=on&indent=on&q=*:*&wt=json&rows=0";
-const dataSuffix = "select?indent=on&q=*:*&wt=json";
-const specialChars = new Set(['+','-','&', '|', '!', '(', ')', '{', '}', '[', ']', '^', '"', '~', '*', '?', ':', '\\', ' ' ]);
+const _FIELDS_SUFFIX = "schema/fields";
+const _FACETS_SUFFIX = "select?facet=on&indent=on&q=*:*&wt=json&rows=0";
+const _HEATMAP_SUFFIX = "select?facet=on&indent=on&q=*:*&wt=json&rows=0";
+const _DATA_SUFFIX = "select?indent=on&q=*:*&wt=json";
+const _STATS_SUFFIX = 'select?q=*:*&indent=on&wt=json&rows=0&stats=true'
+const _SPECIAL_CHARS = new Set(['+','-','&', '|', '!', '(', ')', '{', '}', '[', ']', '^', '"', '~', '*', '?', ':', '\\', ' ' ]);
+
+const _HEATMAP_TYPES = ['location_rpt'];
+const _NUMERIC_TYPES = ['long', 'double', 'int'];
+const _STAT_NOT_SUPPORTED_TYPES = ['location_rpt', 'text_general']
 
 const callConfig = { method: 'GET',
                     mode: 'cors',
@@ -20,7 +25,7 @@ class SolrClient
 {
     state = {    };
     store = {};
-    
+
     setStore(store){
         this.store = store;
         store.subscribe(()=>{
@@ -31,7 +36,8 @@ class SolrClient
 
     getFields()
     {
-        fetch(this.state.baseUrl+fieldsSufix,callConfig)
+        let url = this.state.baseUrl+_FIELDS_SUFFIX;
+        fetch(url,callConfig)
         .then(response => {
             return response.text()
           }).then(body =>{
@@ -44,6 +50,8 @@ class SolrClient
 
             }
             this.store.dispatch(actions.updateFields(fieldsObject));
+
+            setTimeout(()=>{this.getStats(Object.keys(this.state.fields))});
           });
     }
 
@@ -70,21 +78,40 @@ class SolrClient
         };
 
       //Generate the request
-      var facetText = facetSuffix;
+      var url = this.state.baseUrl;
       let searchText = "";
-      if(this.state.facetsList[fieldName])
-        searchText = this.state.facetsList[fieldName].searchText;
 
-      facetText+="&facet.field="+fieldName;
-      facetText+="&facet.contains="+this.encodeForSolr(searchText)
-      facetText+="&facet.contains.ignoreCase=true";
-      facetText+="&facet.limit=10";
+      let fieldType = this.state.fields[fieldName].type;
+
+    //   if(_HEATMAP_TYPES.indexOf(this.state.fields[fieldName].type) > 0){
+      if(_HEATMAP_TYPES.indexOf(fieldType)>-1){
+          url += _HEATMAP_SUFFIX;
+          url+="&facet.heatmap="+fieldName;
+      }
+      else if( _NUMERIC_TYPES.indexOf(fieldType) > -1){
+         return;
+      }
+      else{
+          url += _FACETS_SUFFIX;
+          if(this.state.facetsList[fieldName])
+            searchText = this.state.facetsList[fieldName].searchText;
+
+          url+="&facet.field="+fieldName;
+          url+="&facet.contains="+this.encodeForSolr(searchText)
+          url+="&facet.contains.ignoreCase=true";
+          url+="&facet.limit=10";
+      }
+
+      console.log(url);
+      console.log(_HEATMAP_TYPES);
+      console.log(this.state.fields[fieldName].type);
+
 
       //Add Filters
-      facetText+=this.generateFilterQuery(this.state.filters);
+      url+=this.generateFilterQuery(this.state.filters);
 
       //make promise
-        fetch(this.state.baseUrl+facetText,callConfig)
+        fetch(url,callConfig)
         .then(response => {
           return response.text()
         }).then(body =>{
@@ -98,15 +125,15 @@ class SolrClient
 
       getData()
       {
-          let dataText = dataSuffix;
+          let url = this.state.baseUrl+_DATA_SUFFIX;
           let dataState = this.state.data;
 
-          dataText+=this.generateFilterQuery(this.state.filters);
+          url+=this.generateFilterQuery(this.state.filters);
 
-          dataText+="&rows="+dataState.rows;
-          dataText+="&start="+dataState.start;
+          url+="&rows="+dataState.rows;
+          url+="&start="+dataState.start;
 
-          fetch(this.state.baseUrl+dataText, callConfig)
+          fetch(url, callConfig)
           .then(response => {
               return response.text()
           }).then(body =>{
@@ -127,7 +154,7 @@ class SolrClient
               //console.log("Returning data:"+new Date()+new Date().getMilliseconds());
               this.store.dispatch(actions.updateData({
                   jsonResponse:body,
-                  url:this.state.baseUrl+dataText,
+                  url:url,
                   numFound:jsonObject.response.numFound,
                   start:dataState.start,
                   rows:dataState.rows,
@@ -138,12 +165,34 @@ class SolrClient
           });
   }
 
+  getStats(fieldNameList){
+      let url = this.state.baseUrl + _STATS_SUFFIX
+      for(let fieldName of fieldNameList){
+          if(_STAT_NOT_SUPPORTED_TYPES.indexOf(this.state.fields[fieldName].type)===-1)
+          url+='&stats.field='+fieldName;
+      }
+
+      fetch(url,callConfig)
+      .then(response => {
+          return response.text()
+        }).then(body =>{
+          //Todo: Add code to extract field details and send them
+           console.log(body)
+            let stats = JSON.parse(body).stats.stats_fields;
+            console.log(stats)
+            this.store.dispatch(actions.updateStats(stats));
+          }
+        //   this.store.dispatch(actions.updateFields(fieldsObject));
+        );
+
+  }
+
   //
   //   getFacetsForAllFields(fields,filterQueries)
   //   {
   //       var promise = new Promise(resolve => {
   //       //Generate the request
-  //       var facetText = this.facetSuffix;
+  //       var url = this._FACETS_SUFFIX;
   //       for(let field of fields)
   //       facetText+="&facet.field="+field;
   //       facetText+="&facet.limit=10";
@@ -199,7 +248,7 @@ class SolrClient
   //   {
   //
   //       var promise = new Promise(resolve => {
-  //           let dataText = this.dataSuffix;
+  //           let dataText = this._DATA_SUFFIX;
   //
   //           dataText+=this.generateFilterQuery(filterQueries);
   //
@@ -242,7 +291,7 @@ class SolrClient
   //   getGeoOverview(filterQueries, heatField)
   //   {
   //       var promise = new Promise(resolve => {
-  //           let geoText = this.geoHeatMapSufix;
+  //           let geoText = this._HEATMAP_SUFFIX;
   //           geoText+=this.generateFilterQuery(filterQueries);
   //           geoText+="&facet.heatmap="+heatField;
   //
@@ -288,19 +337,21 @@ class SolrClient
   //Static Support Methods
     generateFilterQuery(filterQueries)
     {
-        let facetText = ""
+        let url = ""
         for(let fq of filterQueries)
         {
-            facetText+="&fq="+fq.fieldName+":"+ this.encodeForSolr(fq.query);
+            url+="&fq="+fq.fieldName+":"+ this.encodeForSolr(fq.query);
         }
-        return facetText;
+        return url;
     }
 
     extractFacetsFromData(data)
     {
         var facetsDataAll = JSON.parse(data).facet_counts;
-        var facetsData = facetsDataAll.facet_fields;
         var facetFields = [];
+
+        //Extract Text Facets options
+        var facetsData = facetsDataAll.facet_fields;
         for(let facetField in facetsData)   //take facet data for a specific field
         {
             if(facetsData.hasOwnProperty(facetField))
@@ -320,9 +371,11 @@ class SolrClient
         let heatMaps = facetsDataAll.facet_heatmaps;
         for(let heatMapFieldName in heatMaps){
             if(heatMaps.hasOwnProperty(heatMapFieldName)){
-                facetFields.push({fieldName:heatMapFieldName, facets:heatMaps[heatMapFieldName], type:facetsTypes.TEXT})
+                facetFields.push({fieldName:heatMapFieldName, facets:heatMaps[heatMapFieldName], type:facetsTypes.HEAT_MAP})
             }
         }
+
+
 
 
         return facetFields;
@@ -333,7 +386,7 @@ class SolrClient
         let newStr = "";
         for(let ch of str)
         {
-          if(specialChars.has(ch))
+          if(_SPECIAL_CHARS.has(ch))
               newStr+="\\";
           newStr+=ch;
         }

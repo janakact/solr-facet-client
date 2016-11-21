@@ -1,7 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { toggleSelectField } from '../actions'
-import { Panel } from 'react-bootstrap';
+import { Panel, OverlayTrigger, Tooltip } from 'react-bootstrap';
+
+
+const tooltip = (stats) => (
+  <Tooltip id="tooltip"><strong>Holy guacamole!</strong>{JSON.stringify(stats)}.</Tooltip>
+);
 
 
 // Single Field
@@ -17,7 +22,9 @@ let  Field = ({field, onClick}) => {
                 className={"tag-cloud "+(field.selected ? 'tag-cloud-item-checked' : 'tag-cloud-item')}
                 onClick={onClick}>
 
-            	<strong>{field.name}</strong> : {field.type}
+                  <OverlayTrigger placement="left" overlay={tooltip(field.stats)}>
+            	<span><strong>{field.name}</strong> : {field.type} </span>
+                </OverlayTrigger>
             </li>
     )
 }
