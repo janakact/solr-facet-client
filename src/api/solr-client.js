@@ -5,6 +5,7 @@ import facetsTypes from '../constants/FacetsTypes'
 const _FIELDS_SUFFIX = "schema/fields";
 const _FACETS_SUFFIX = "select?facet=on&indent=on&q=*:*&wt=json&rows=0";
 const _HEATMAP_SUFFIX = "select?facet=on&indent=on&q=*:*&wt=json&rows=0";
+const _NUMERIC_RANGE_SUFFIX = 'select?facet=on&indent=on&q=*:*&wt=json&rows=0';
 const _DATA_SUFFIX = "select?indent=on&q=*:*&wt=json";
 const _STATS_SUFFIX = 'select?q=*:*&indent=on&wt=json&rows=0&stats=true'
 const _SPECIAL_CHARS = new Set(['+','-','&', '|', '!', '(', ')', '{', '}', '[', ']', '^', '"', '~', '*', '?', ':', '\\', ' ' ]);
@@ -89,7 +90,12 @@ class SolrClient
           url+="&facet.heatmap="+fieldName;
       }
       else if( _NUMERIC_TYPES.indexOf(fieldType) > -1){
-         return;
+         url += _NUMERIC_RANGE_SUFFIX;
+         url += "&facet.range=" + fieldName;
+         url += "&facet.range.start=" + this.state.fields[fieldName].stats.min
+         url += "&facet.range.end=" + this.state.fields[fieldName].stats.max
+         url += "&facet.range.gap=" + Math.round((this.state.fields[fieldName].stats.max - this.state.fields[fieldName].stats.min) / 100);
+
       }
       else{
           url += _FACETS_SUFFIX;
@@ -376,6 +382,17 @@ class SolrClient
         }
 
 
+        //Extract range facets
+        let facetRanges = facetsDataAll.facet_ranges;
+        for(let fieldName of Object.keys(facetRanges)){
+            let facets = facetRanges[fieldName];
+            // let counts = []
+            // for(let i=0; i<facets.counts.length; i+=2){
+            //     counts.push({start:facets.counts[i], count:facets.counts[i+1]})
+            // }
+            // facets['counts'] = counts;
+            facetFields.push({fieldName:fieldName, facets:facets, type:facetsTypes.NUMERIC_RANGE})
+        }
 
 
         return facetFields;

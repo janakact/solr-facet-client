@@ -20,6 +20,8 @@ store.dispatch(actions.requestFields("http://localhost:8983/solr/gettingstarted/
 
 
 const div = document.createElement('div');
+const mapm = document.createElement('map');
+
 ReactDOM.render(<Provider store={store}>
   <div className="container" >
       <App />

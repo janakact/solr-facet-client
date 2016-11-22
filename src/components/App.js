@@ -5,6 +5,7 @@ import FieldList from '../components/FieldList'
 import FacetsList from '../components/FacetsList'
 import FilterList from '../components/FilterList'
 import DataBrowser from '../components/DataBrowser'
+import ReactSlider from 'react-slider'
 
 
 const mapStateToProps = (state, ownProps) => ({
@@ -24,6 +25,8 @@ let App = ({fields,facetsList, filters, data}) => (
     <FilterList filters={filters} />
     <FacetsList facetsList={facetsList}/>
     <DataBrowser data={data}/>
+
+                            <ReactSlider defaultValue={50}  />
   </div>
 )
 App = connect(mapStateToProps, mapDispatchToProps)(App);

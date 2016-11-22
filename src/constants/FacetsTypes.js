@@ -1,7 +1,7 @@
 const types = {
     TEXT:'TEXT',
 	HEAT_MAP:'HEAT_MAP',
-	GRAPH:'GRAPH'
+	NUMERIC_RANGE:'NUMERIC_RANGE'
 }
 
 export default types;

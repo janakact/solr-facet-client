@@ -21,6 +21,8 @@ ReactDOM.render(
     <Provider store={store}>
         <div className="container" >
             <App />
+                <canvas id="graphItem" width="400" height="400"></canvas>
+
         </div>
     </Provider>,
   document.getElementById('root')

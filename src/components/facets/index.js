@@ -13,7 +13,7 @@ let Facets = (props) => {
             return( <TextOptions {...props} /> );
         case facetsTypes.HEAT_MAP:
             return <HeatMap {...props} />
-        case facetsTypes.GRAPH:
+        case facetsTypes.NUMERIC_RANGE:
             return <Graph {...props} />
         default:
             return null;
