@@ -4,9 +4,20 @@ import { toggleSelectField } from '../actions'
 import { Panel, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 
-const tooltip = (stats) => (
-  <Tooltip id="tooltip"><strong>Holy guacamole!</strong>{JSON.stringify(stats)}.</Tooltip>
-);
+const tooltip = (stats) => {
+    if(!stats) return (<Tooltip id="tooltip"><span><strong>No Stats Available</strong></span></Tooltip>)
+    else
+     return (
+  <Tooltip id="tooltip"><span><strong>Stats</strong> <br/>
+
+      <ul>
+  {stats && Object.keys(stats).map((key)=>(<li> {key} : {stats[key]}  </li>))}
+  </ul>
+</span>
+
+  </Tooltip>
+)}
+;
 
 
 // Single Field
