@@ -17,10 +17,12 @@ const initialState = {
 }
 
 const reducer = (state=initialState, action) => {
-    console.log("----------------------------\nState:");
-    console.log(state)
-    console.log("Action:");
-    console.log(action)
+
+    // //Log the state and change
+    // console.log("----------------------------\nState:");
+    // console.log(state)
+    // console.log("Action:");
+    // console.log(action)
 
     switch (action.type) {
         case types.SET_BASEURL:
@@ -56,11 +58,13 @@ const reducer = (state=initialState, action) => {
                 newFields[fieldName] = {...state.fields[fieldName], stats:action.stats[fieldName]}
             }
             return {...state, fields:newFields}
-        //
-        case types.CHANGE_SEARCHTEXT_FACETS:
+
+        //----------------------------------------------- changeing facets
+        case types.CHANGE_FACETS_OPTIONS:
             let newFacetsListSearch = {...state.facetsList}
-            newFacetsListSearch[action.fieldName] = {...newFacetsListSearch[action.fieldName],searchText:action.text};
+            newFacetsListSearch[action.fieldName] = {...newFacetsListSearch[action.fieldName],...action.options};
             return {...state, fetching:true, facetsList:newFacetsListSearch}
+        // ---------------------------------------------------------------
 
         case types.ADD_FILTER:
             return {...state,

@@ -2,6 +2,20 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { removeFilter } from '../actions'
 import { Panel } from 'react-bootstrap';
+import filterTypes from '../constants/FilterTypes'
+
+
+const getFilterText = (filterObj) =>{
+    switch(filterObj.type){
+        case filterTypes.TEXT_FILTER:
+            return filterObj.query;
+        case filterTypes.NUMERIC_RANGE_FILTER:
+            return '['+filterObj.range[0]+' TO '+filterObj.range[1]+']';
+        default:
+            return "<Undefined Filter>"
+
+    }
+}
 
 
 // Single Field
@@ -15,8 +29,7 @@ let  Filter = ({filterObject, onClick}) => {
     return (
             <li className="tag-cloud tag-cloud-item"
                 onClick={onClick}>
-
-            	<strong>{filterObject.fieldName}</strong> : {filterObject.query}
+            	<strong>{filterObject.fieldName}</strong> : {getFilterText(filterObject)}
             </li>
     )
 }

@@ -10,8 +10,8 @@ import solrClient from '../api/solr-client'
 
 //Fields
 export const requestFields = (url) =>{
-    setTimeout(() => {solrClient.getFields();}, 100);
-    setTimeout(() => {solrClient.getFacetsForAllFields();}, 100);
+    setTimeout(() => {solrClient.getFields();}, 10);
+    setTimeout(() => {solrClient.getFacetsForAllFields();}, 10);
     return {
         type:types.REQUEST_FIELDS,
         url
@@ -29,41 +29,40 @@ export const updateStats = (stats) =>({
 })
 
 export const toggleSelectField = (fieldName) =>{
-    setTimeout(() => {solrClient.getFacets(fieldName);}, 100);
+    setTimeout(() => {solrClient.getFacets(fieldName);}, 10);
     return {
         type:types.TOGGLESELECT_FIELD,
         fieldName
     }
 }
 
-
-
-
-//Facets
-// export const requestFacets = (fieldName) => {
-//     setTimeout(()=>{solrClient.getFacets(fieldName)});
-//     return {
-//     type:types.REQUEST_FACETS,
-//     fieldName
-//     }
-// })
-
 export const updateFacets = (facets) => ({
     type:types.UPDATE_FACETS,
     facets
 })
 
-export const changeSearchTextFacets = (fieldName, text) => {
-    setTimeout(() => {solrClient.getFacets(fieldName);}, 100);
+
+//----------------------------------------------- Change facets
+export const changeFacetsSearchText = (fieldName, searchText) => {
+    setTimeout(() => {solrClient.getFacets(fieldName);}, 10);
     return({
-        type:types.CHANGE_SEARCHTEXT_FACETS,
+        type:types.CHANGE_FACETS_OPTIONS,
         fieldName,
-        text
+        options:{searchText}
     });
 }
 
+export const changeFacetsNumericRange = (fieldName, range) => {
+    setTimeout(() => {solrClient.getFacets(fieldName);}, 10);
+    return({
+        type:types.CHANGE_FACETS_OPTIONS,
+        fieldName,
+        options:{range}
+    });
+}
+// ------------------------------------------------------------------------
 export const addFilter = (filterObject) => {
-    setTimeout(() => {solrClient.getFacetsForAllFields();}, 100);
+    setTimeout(() => {solrClient.getFacetsForAllFields();}, 10);
     return({
         type:types.ADD_FILTER,
         filterObject
@@ -71,7 +70,7 @@ export const addFilter = (filterObject) => {
 }
 
 export const removeFilter = (filterObject) => {
-    setTimeout(() => {solrClient.getFacetsForAllFields();}, 100);
+    setTimeout(() => {solrClient.getFacetsForAllFields();}, 10);
     return ({
         type:types.REMOVE_FILTER,
         filterObject
@@ -90,7 +89,7 @@ export const updateData = (data) => {
 }
 
 export const updatePagination = (start, rows) =>{
-    setTimeout(() => {solrClient.getData();}, 100);
+    setTimeout(() => {solrClient.getData();}, 10);
     return ({
         type:types.UPDATE_PAGINATION,
         start,

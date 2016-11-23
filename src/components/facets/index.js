@@ -1,7 +1,7 @@
 import React from 'react';
 import TextOptions from './TextOptions'
 import HeatMap from './HeatMap'
-import Graph from './Graph'
+import GraphSlider from './GraphSlider'
 import facetsTypes from '../../constants/FacetsTypes'
 
 //Facets results for a single field
@@ -14,7 +14,7 @@ let Facets = (props) => {
         case facetsTypes.HEAT_MAP:
             return <HeatMap {...props} />
         case facetsTypes.NUMERIC_RANGE:
-            return <Graph {...props} />
+            return <GraphSlider {...props} />
         default:
             return null;
 

@@ -10,9 +10,11 @@ import * as actions from './actions'
 
 import './index.css';
 import '../node_modules/fixed-data-table/dist/fixed-data-table.css';
+import '../node_modules/leaflet/dist/leaflet.css';
+import '../node_modules/react-input-range/dist/react-input-range.min.css';
 
 const store = createStore(reducer);
-store.subscribe(()=>{console.log(store.getState())}); //To log all changes
+// store.subscribe(()=>{console.log(store.getState())}); //To log all changes
 
 solrClient.setStore(store);
 

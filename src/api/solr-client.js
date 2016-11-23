@@ -1,10 +1,11 @@
 import 'whatwg-fetch';
 import * as actions from '../actions'
 import facetsTypes from '../constants/FacetsTypes'
+import filterTypes from '../constants/FilterTypes'
 
 const _FIELDS_SUFFIX = "schema/fields";
 const _FACETS_SUFFIX = "select?facet=on&indent=on&q=*:*&wt=json&rows=0";
-const _HEATMAP_SUFFIX = "select?facet=on&indent=on&q=*:*&wt=json&rows=0";
+const _HEATMAP_SUFFIX = "select?facet=on&indent=on&q=*:*&wt=json&rows=0&facet.heatmap.format=png&facet.heatmap.distErrPct=0.04";
 const _NUMERIC_RANGE_SUFFIX = 'select?facet=on&indent=on&q=*:*&wt=json&rows=0';
 const _DATA_SUFFIX = "select?indent=on&q=*:*&wt=json";
 const _STATS_SUFFIX = 'select?q=*:*&indent=on&wt=json&rows=0&stats=true'
@@ -12,6 +13,7 @@ const _SPECIAL_CHARS = new Set(['+','-','&', '|', '!', '(', ')', '{', '}', '[', 
 
 const _HEATMAP_TYPES = ['location_rpt'];
 const _NUMERIC_TYPES = ['long', 'double', 'int'];
+const _NUMERIC_INT_TYPES = ['long', 'int']; //Used in calculating gap. If it is an Int field gap has to be rounded
 const _STAT_NOT_SUPPORTED_TYPES = ['location_rpt', 'text_general']
 
 const callConfig = { method: 'GET',
@@ -63,16 +65,17 @@ class SolrClient
         for(let fieldName of Object.keys(this.state.fields)){
             let field = this.state.fields[fieldName];
             if( field.selected===false) continue;
-            setTimeout(()=>this.getFacets(field.name), 100*i)
+            setTimeout(()=>this.getFacets(field.name), 10*i)
             i+=1;
         }
-        setTimeout(()=>this.getData(), 100);
+
+        setTimeout(()=>{this.getStats(Object.keys(this.state.fields))});
+        setTimeout(()=>this.getData(), 10);
 
     }
 
     getFacets(fieldName)
     {
-        console.log("getFacet-"+fieldName)
         if(this.state.fields[fieldName] && !this.state.fields[fieldName].selected) {
             console.log("Error: request facets for not selected field")
             return
@@ -92,9 +95,22 @@ class SolrClient
       else if( _NUMERIC_TYPES.indexOf(fieldType) > -1){
          url += _NUMERIC_RANGE_SUFFIX;
          url += "&facet.range=" + fieldName;
-         url += "&facet.range.start=" + this.state.fields[fieldName].stats.min
-         url += "&facet.range.end=" + this.state.fields[fieldName].stats.max
-         url += "&facet.range.gap=" + Math.round((this.state.fields[fieldName].stats.max - this.state.fields[fieldName].stats.min) / 100);
+         let range = [this.state.fields[fieldName].stats.min, this.state.fields[fieldName].stats.max];
+         if( this.state.facetsList[fieldName] &&  this.state.facetsList[fieldName].range){
+            range = this.state.facetsList[fieldName].range;
+         }
+         url += "&facet.range.start=" + range[0]
+         url += "&facet.range.end=" + range[1]
+
+         //Calculating the gap for the range facets. For numeric fields it has to be
+         let gap = (range[1]-range[0]) / 100;
+         if( _NUMERIC_INT_TYPES.indexOf(fieldType)>-1){
+            gap = Math.round(gap)
+            if(gap<=0) gap = 1;
+
+         }
+
+         url += "&facet.range.gap=" + gap;
 
       }
       else{
@@ -107,11 +123,6 @@ class SolrClient
           url+="&facet.contains.ignoreCase=true";
           url+="&facet.limit=10";
       }
-
-      console.log(url);
-      console.log(_HEATMAP_TYPES);
-      console.log(this.state.fields[fieldName].type);
-
 
       //Add Filters
       url+=this.generateFilterQuery(this.state.filters);
@@ -178,14 +189,14 @@ class SolrClient
           url+='&stats.field='+fieldName;
       }
 
+    url+=this.generateFilterQuery(this.state.filters);
+
       fetch(url,callConfig)
       .then(response => {
           return response.text()
         }).then(body =>{
           //Todo: Add code to extract field details and send them
-           console.log(body)
             let stats = JSON.parse(body).stats.stats_fields;
-            console.log(stats)
             this.store.dispatch(actions.updateStats(stats));
           }
         //   this.store.dispatch(actions.updateFields(fieldsObject));
@@ -346,7 +357,10 @@ class SolrClient
         let url = ""
         for(let fq of filterQueries)
         {
-            url+="&fq="+fq.fieldName+":"+ this.encodeForSolr(fq.query);
+            if(fq.type===filterTypes.TEXT_FILTER)
+                url+="&fq="+fq.fieldName+":"+ this.encodeForSolr(fq.query);
+            else
+                url+="&fq="+fq.fieldName+":["+fq.range[0]+ " TO " +fq.range[1]+"]";
         }
         return url;
     }
@@ -377,7 +391,12 @@ class SolrClient
         let heatMaps = facetsDataAll.facet_heatmaps;
         for(let heatMapFieldName in heatMaps){
             if(heatMaps.hasOwnProperty(heatMapFieldName)){
-                facetFields.push({fieldName:heatMapFieldName, facets:heatMaps[heatMapFieldName], type:facetsTypes.HEAT_MAP})
+                let heatMapList = heatMaps[heatMapFieldName];
+                //Convert the list into an object
+                let heatMapObject = {}
+                for(let i=0; i<heatMapList.length;i+=2)
+                    heatMapObject[heatMapList[i]] = heatMapList[i+1]
+                facetFields.push({fieldName:heatMapFieldName, facets:heatMapObject, type:facetsTypes.HEAT_MAP})
             }
         }
 
@@ -391,7 +410,8 @@ class SolrClient
             //     counts.push({start:facets.counts[i], count:facets.counts[i+1]})
             // }
             // facets['counts'] = counts;
-            facetFields.push({fieldName:fieldName, facets:facets, type:facetsTypes.NUMERIC_RANGE})
+            let stats = this.state.fields[fieldName].stats;
+            facetFields.push({fieldName:fieldName, facets:facets, type:facetsTypes.NUMERIC_RANGE, fullRange:[stats.min , stats.max]})
         }
 
 

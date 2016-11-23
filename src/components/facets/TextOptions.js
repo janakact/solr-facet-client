@@ -1,12 +1,13 @@
 import React from 'react';
 import { ListGroup,ListGroupItem,Badge,Panel, Col } from 'react-bootstrap';
 import { connect } from 'react-redux'
-import {changeSearchTextFacets, addFilter} from '../../actions'
+import {changeFacetsSearchText, addFilter} from '../../actions'
+import filterTypes from '../../constants/FilterTypes'
 
 //Single Facet Element. Query Oprtion
 let Facet = ({value,count, fieldName, dispatch}) => {
     return(
-        <ListGroupItem href="#" onClick={()=>{dispatch(addFilter({fieldName:fieldName, query:value}))}}>
+        <ListGroupItem href="#" onClick={()=>{dispatch(addFilter({fieldName:fieldName, query:value, type:filterTypes.TEXT_FILTER}))}}>
             <p>{value} <Badge>{count}</Badge></p>
         </ListGroupItem>
     )
@@ -21,7 +22,7 @@ let SearchBox = ({fieldName,dispatch}) => {
         <form
             onSubmit={e => {
               e.preventDefault()
-              dispatch(changeSearchTextFacets(fieldName,input.value))
+              dispatch(changeFacetsSearchText(fieldName,input.value))
         }}>
           <input
               ref={node => {

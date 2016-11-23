@@ -11,7 +11,7 @@ const tooltip = (stats) => {
   <Tooltip id="tooltip"><span><strong>Stats</strong> <br/>
 
       <ul>
-  {stats && Object.keys(stats).map((key)=>(<li> {key} : {stats[key]}  </li>))}
+  {stats && Object.keys(stats).map((key)=>(<li key={key }> {key} : {stats[key]}  </li>))}
   </ul>
 </span>
 
