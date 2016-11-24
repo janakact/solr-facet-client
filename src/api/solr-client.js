@@ -12,9 +12,11 @@ const _STATS_SUFFIX = 'select?q=*:*&indent=on&wt=json&rows=0&stats=true'
 const _SPECIAL_CHARS = new Set(['+','-','&', '|', '!', '(', ')', '{', '}', '[', ']', '^', '"', '~', '*', '?', ':', '\\', ' ' ]);
 
 const _HEATMAP_TYPES = ['location_rpt'];
-const _NUMERIC_TYPES = ['long', 'double', 'int'];
+const _NUMERIC_TYPES = ['long', 'double', 'int', 'date'];
 const _NUMERIC_INT_TYPES = ['long', 'int']; //Used in calculating gap. If it is an Int field gap has to be rounded
 const _STAT_NOT_SUPPORTED_TYPES = ['location_rpt', 'text_general']
+
+const _DATE_TYPE = 'date'
 
 const callConfig = { method: 'GET',
                     mode: 'cors',
@@ -97,7 +99,11 @@ class SolrClient
          url += "&facet.range=" + fieldName;
          let range = [this.state.fields[fieldName].stats.min, this.state.fields[fieldName].stats.max];
          if( this.state.facetsList[fieldName] &&  this.state.facetsList[fieldName].range){
+
             range = this.state.facetsList[fieldName].range;
+            if(this.state.fields[fieldName].type==_DATE_TYPE)
+                range = range.map(this.mapDateToSolr);
+            console.log(range)
          }
          url += "&facet.range.start=" + range[0]
          url += "&facet.range.end=" + range[1]
@@ -110,7 +116,10 @@ class SolrClient
 
          }
 
-         url += "&facet.range.gap=" + gap;
+         if(_DATE_TYPE==this.state.fields[fieldName].type)
+            url += "&facet.range.gap=" + '%2B1DAY';
+         else
+            url += "&facet.range.gap=" + gap;
 
       }
       else{
@@ -359,8 +368,8 @@ class SolrClient
         {
             if(fq.type===filterTypes.TEXT_FILTER)
                 url+="&fq="+fq.fieldName+":"+ this.encodeForSolr(fq.query);
-            else
-                url+="&fq="+fq.fieldName+":["+fq.range[0]+ " TO " +fq.range[1]+"]";
+            else if(fq.type===filterTypes.NUMERIC_RANGE_FILTER)
+                url+="&fq="+fq.fieldName+":["+this.mapDateToSolr(fq.range[0])+ " TO " +this.mapDateToSolr(fq.range[1])+"]";
         }
         return url;
     }
@@ -405,12 +414,23 @@ class SolrClient
         let facetRanges = facetsDataAll.facet_ranges;
         for(let fieldName of Object.keys(facetRanges)){
             let facets = facetRanges[fieldName];
-            // let counts = []
-            // for(let i=0; i<facets.counts.length; i+=2){
-            //     counts.push({start:facets.counts[i], count:facets.counts[i+1]})
-            // }
-            // facets['counts'] = counts;
+
+
             let stats = this.state.fields[fieldName].stats;
+
+            // ------------------------
+            //Convert to Date objects if it is date type
+            if(this.state.fields[fieldName].type=='date'){
+                //Only if Date
+                for(let i=0; i<facets.counts.length; i+=2){
+                    facets.counts[i] = Date.parse(facets.counts[i])
+                }
+                stats.min = Date.parse(stats.min)
+                stats.max = Date.parse(stats.max)
+                facets.start = Date.parse(facets.start)
+                facets.end = Date.parse(facets.end)
+            }
+            //-----------------------------------------
             facetFields.push({fieldName:fieldName, facets:facets, type:facetsTypes.NUMERIC_RANGE, fullRange:[stats.min , stats.max]})
         }
 
@@ -428,6 +448,12 @@ class SolrClient
           newStr+=ch;
         }
         return newStr;
+    }
+
+    mapDateToSolr(date){
+        date = new Date(date);
+        console.log(date)
+        return date.toISOString();
     }
 
 

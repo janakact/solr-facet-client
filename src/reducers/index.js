@@ -19,10 +19,11 @@ const initialState = {
 const reducer = (state=initialState, action) => {
 
     // //Log the state and change
-    // console.log("----------------------------\nState:");
-    // console.log(state)
-    // console.log("Action:");
-    // console.log(action)
+    console.log("----------------------------\nBefore State:");
+    console.log(state)
+    console.log("Action:");
+    console.log(action)
+    console.log("\n\n")
 
     switch (action.type) {
         case types.SET_BASEURL:

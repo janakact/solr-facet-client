@@ -85,36 +85,31 @@ let Graph = ({facets, minMaxValues}) => {
 
 
 // -------------------------------------------------------------------------------------------------
-class GraphSlider extends React.Component {
-    constructor(props) {
-    super(props);
+const getDefaultState = (props) => {
 
     let facets = props.facets.facets;
+    console.log("Props")
+    console.log(props)
+    let values = {
+                      min:  facets.start,
+                      max:  facets.end,
+                  };
+    return {
+         values: values,
+         valuesCompleted:values
 
-    this.state = {
-      values: {
-        min: facets.start,
-        max:  facets.end,
-      },
-      valuesCompleted:{
-          min:facets.start,
-          max:facets.end
-      }
-    };
+     };
+}
+
+class GraphSlider extends React.Component {
+
+   constructor(props) {
+    super(props);
+
+    this.state = getDefaultState(props);
   }
   componentWillReceiveProps(nextProps){
-      let facets = nextProps.facets.facets;
-      this.setState({
-          values: {
-            min: facets.start,
-            max:  facets.end,
-          },
-          valuesCompleted:{
-              min:facets.start,
-              max:facets.end
-          }
-
-      })
+      this.setState(getDefaultState(nextProps));
   }
 
   handleSlideChange(component, values) {
