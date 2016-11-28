@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 import App from './components/App';
 import solrClient from './api/solr-client';
 
-import { createStore } from 'redux'
-import { Provider } from 'react-redux'
+import {createStore} from 'redux'
+import {Provider} from 'react-redux'
 import reducer from './reducers'
 import * as actions from './actions'
 
@@ -21,11 +21,11 @@ solrClient.setStore(store);
 store.dispatch(actions.requestFields("http://localhost:8983/solr/gettingstarted/"))
 ReactDOM.render(
     <Provider store={store}>
-        <div className="container" >
+        <div className="container">
             <App />
-                <canvas id="graphItem" width="400" height="400"></canvas>
+            <canvas id="graphItem" width="400" height="400"></canvas>
 
         </div>
     </Provider>,
-  document.getElementById('root')
+    document.getElementById('root')
 );

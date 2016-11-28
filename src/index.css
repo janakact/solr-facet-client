@@ -1,12 +1,11 @@
 body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
 }
 
-
 /*Page Size*/
-.pagination{
+.pagination {
     margin: 0px;
 }
 
@@ -15,52 +14,58 @@ body {
     overflow-y: auto;
 }
 
-.facet-list-scroll
-{
+.facet-list-scroll {
     max-height: 340px;
     overflow-y: auto;
 }
 
 /*Map */
 .leaflet-container {
-  height: 600px;
-  width: 100%;
-  margin: 0 auto;
+    height: 600px;
+    width: 100%;
+    margin: 0 auto;
 }
-
 
 /*Loading Icon*/
 .loader {
-  border: 16px solid #f3f3f3;
-  border-radius: 50%;
-  border-top: 16px solid #3498db;
-  width: 20px;
-  height: 20px;
-  -webkit-animation: spin 0.5s linear infinite;
-  animation: spin 0.5s linear infinite;
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 20px;
+    height: 20px;
+    -webkit-animation: spin 0.5s linear infinite;
+    animation: spin 0.5s linear infinite;
 }
 
 @-webkit-keyframes spin {
-  0% { -webkit-transform: rotate(0deg); }
-  100% { -webkit-transform: rotate(360deg); }
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
-
 
 /*For Tag Like Elements*/
 #tag-cloud {
-	width: 200px;
-	margin-left: 0;
+    width: 200px;
+    margin-left: 0;
 }
+
 .tag-cloud {
     background-color: #999999;
     -webkit-border-radius: 5px;
-	   -moz-border-radius: 5px;
-	        border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
     color: #FFFFFF;
     cursor: pointer;
     display: inline-block;
@@ -70,6 +75,7 @@ body {
     padding: 1px 4px 2px;
     vertical-align: baseline;
 }
+
 /*.tag-cloud:after {
     color: #000000;
     content: " ×";
@@ -82,15 +88,17 @@ body {
 	top: 1px;
 }*/
 
-	/* Colors */
+/* Colors */
 
 .tag-cloud.tag-cloud-item {
     background-color: #D9EDF7;;
     color: #5B9ABA;
 }
+
 .tag-cloud.tag-cloud-item-checked {
     background-color: #5B9ABA;
 }
+
 /*.tag-cloud.tag-cloud-warning {
     background-color: #F89406;
 }
