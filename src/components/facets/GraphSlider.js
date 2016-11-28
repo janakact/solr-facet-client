@@ -1,13 +1,11 @@
 import React from 'react';
-import { Col, Panel, Button } from 'react-bootstrap';
-import { connect } from 'react-redux'
+import {Col, Panel, Button} from 'react-bootstrap';
+import {connect} from 'react-redux'
 import InputRange from 'react-input-range';
 import {changeFacetsNumericRange, addFilter} from '../../actions'
 import filterTypes from '../../constants/FilterTypes'
 
 var LineChart = require("react-chartjs").Line;
-
-
 
 
 // var MyComponent = React.createClass({
@@ -18,124 +16,153 @@ var LineChart = require("react-chartjs").Line;
 
 
 const getData = (facets) => {
-    if(!facets) return []
+    if (!facets) return []
     let labels = []
     let scatter = []
-    for(let i=0; i<facets.options.headers.length; i++){
-        scatter.push({x: (parseFloat(facets.options.headers[i]) + parseFloat(facets.options.gap)/2), y:parseFloat(facets.options.counts[i])})
+    for (let i = 0; i < facets.options.headers.length; i++) {
+        scatter.push({
+            x: (parseFloat(facets.options.headers[i]) + parseFloat(facets.options.gap) / 2),
+            y: parseFloat(facets.options.counts[i])
+        })
         labels.push(facets.options.headers[i]);
     }
 
 
-
     return {
-            labels:labels,
+        labels: labels,
         // labels:labels,
-            datasets:[
-                {
+        datasets: [
+            {
                 lineTension: 0,
                 backgroundColor: "rgba(75,192,192,0.4)",
                 borderColor: "rgba(75,192,192,1)",
                 label: 'No. of Docs',
-                data:scatter,
-                pointRadius:0,
-                fill: true ,
-                }
-            ]
+                data: scatter,
+                pointRadius: 0,
+                fill: true,
+            }
+        ]
 
-    } ;
+    };
 }
 
 
-const getOptions = (facets) => ({
-    animation : false,
+const getOptions = (facets) => {
+    let type = facets.field.type==='date'?'time':'linear'
+    return {
+        animation: false,
         scales: {
             xAxes: [{
-                type: 'linear',
+                type: type,
                 position: 'bottom',
-                ticks:
-                {
-                min:facets.selectedRange[0],
-                max:facets.selectedRange[1]
+                ticks: {
+                    min: facets.selectedRange[0],
+                    max: facets.selectedRange[1]
                 }
             }]
         }
-    })
+    }
+}
+
 
 //Facets results for a single field
-let Graph = ({facets, minMaxValues}) => {
+let Graph = ({facets}) => {
     // setTimeout(()=>{initializeGraph( {data:getData(facets), options:options, width:1000, height:400}, 'graphItem')}, 1000)
-    return(
-                    <div>
-                        {JSON.stringify(minMaxValues)}
-                <LineChart data={getData(facets)} options={getOptions(minMaxValues)}  redraw  width={1000} height={400} />
-                </div>
+    return (
+        <div>
+            <LineChart data={getData(facets)} options={getOptions(facets)} redraw width={1000} height={400}/>
+        </div>
     )
 }
 
 
-
-
-
-
-
 // -------------------------------------------------------------------------------------------------
-// const get
+const mapSelectedRange = (selectedRange) => {
+    return {min: selectedRange[0], max: selectedRange[1]};
+}
 class GraphSlider extends React.Component {
 
-   constructor(props) {
-    super(props);
-    this.state = {selectedRange:this.props.facets.selectedRange};
-  }
-  componentWillReceiveProps(nextProps){
-      this.setState({selectedRange:nextProps.facets.selectedRange});
-  }
+    constructor(props) {
+        super(props);
 
-  handleSlideChange(component, values) {
-    this.setState({
-        selectedRange: values,
-    });
-  }
+        console.log("---")
+        console.log(props.facets);
+        let range = mapSelectedRange(props.facets.selectedRange);
+        this.state = {
+            selectedRange: range,
+            selectingRange: range
+        };
+    }
 
-  handleSlideChangeComplete(component, values){
+    componentWillReceiveProps(nextProps) {
+        let range = mapSelectedRange(nextProps.facets.selectedRange);
+        this.setState(
+            {
+                selectedRange: range,
+                selectingRange: range
+            });
+    }
 
-      this.props.dispatch(changeFacetsNumericRange(this.props.facets.fieldName,[values.min, values.max]))
-      this.setState({
-        values: values,
-        valuesCompleted:values
-      });
-  }
+    handleSlideChange(component, values) {
+        this.setState({
+            selectingRange: values,
+        });
+    }
 
-  //Adding the filter
-  addFilter(){
-      let values = this.state.valuesCompleted;
-      this.props.dispatch(addFilter({
-          fieldName:this.props.facets.fieldName,
-          range:[values.min, values.max],
-          type:filterTypes.NUMERIC_RANGE_FILTER}))
-  }
+    handleSlideChangeComplete(component, values) {
 
-  render() {
+        this.props.dispatch(changeFacetsNumericRange(this.props.facets.field.name, [values.min, values.max]))
+        this.setState({
+            selectingRange: values,
+            selectedRange: values
+        });
+    }
 
-      let fullRange = this.props.facets.fullRange;
-      let extraGapFromEdges = (fullRange[1]- fullRange[0])/5 ; //Add some extra gaps to edges to make sure all points are visible
-    return (
-    <Col xs={12} md={12} >
-        <Panel collapsible defaultExpanded header={this.props.facets.fieldName} >
-                <Graph {...this.props}  minMaxValues={this.state.valuesCompleted} />
-                 <InputRange
-                    minValue={fullRange[0]-extraGapFromEdges}
-                    maxValue={fullRange[1]+extraGapFromEdges}
-                    value={this.state.values}
-                    onChange={this.handleSlideChange.bind(this)}
-                    onChangeComplete={this.handleSlideChangeComplete.bind(this)}
-                 />
-             <Button onClick={this.addFilter.bind(this)} > Apply Filter </Button>
-         </Panel>
-     </Col>
-    );
-  }
-};
+    //Adding the filter
+    addFilter() {
+        let values = this.state.selectedRange;
+        this.props.dispatch(addFilter({
+            field: this.props.facets.field,
+            range: [values.min, values.max],
+            type: filterTypes.NUMERIC_RANGE_FILTER
+        }))
+    }
+
+    render() {
+        let fullRange = this.props.facets.fullRange;
+        // let extraGapFromEdges = (fullRange[1] - fullRange[0]) / 50; //Add some extra gaps to edges to make sure all points are visible
+        return (
+            <Col xs={12} md={12}>
+                <Panel collapsible defaultExpanded header={this.props.facets.field.name}>
+                    <Graph {...this.props}  />
+                    <br/>
+                    <InputRange
+                        minValue={this.state.selectedRange.min}
+                        maxValue={this.state.selectedRange.max}
+                        value={this.state.selectingRange}
+                        onChange={this.handleSlideChange.bind(this)}
+                        onChangeComplete={this.handleSlideChangeComplete.bind(this)}
+                    />
+
+
+                    <br/>
+
+                    <InputRange
+                        minValue={fullRange[0] }
+                        maxValue={fullRange[1] }
+                        value={this.state.selectingRange}
+                        onChange={this.handleSlideChange.bind(this)}
+                        onChangeComplete={this.handleSlideChangeComplete.bind(this)}
+                    />
+
+
+                    <Button onClick={this.addFilter.bind(this)}> Apply Filter </Button>
+                </Panel>
+            </Col>
+        );
+    }
+}
+;
 
 GraphSlider = connect()(GraphSlider);
 export default GraphSlider;

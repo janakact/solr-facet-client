@@ -16,6 +16,8 @@ const _NUMERIC_TYPES = ['long', 'double', 'int', 'date'];
 const _NUMERIC_INT_TYPES = ['long', 'int']; //Used in calculating gap. If it is an Int field gap has to be rounded
 const _STAT_NOT_SUPPORTED_TYPES = ['location_rpt', 'text_general']
 
+const _RANGE_PARTITIONS_COUNT = 200;
+
 const _DATE_TYPE = 'date'
 
 const callConfig = {
@@ -27,6 +29,27 @@ const callConfig = {
     crossDomain: true,
     withCredentials: true
 };
+
+const mapMillisToIsoDate = (gap) => {
+    if(gap<1000)
+        return Math.ceil(gap)+'MILLISECOND';
+    gap/=1000;
+
+    if(gap<60)
+        return Math.ceil(gap) + 'SECOND';
+
+    gap/=60;
+    if(gap<60)
+        return Math.ceil(gap) +'MINUTE';
+
+    gap/=60;
+    if(gap<24)
+        return Math.ceil(gap) +'HOUR';
+
+    gap/=24;
+    if(gap<30)
+        return Math.ceil(gap) +'DAY';
+}
 
 class SolrClient {
     state = {};
@@ -102,7 +125,6 @@ class SolrClient {
             url += "&facet.range=" + fieldName;
             let range = [this.state.fields[fieldName].stats.min, this.state.fields[fieldName].stats.max];
             if (this.state.facetsList[fieldName] && this.state.facetsList[fieldName].range) {
-
                 range = this.state.facetsList[fieldName].range;
                 if (this.state.fields[fieldName].type == _DATE_TYPE)
                     range = range.map(this.mapDateToSolr);
@@ -112,17 +134,24 @@ class SolrClient {
             url += "&facet.range.end=" + range[1]
 
             //Calculating the gap for the range facets. For numeric fields it has to be
-            let gap = (range[1] - range[0]) / 100;
+            let gap = (range[1] - range[0]) / _RANGE_PARTITIONS_COUNT;
             if (_NUMERIC_INT_TYPES.indexOf(fieldType) > -1) {
                 gap = Math.round(gap)
                 if (gap <= 0) gap = 1;
 
             }
 
-            if (_DATE_TYPE == this.state.fields[fieldName].type)
-                url += "&facet.range.gap=" + '%2B1DAY';
-            else
-                url += "&facet.range.gap=" + gap;
+            if (_DATE_TYPE == this.state.fields[fieldName].type) {
+                console.log(gap)
+                console.log(range)
+                let gapInMillis = ( Date.parse(range[1]) -  Date.parse(range[0]))/_RANGE_PARTITIONS_COUNT;
+                console.log(gapInMillis);
+                console.log("------------ gap");
+                gap = '%2B'+mapMillisToIsoDate(gapInMillis);
+                console.log(gap);
+
+            }
+            url += "&facet.range.gap=" + gap;
 
         }
         else {
@@ -366,9 +395,12 @@ class SolrClient {
         let url = ""
         for (let fq of filterQueries) {
             if (fq.type === filterTypes.TEXT_FILTER)
-                url += "&fq=" + fq.fieldName + ":" + this.encodeForSolr(fq.query);
-            else if (fq.type === filterTypes.NUMERIC_RANGE_FILTER)
-                url += "&fq=" + fq.fieldName + ":[" + this.mapDateToSolr(fq.range[0]) + " TO " + this.mapDateToSolr(fq.range[1]) + "]";
+                url += "&fq=" + fq.field.name + ":" + this.encodeForSolr(fq.query);
+            else if (fq.type === filterTypes.NUMERIC_RANGE_FILTER) {
+                if(fq.field.type == _DATE_TYPE)
+                    fq.range = fq.range.map(this.mapDateToSolr);
+                url += "&fq=" + fq.field.name + ":[" + fq.range[0] + " TO " + fq.range[1] + "]";
+            }
         }
         return url;
     }
@@ -427,14 +459,9 @@ class SolrClient {
             // ------------------------
             //Convert to Date objects if it is date type
             if (this.state.fields[fieldName].type == 'date') {
-                //Only if Date
-                // for (let i = 0; i < facets.counts.length; i += 2) {
-                //     facets.counts[i] = Date.parse(facets.counts[i])
-                // }
-                // stats.min = Date.parse(stats.min)
-                // stats.max = Date.parse(stats.max)
-                // facets.start = Date.parse(facets.start)
-                // facets.end = Date.parse(facets.end)
+                fullRange = fullRange.map(Date.parse)
+                selectedRange = selectedRange.map(Date.parse)
+                options.headers =options.headers.map(Date.parse)
             }
             //-----------------------------------------
             facetFields.push(facetsTypes.generators.numericRange(this.state.fields[fieldName], fullRange, selectedRange,options));

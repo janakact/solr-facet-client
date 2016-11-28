@@ -9,7 +9,7 @@ const FacetsGenerators = {
         return {type:types.TEXT, field, searchText, options};
     },
     numericRange:(field, fullRange, selectedRange, options) => {
-        return {type:types.NUMERIC_RANGE, field:field, fullRange:fullRange, options:options};
+        return {type:types.NUMERIC_RANGE, field, fullRange, selectedRange, options};
     },
     heatMap:(field, area, options) =>{
         return {type:types.HEAT_MAP, field, area, options};

@@ -10,7 +10,10 @@ const getFilterText = (filterObj) => {
         case filterTypes.TEXT_FILTER:
             return filterObj.query;
         case filterTypes.NUMERIC_RANGE_FILTER:
-            return '[' + filterObj.range[0] + ' TO ' + filterObj.range[1] + ']';
+            let range = filterObj.range
+            if(filterObj.field.type=='date')
+                range = filterObj.range.map((item) => (new Date(item).toISOString()))
+            return '[' + range[0] + ' TO ' + range[1] + ']';
         default:
             return "<Undefined Filter>"
 
@@ -29,7 +32,7 @@ let Filter = ({filterObject, onClick}) => {
     return (
         <li className="tag-cloud tag-cloud-item"
             onClick={onClick}>
-            <strong>{filterObject.fieldName}</strong> : {getFilterText(filterObject)}
+            <strong>{filterObject.field.name}</strong> : {getFilterText(filterObject)}
         </li>
     )
 }

@@ -7,7 +7,7 @@ import filterTypes from '../../constants/FilterTypes'
 //Single Facet Element. Query Oprtion
 let Facet = ({head,count, field, dispatch}) => {
     return(
-        <ListGroupItem href="#" onClick={()=>{dispatch(addFilter({fieldName:field.name, query:head, type:filterTypes.TEXT_FILTER}))}}>
+        <ListGroupItem href="#" onClick={()=>{dispatch(addFilter({field:field, query:head, type:filterTypes.TEXT_FILTER}))}}>
             <p>{head} <Badge>{count}</Badge></p>
         </ListGroupItem>
     )
