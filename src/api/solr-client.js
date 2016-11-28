@@ -228,7 +228,7 @@ class SolrClient {
                 url += '&stats.field=' + fieldName;
         }
 
-        url += this.generateFilterQuery(this.state.filters);
+        // url += this.generateFilterQuery(this.state.filters);
 
         fetch(url, callConfig)
             .then(response => {
@@ -437,7 +437,7 @@ class SolrClient {
                 let heatMapObject = {}
                 for (let i = 0; i < heatMapList.length; i += 2)
                     heatMapObject[heatMapList[i]] = heatMapList[i + 1]
-                facetFields.push({fieldName: heatMapFieldName, facets: heatMapObject, type: facetsTypes.HEAT_MAP})
+                facetFields.push(facetsTypes.generators.heatMap(this.state.fields[heatMapFieldName], null, heatMapObject));
             }
         }
 

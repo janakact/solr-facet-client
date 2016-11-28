@@ -69,9 +69,23 @@ const reducer = (state = initialState, action) => {
         // ---------------------------------------------------------------
 
         case types.ADD_FILTER:
+            let newFilters = []
+            let added = false;
+            for(let filter of state.filters){
+                if(filter.field.name===action.filterObject.field.name)
+                {
+                    newFilters.push(action.filterObject)
+                    added = true;
+                    break;
+                }
+                else
+                    newFilters.push(filter)
+            }
+            if(!added)
+                newFilters.push(action.filterObject);
             return {
                 ...state,
-                filters: [...state.filters, action.filterObject],
+                filters: newFilters,
                 data: {...state.data, start: 0} //Reset start
             }
         case types.REMOVE_FILTER:

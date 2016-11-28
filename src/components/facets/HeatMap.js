@@ -8,11 +8,11 @@ import { Map, TileLayer, ImageOverlay } from 'react-leaflet';
 const position = [0,0]
 //Facets results for a single field
 let HeatMap = ({facets}) => {
-        let {counts_png,minX, minY, maxX, maxY} = facets.facets;
+        let {counts_png,minX, minY, maxX, maxY} = facets.options;
     return(
 
                   <Col xs={12} md={12} >
-        <Panel collapsible defaultExpanded header={facets.fieldName} >
+        <Panel collapsible defaultExpanded header={facets.field.name} >
 
 
 
