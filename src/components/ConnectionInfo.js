@@ -1,32 +1,33 @@
-import React from 'react'
-import { connect } from 'react-redux'
-import { requestFields } from '../actions'
+import React from "react";
+import {connect} from "react-redux";
+import {requestFields} from "../actions";
 
-let ConnectionInfo = ({ dispatch }) => {
-  let input;//
-  //input.value = "http://localhost:8983/solr/gettingstarted/";
+let ConnectionInfo = ({dispatch}) => {
+    let input;//
+    //input.value = "http://localhost:8983/solr/gettingstarted/";
 
-  return (
-    <div>
-      <form
-          onSubmit={e => {
-            e.preventDefault()
-            if (!input.value.trim()) {
-              return
-            }
-            dispatch(requestFields(input.value))
-      }}>
-        <input
-            defaultValue="http://localhost:8983/solr/gettingstarted/"
-            ref={node => {
-            input = node
-        }} />
-        <button type="submit">
-          Connect
-        </button>
-      </form>
-    </div>
-  )
+    return (
+        <div>
+            <form
+                onSubmit={e => {
+                    e.preventDefault()
+                    if (!input.value.trim()) {
+                        return
+                    }
+                    dispatch(requestFields(input.value))
+                }}>
+                <input width={400}
+                       className="form-control"
+                       defaultValue="http://localhost:8983/solr/gettingstarted/"
+                       ref={node => {
+                           input = node
+                       }}/>
+                <button type="submit">
+                    Connect
+                </button>
+            </form>
+        </div>
+    )
 }
 ConnectionInfo = connect()(ConnectionInfo)
 

@@ -1,13 +1,13 @@
-import React from 'react'
-import { connect } from 'react-redux'
-import { updatePagination } from '../actions'
-import { Panel,Well, Pagination, Row, Col, Tab, Tabs } from 'react-bootstrap';
-import {Table, Column, Cell} from 'fixed-data-table';
-import DataMap from './DataMap'
+import React from "react";
+import {connect} from "react-redux";
+import {updatePagination} from "../actions";
+import {Panel, Well, Pagination, Row, Col, Tab, Tabs} from "react-bootstrap";
+import {Table, Column, Cell} from "fixed-data-table";
+import DataMap from "./DataMap";
 
 
 // Data Browser
-let PageNav  = ({data, dispatch}) => {
+let PageNav = ({data, dispatch}) => {
     return (
         <div>
             <Row className="show-grid">
@@ -17,7 +17,9 @@ let PageNav  = ({data, dispatch}) => {
                     </label>
                     <select
                         defaultValue={data.rows}
-                        onChange={(event) => {dispatch(updatePagination(data.start-data.start%event.target.value, event.target.value))}} >
+                        onChange={(event) => {
+                            dispatch(updatePagination(data.start - data.start % event.target.value, event.target.value))
+                        }}>
                         <option value="1">1</option>
                         <option value="10">10</option>
                         <option value="100">100</option>
@@ -33,10 +35,12 @@ let PageNav  = ({data, dispatch}) => {
                         last
                         ellipsis
                         boundaryLinks
-                        items={Math.ceil(data.numFound/data.rows)}
+                        items={Math.ceil(data.numFound / data.rows)}
                         maxButtons={5}
-                        activePage={1+(Math.ceil(data.start/data.rows))}
-                        onSelect={(eventKey)=>{dispatch(updatePagination((eventKey-1)*data.rows,data.rows))}} />
+                        activePage={1 + (Math.ceil(data.start / data.rows))}
+                        onSelect={(eventKey) => {
+                            dispatch(updatePagination((eventKey - 1) * data.rows, data.rows))
+                        }}/>
                 </Col>
             </Row>
         </div>
@@ -45,9 +49,8 @@ let PageNav  = ({data, dispatch}) => {
 PageNav = connect()(PageNav)
 
 
-
 let TableView = ({data}) => {
-        return (
+    return (
         <Table
             rowHeight={30}
             rowsCount={data.docs.length}
@@ -59,12 +62,12 @@ let TableView = ({data}) => {
                 header="#"
                 cell={({rowIndex, ...props}) => (
                     <Cell>
-                        {rowIndex+1+data.start}
+                        {rowIndex + 1 + data.start}
                     </Cell>
                 )}
                 width={100}
-                />
-            {data.columnNames.map((columnName,index)=>
+            />
+            {data.columnNames.map((columnName, index) =>
 
                 <Column
                     key={index}
@@ -79,43 +82,37 @@ let TableView = ({data}) => {
                         </Cell>
                     )}
                     width={100}
-                    />
+                />
             )}
         </Table>
-        )};
+    )
+};
 
 
+let DataBrowser = ({data}) => {
+    return (
+        <Panel bsStyle="info" header="Data Browser">
+            <PageNav data={data}/>
+            <Well bsSize="small">URL: <a href={data.url}><code >{data.url}</code></a></Well>
 
+            <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
+                <Tab eventKey={1} title="Table">
+                    <h4>Airport_Details</h4>
+                    <TableView data={data}/>
+                </Tab>
 
-
-
-
-
-
-let DataBrowser = ({data}) =>  {
-	return (
-		<Panel  bsStyle="info" header="Data Browser">
-        <PageNav  data={data}/>
-        <Well bsSize="small">URL: <a href={data.url}><code >{data.url}</code></a></Well>
-
-        <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
-            <Tab eventKey={1} title="Table">
-                <h4>Airport_Details</h4>
-                <TableView data={data}/>
-            </Tab>
-
-            <Tab eventKey={2} title="JSON Response">
+                <Tab eventKey={2} title="JSON Response">
                 <pre className="pre-scrollable">
                 {data.jsonResponse}
                 </pre>
-            </Tab>
+                </Tab>
 
-            <Tab eventKey={3} title="Map">
-                <DataMap data={data} />
-            </Tab>
-        </Tabs>
+                <Tab eventKey={3} title="Map">
+                    <DataMap data={data}/>
+                </Tab>
+            </Tabs>
 
-	   </Panel>
-	);
+        </Panel>
+    );
 }
 export default DataBrowser;
