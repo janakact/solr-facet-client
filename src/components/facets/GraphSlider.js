@@ -19,16 +19,11 @@ var LineChart = require("react-chartjs").Line;
 
 const getData = (facets) => {
     if(!facets) return []
-
-    let list = facets.facets.counts;
-    let values = []
     let labels = []
     let scatter = []
-    for(let i=0; i<list.length; i+=2){
-        values.push(parseFloat(list[i+1]));
-        // labels.push(" ");
-        // labels.push(list[i]+'to' + (parseFloat(list[i]) + parseFloat(facets.facets.gap)));
-        scatter.push({x: (parseFloat(list[i]) + parseFloat(facets.facets.gap)/2), y:parseFloat(list[i+1])})
+    for(let i=0; i<facets.options.headers.length; i++){
+        scatter.push({x: (parseFloat(facets.options.headers[i]) + parseFloat(facets.options.gap)/2), y:parseFloat(facets.options.counts[i])})
+        labels.push(facets.options.headers[i]);
     }
 
 
@@ -52,7 +47,7 @@ const getData = (facets) => {
 }
 
 
-const getOptions = (minMaxValues) => ({
+const getOptions = (facets) => ({
     animation : false,
         scales: {
             xAxes: [{
@@ -60,8 +55,8 @@ const getOptions = (minMaxValues) => ({
                 position: 'bottom',
                 ticks:
                 {
-                min:minMaxValues.min,
-                max:minMaxValues.max
+                min:facets.selectedRange[0],
+                max:facets.selectedRange[1]
                 }
             }]
         }
@@ -85,36 +80,20 @@ let Graph = ({facets, minMaxValues}) => {
 
 
 // -------------------------------------------------------------------------------------------------
-const getDefaultState = (props) => {
-
-    let facets = props.facets.facets;
-    console.log("Props")
-    console.log(props)
-    let values = {
-                      min:  facets.start,
-                      max:  facets.end,
-                  };
-    return {
-         values: values,
-         valuesCompleted:values
-
-     };
-}
-
+// const get
 class GraphSlider extends React.Component {
 
    constructor(props) {
     super(props);
-
-    this.state = getDefaultState(props);
+    this.state = {selectedRange:this.props.facets.selectedRange};
   }
   componentWillReceiveProps(nextProps){
-      this.setState(getDefaultState(nextProps));
+      this.setState({selectedRange:nextProps.facets.selectedRange});
   }
 
   handleSlideChange(component, values) {
     this.setState({
-      values: values,
+        selectedRange: values,
     });
   }
 

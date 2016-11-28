@@ -5,10 +5,10 @@ import {changeFacetsSearchText, addFilter} from '../../actions'
 import filterTypes from '../../constants/FilterTypes'
 
 //Single Facet Element. Query Oprtion
-let Facet = ({value,count, fieldName, dispatch}) => {
+let Facet = ({head,count, field, dispatch}) => {
     return(
-        <ListGroupItem href="#" onClick={()=>{dispatch(addFilter({fieldName:fieldName, query:value, type:filterTypes.TEXT_FILTER}))}}>
-            <p>{value} <Badge>{count}</Badge></p>
+        <ListGroupItem href="#" onClick={()=>{dispatch(addFilter({fieldName:field.name, query:head, type:filterTypes.TEXT_FILTER}))}}>
+            <p>{head} <Badge>{count}</Badge></p>
         </ListGroupItem>
     )
 }
@@ -36,15 +36,16 @@ SearchBox = connect()(SearchBox);
 
 //Facets results for a single field
 let TextOptions = ({facets}) => {
+    console.log(facets);
     return(
 
                   <Col xs={12} md={3} >
-        <Panel collapsible defaultExpanded header={facets.fieldName} >
-            <SearchBox fieldName={facets.fieldName}/>
+        <Panel collapsible defaultExpanded header={facets.field.name} >
+            <SearchBox fieldName={facets.field.name}/>
             <div  className="facet-list-scroll" >
             <ListGroup fill>
-                    {facets.facets.map((facet,index)=>
-                        <Facet {...facet} fieldName={facets.fieldName} key={facet.value}>{facet.value}</Facet>
+                    {facets.options.headers.map((head,index)=>
+                        <Facet head={head} count={facets.options.counts[index]} field={facets.field} key={head}/>
                     )}
             </ListGroup>
             </div>

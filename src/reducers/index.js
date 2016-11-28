@@ -51,7 +51,7 @@ const reducer = (state = initialState, action) => {
             return {...state, fetching: true}
         case types.UPDATE_FACETS:
             let newFacetsList = {...state.facetsList}
-            newFacetsList[action.facets.fieldName] = action.facets;
+            newFacetsList[action.facets.field.name] = action.facets;
             return {...state, fetching: false, facetsList: newFacetsList}
 
         case types.UPDATE_STATS:

@@ -374,7 +374,8 @@ class SolrClient {
     }
 
     extractFacetsFromData(data) {
-        var facetsDataAll = JSON.parse(data).facet_counts;
+        data = JSON.parse(data);
+        let facetsDataAll = data.facet_counts;
         var facetFields = [];
 
         //Extract Text Facets options
@@ -383,13 +384,15 @@ class SolrClient {
         {
             if (facetsData.hasOwnProperty(facetField)) {
                 let facetArray = facetsData[facetField];
-                let facets = [];
+                let options = { headers:[], counts: []};
                 for (var i = 0; i < facetArray.length; i += 2)  //loop through facet data array and convert them to (value,count) pairs
                 {
-                    if (facetArray[i + 1] > 0)
-                        facets.push({value: facetArray[i], count: facetArray[i + 1]})
+                    if (facetArray[i + 1] > 0){
+                        options.headers.push(facetArray[i]);
+                        options.counts.push(facetArray[i + 1])
+                    }
                 }
-                facetFields.push({fieldName: facetField, facets: facets, searchText: "", type: facetsTypes.TEXT});
+                facetFields.push( facetsTypes.generators.text(this.state.fields[facetField],data.responseHeader.params.facet.contaions, options  ) );
             }
         }
 
@@ -414,26 +417,27 @@ class SolrClient {
 
 
             let stats = this.state.fields[fieldName].stats;
-
+            let fullRange = [stats.min, stats.max];
+            let selectedRange = [facets.start, facets.end];
+            let options = {headers:[], counts:[], gap:1};
+            for (let i = 0; i < facets.counts.length; i += 2) {
+                options.headers.push(facets.counts[i]);
+                options.counts.push(facets.counts[i+1]);
+            }
             // ------------------------
             //Convert to Date objects if it is date type
             if (this.state.fields[fieldName].type == 'date') {
                 //Only if Date
-                for (let i = 0; i < facets.counts.length; i += 2) {
-                    facets.counts[i] = Date.parse(facets.counts[i])
-                }
-                stats.min = Date.parse(stats.min)
-                stats.max = Date.parse(stats.max)
-                facets.start = Date.parse(facets.start)
-                facets.end = Date.parse(facets.end)
+                // for (let i = 0; i < facets.counts.length; i += 2) {
+                //     facets.counts[i] = Date.parse(facets.counts[i])
+                // }
+                // stats.min = Date.parse(stats.min)
+                // stats.max = Date.parse(stats.max)
+                // facets.start = Date.parse(facets.start)
+                // facets.end = Date.parse(facets.end)
             }
             //-----------------------------------------
-            facetFields.push({
-                fieldName: fieldName,
-                facets: facets,
-                type: facetsTypes.NUMERIC_RANGE,
-                fullRange: [stats.min, stats.max]
-            })
+            facetFields.push(facetsTypes.generators.numericRange(this.state.fields[fieldName], fullRange, selectedRange,options));
         }
 
 
