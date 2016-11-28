@@ -70,6 +70,17 @@ export const changeFacetsNumericRange = (fieldName, range) => {
         options: {range}
     });
 }
+
+export const changeFacetsGeoShape = (fieldName, shape) => {
+    setTimeout(() => {
+        solrClient.getFacets(fieldName);
+    }, 10);
+    return ({
+        type: types.CHANGE_FACETS_OPTIONS,
+        fieldName,
+        options: {shape}
+    });
+}
 // ------------------------------------------------------------------------
 export const addFilter = (filterObject) => {
     setTimeout(() => {
