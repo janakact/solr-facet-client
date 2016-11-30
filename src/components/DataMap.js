@@ -34,7 +34,6 @@ var DataMap = ({data}) => {
         </select>
 
         <Map
-            fitBoundsOnLoad
             center={position}
             zoom={1}
             animate={true}

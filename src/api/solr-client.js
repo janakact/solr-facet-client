@@ -16,7 +16,7 @@ const _NUMERIC_TYPES = ['long', 'double', 'int', 'date'];
 const _NUMERIC_INT_TYPES = ['long', 'int']; //Used in calculating gap. If it is an Int field gap has to be rounded
 const _STAT_NOT_SUPPORTED_TYPES = ['location_rpt', 'text_general']
 
-const _RANGE_PARTITIONS_COUNT = 200;
+const _RANGE_PARTITIONS_COUNT = 50;
 
 const _DATE_TYPE = 'date'
 
@@ -401,8 +401,32 @@ class SolrClient {
                     fq.range = fq.range.map(this.mapDateToSolr);
                 url += "&fq=" + fq.field.name + ":[" + fq.range[0] + " TO " + fq.range[1] + "]";
             }
+            else if(fq.type === filterTypes.GEO_SHAPE){
+                url += this.shapeToSolrQuery(fq.shapes,fq.field);
+            }
         }
         return url;
+    }
+
+    shapeToSolrQuery(shapes, field){
+        if(shapes.length==0) return "";
+        let url = "";
+        for(let shape of shapes)
+        {
+            switch (shape.type){
+            case 'circle':
+                url+= " OR {!geofilt sfield="+this.encodeForSolr(field.name)+"}&pt="+shape.point.lat+","+shape.point.lng+"&d="+shape.radius/1000+"";
+                break;
+            case 'polygon':
+                url+= " OR ({!field f="+field.name+"}Intersects(POLYGON(("+(shape.points.reduce((txt,point)=> (txt+","+point.lat+" "+point.lng), "").substring(2))+")))";
+            case 'rectangle':
+                url+= " OR "+field.name+":["+shape.points[0].lat+","+shape.points[0].lng+" TO "+shape.points[2].lat+","+shape.points[2].lng+"]";
+            }
+
+        }
+        console.log('Shape to solr query')
+        console.log(url)
+        return "&fq="+url.substring(4)+"";
     }
 
     extractFacetsFromData(data) {

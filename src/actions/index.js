@@ -72,9 +72,9 @@ export const changeFacetsNumericRange = (fieldName, range) => {
 }
 
 export const changeFacetsGeoShape = (fieldName, shape) => {
-    setTimeout(() => {
-        solrClient.getFacets(fieldName);
-    }, 10);
+    // setTimeout(() => {
+    //     solrClient.getFacets(fieldName);
+    // }, 10);
     return ({
         type: types.CHANGE_FACETS_OPTIONS,
         fieldName,

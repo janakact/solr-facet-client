@@ -70,7 +70,7 @@ let Graph = ({facets}) => {
     // setTimeout(()=>{initializeGraph( {data:getData(facets), options:options, width:1000, height:400}, 'graphItem')}, 1000)
     return (
         <div>
-            <LineChart data={getData(facets)} options={getOptions(facets)} redraw width={1000} height={100}/>
+            <LineChart data={getData(facets)} options={getOptions(facets)} width={1000} height={200}/>
         </div>
     )
 }
