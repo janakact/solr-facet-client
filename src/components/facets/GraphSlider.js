@@ -1,7 +1,7 @@
 import React from 'react';
 import {Col, Panel, Button} from 'react-bootstrap';
 import {connect} from 'react-redux'
-import InputRange from 'react-input-range';
+import Rcslider from 'rc-slider';
 import {changeFacetsNumericRange, addFilter} from '../../actions'
 import filterTypes from '../../constants/FilterTypes'
 
@@ -48,7 +48,8 @@ const getData = (facets) => {
 
 
 const getOptions = (facets) => {
-    let type = facets.field.type==='date'?'time':'linear'
+    console.log(facets.selectedRange);
+    let type = facets.field.type === 'date' ? 'time' : 'linear'
     return {
         animation: false,
         scales: {
@@ -70,7 +71,7 @@ let Graph = ({facets}) => {
     // setTimeout(()=>{initializeGraph( {data:getData(facets), options:options, width:1000, height:400}, 'graphItem')}, 1000)
     return (
         <div>
-            <LineChart data={getData(facets)} options={getOptions(facets)} width={1000} height={200}/>
+            <LineChart redraw data={getData(facets)} options={getOptions(facets)} width={1000} height={200}/>
         </div>
     )
 }
@@ -87,7 +88,8 @@ class GraphSlider extends React.Component {
 
         console.log("---")
         console.log(props.facets);
-        let range = mapSelectedRange(props.facets.selectedRange);
+        // let range = mapSelectedRange(props.facets.selectedRange);
+        let range = props.facets.selectedRange;
         this.state = {
             selectedRange: range,
             selectingRange: range
@@ -95,7 +97,8 @@ class GraphSlider extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        let range = mapSelectedRange(nextProps.facets.selectedRange);
+        // let range = mapSelectedRange(nextProps.facets.selectedRange);
+        let range = nextProps.facets.selectedRange;
         this.setState(
             {
                 selectedRange: range,
@@ -103,15 +106,15 @@ class GraphSlider extends React.Component {
             });
     }
 
-    handleSlideChange(component, values) {
+    handleSlideChange(values) {
         this.setState({
             selectingRange: values,
         });
     }
 
-    handleSlideChangeComplete(component, values) {
+    handleSlideChangeComplete(values) {
 
-        this.props.dispatch(changeFacetsNumericRange(this.props.facets.field.name, [values.min, values.max]))
+        this.props.dispatch(changeFacetsNumericRange(this.props.facets.field.name, values))
         this.setState({
             selectingRange: values,
             selectedRange: values
@@ -123,7 +126,7 @@ class GraphSlider extends React.Component {
         let values = this.state.selectedRange;
         this.props.dispatch(addFilter({
             field: this.props.facets.field,
-            range: [values.min, values.max],
+            range: values,
             type: filterTypes.NUMERIC_RANGE_FILTER
         }))
     }
@@ -136,23 +139,28 @@ class GraphSlider extends React.Component {
                 <Panel collapsible defaultExpanded header={this.props.facets.field.name}>
                     <Graph {...this.props}  />
                     <br/>
-                    <InputRange
-                        minValue={this.state.selectedRange.min}
-                        maxValue={this.state.selectedRange.max}
+                    <Rcslider
+                        range={true}
+                        defaultValue={this.state.selectedRange}
+                        min={this.state.selectedRange[0]}
+                        max={this.state.selectedRange[1]}
                         value={this.state.selectingRange}
                         onChange={this.handleSlideChange.bind(this)}
-                        onChangeComplete={this.handleSlideChangeComplete.bind(this)}
+                        onAfterChange={this.handleSlideChangeComplete.bind(this)}
+                        tipFormatter={this.props.facets.field.type==='date'?(item)=> new Date(item).toString():item=>item}
                     />
 
 
                     <br/>
 
-                    <InputRange
-                        minValue={fullRange[0] }
-                        maxValue={fullRange[1] }
+                    <Rcslider
+                        range={true}
+                        min={fullRange[0] }
+                        max={fullRange[1] }
                         value={this.state.selectingRange}
                         onChange={this.handleSlideChange.bind(this)}
-                        onChangeComplete={this.handleSlideChangeComplete.bind(this)}
+                        onAfterChange={this.handleSlideChangeComplete.bind(this)}
+                        tipFormatter={this.props.facets.field.type==='date'?(item)=> new Date(item).toString():item=>item}
                     />
 
 

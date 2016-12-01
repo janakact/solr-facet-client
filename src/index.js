@@ -9,7 +9,7 @@ import * as actions from "./actions";
 import "./index.css";
 import "../node_modules/fixed-data-table/dist/fixed-data-table.css";
 import "../node_modules/leaflet/dist/leaflet.css";
-import "../node_modules/react-input-range/dist/react-input-range.min.css";
+import "../node_modules/rc-slider/dist/rc-slider.min.css";
 import "../node_modules/leaflet-draw/dist/leaflet.draw.css"
 
 const store = createStore(reducer);
