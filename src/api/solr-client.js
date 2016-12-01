@@ -418,9 +418,11 @@ class SolrClient {
                 url+= " OR {!geofilt sfield="+this.encodeForSolr(field.name)+"}&pt="+shape.point.lat+","+shape.point.lng+"&d="+shape.radius/1000+"";
                 break;
             case 'polygon':
-                url+= " OR ({!field f="+field.name+"}Intersects(POLYGON(("+(shape.points.reduce((txt,point)=> (txt+","+point.lat+" "+point.lng), "").substring(2))+")))";
+                url+= " OR {!field f="+field.name+"}Intersects(POLYGON(("+(shape.points.reduce((txt,point)=> (txt+","+point.lat+" "+point.lng), "").substring(2))+"))";
+                break;
             case 'rectangle':
                 url+= " OR "+field.name+":["+shape.points[0].lat+","+shape.points[0].lng+" TO "+shape.points[2].lat+","+shape.points[2].lng+"]";
+                break;
             }
 
         }
