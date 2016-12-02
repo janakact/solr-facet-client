@@ -114,3 +114,7 @@ body {
 .container_all{
     margin: 50px;
 }
+
+.react-draggable{
+    z-index: 1000;
+}
