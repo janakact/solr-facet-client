@@ -1,6 +1,7 @@
 import React from "react";
 import {Row, Panel} from "react-bootstrap";
 import Facets from "./facets/";
+
 // import
 // import { request } from '../actions'
 

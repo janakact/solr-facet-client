@@ -1,4 +1,5 @@
 import React from 'react';
+import Draggable from 'react-draggable'; // The default
 import { ListGroup,ListGroupItem,Badge,Panel, Col } from 'react-bootstrap';
 import { connect } from 'react-redux'
 import {changeFacetsSearchText, addFilter} from '../../actions'
@@ -39,7 +40,9 @@ let TextOptions = ({facets}) => {
     console.log(facets);
     return(
 
-                  <Col xs={12} md={3} >
+        <Draggable
+            zIndex={1000}>
+        <Col xs={12} md={3} >
         <Panel collapsible defaultExpanded header={facets.field.name} >
             <SearchBox fieldName={facets.field.name}/>
             <div  className="facet-list-scroll" >
@@ -50,7 +53,8 @@ let TextOptions = ({facets}) => {
             </ListGroup>
             </div>
         </Panel>
-    </Col>
+        </Col>
+    </Draggable>
     )
 }
 
