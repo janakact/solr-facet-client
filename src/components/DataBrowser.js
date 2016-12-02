@@ -89,7 +89,7 @@ let TableView = ({data}) => {
 };
 
 
-let DataBrowser = ({data}) => {
+let DataBrowser = ({data, fields}) => {
     return (
         <Panel bsStyle="info" header="Data Browser">
             <PageNav data={data}/>
@@ -108,7 +108,7 @@ let DataBrowser = ({data}) => {
                 </Tab>
 
                 <Tab eventKey={3} title="Map">
-                    <DataMap data={data}/>
+                    <DataMap data={data} fields={fields}/>
                 </Tab>
             </Tabs>
 

@@ -32,7 +32,7 @@ let App = ({fields, facetsList, filters, data}) => (
                 <FieldList fields={fields}/>
             </Col>
             <Col xs={12} md={10}>
-                <DataBrowser data={data}/>
+                <DataBrowser data={data} fields={fields}/>
             </Col>
         </Row>
         <Row>
