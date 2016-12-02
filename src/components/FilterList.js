@@ -44,7 +44,7 @@ Filter = connect(mapStateToPropsField, mapDispatchToPropsField)(Filter);
 // List of All Fields
 let FilterList = ({filters}, dispatch) => {
     return (
-        <Panel bsStyle="info" header="Available Filters">
+        <Panel bsStyle="info" header="Applied Filters">
             <ul>
                 {filters.map((filter, index) =>
                     <Filter

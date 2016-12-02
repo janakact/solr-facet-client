@@ -20,9 +20,8 @@ solrClient.setStore(store);
 store.dispatch(actions.requestFields("http://localhost:8983/solr/gettingstarted/"))
 ReactDOM.render(
     <Provider store={store}>
-        <div className="container">
+        <div className="container_all">
             <App />
-            <canvas id="graphItem" width="400" height="400"></canvas>
 
         </div>
     </Provider>,

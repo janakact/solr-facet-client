@@ -1,6 +1,7 @@
 import React from "react";
 import {connect} from "react-redux";
 import {requestFields} from "../actions";
+import {Row, Col} from "react-bootstrap";
 
 let ConnectionInfo = ({dispatch}) => {
     let input;//
@@ -16,16 +17,23 @@ let ConnectionInfo = ({dispatch}) => {
                     }
                     dispatch(requestFields(input.value))
                 }}>
+            <Row>
+                <Col  xs={8} md={10}>
                 <input width={400}
                        className="form-control"
                        defaultValue="http://localhost:8983/solr/gettingstarted/"
                        ref={node => {
                            input = node
                        }}/>
+                </Col>
+
+                <Col  xs={4} md={2}>
                 <button type="submit">
                     Connect
                 </button>
-            </form>
+                </Col>
+            </Row>
+        </form>
         </div>
     )
 }

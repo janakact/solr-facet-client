@@ -35,18 +35,21 @@ var DataMap = ({data}) => {
 
         <Map
             center={position}
-            zoom={1}
+            zoom={2}
+            minZoom={1}
             animate={true}
             id='map'>
             <TileLayer
                 url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                continuousWorld={false}
+                noWrap={true}
             />
             {data.docs.map((doc, index) =>
                 <DocMarker
                     key={index}
                     doc={doc}
-                    field={locationSelect}
+                    field={'Location'}
                     fields={data.columnNames}
                 />
             )}

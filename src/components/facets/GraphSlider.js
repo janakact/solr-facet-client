@@ -147,7 +147,7 @@ class GraphSlider extends React.Component {
                         value={this.state.selectingRange}
                         onChange={this.handleSlideChange.bind(this)}
                         onAfterChange={this.handleSlideChangeComplete.bind(this)}
-                        tipFormatter={this.props.facets.field.type==='date'?(item)=> new Date(item).toString():item=>item}
+                        tipFormatter={this.props.facets.field.type === 'date' ? (item)=> new Date(item).toString() : item=>item}
                     />
 
 
@@ -160,7 +160,7 @@ class GraphSlider extends React.Component {
                         value={this.state.selectingRange}
                         onChange={this.handleSlideChange.bind(this)}
                         onAfterChange={this.handleSlideChangeComplete.bind(this)}
-                        tipFormatter={this.props.facets.field.type==='date'?(item)=> new Date(item).toString():item=>item}
+                        tipFormatter={this.props.facets.field.type === 'date' ? (item)=> new Date(item).toString() : item=>item}
                     />
 
 

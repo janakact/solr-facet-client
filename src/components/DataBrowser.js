@@ -95,7 +95,7 @@ let DataBrowser = ({data}) => {
             <PageNav data={data}/>
             <Well bsSize="small">URL: <a href={data.url}><code >{data.url}</code></a></Well>
 
-            <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
+            <Tabs defaultActiveKey={3} id="uncontrolled-tab-example">
                 <Tab eventKey={1} title="Table">
                     <h4>Airport_Details</h4>
                     <TableView data={data}/>
@@ -111,6 +111,7 @@ let DataBrowser = ({data}) => {
                     <DataMap data={data}/>
                 </Tab>
             </Tabs>
+
 
         </Panel>
     );
