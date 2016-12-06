@@ -6,6 +6,7 @@ import FieldList from "../components/FieldList";
 import FacetsWindow from "../components/FacetsWindow";
 import FilterList from "../components/FilterList";
 import DataBrowser from "../components/DataBrowser";
+import SortBy from './SortBy'
 
 
 const mapStateToProps = (state, ownProps) => ({
@@ -13,14 +14,15 @@ const mapStateToProps = (state, ownProps) => ({
     facetsList: state.facetsList,
     filters: state.filters,
     data: state.data,
-    facetsWindow:state.facetsWindow
+    facetsWindow: state.facetsWindow,
+    sorts: state.sorts
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
     // onClick: () => {
     //   dispatch(toggleSelectField(ownProps.field.name))
     // }
 });
-let App = ({fields, facetsList, filters, data, facetsWindow}) => (
+let App = ({fields, facetsList, filters, data, facetsWindow, sorts}) => (
     <div>
         <Row className="show-grid">
             <Col xs={12} md={12}>
@@ -29,6 +31,7 @@ let App = ({fields, facetsList, filters, data, facetsWindow}) => (
         </Row>
         <Row>
             <Col xs={12} md={2}>
+                <SortBy fields={fields} sorts={sorts}/>
                 <FilterList filters={filters}/>
                 <FieldList fields={fields}/>
             </Col>

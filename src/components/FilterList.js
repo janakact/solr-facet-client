@@ -15,7 +15,7 @@ const getFilterText = (filterObj) => {
                 range = filterObj.range.map((item) => (new Date(item).toISOString()))
             return '[' + range[0] + ' TO ' + range[1] + ']';
         case filterTypes.GEO_SHAPE:
-            return JSON.stringify(filterObj.shapes);
+            return JSON.stringify(filterObj.shapes.map(shape=>shape.type));
         default:
             return "<Undefined Filter>"
 

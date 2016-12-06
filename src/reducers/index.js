@@ -9,6 +9,7 @@ const initialState = {
     fields: {},
     facetsList: {},
     filters: [],
+    sorts:[],
     data: {
         jsonResponse: "",
         url: "",
@@ -113,6 +114,12 @@ const reducer = (state = initialState, action) => {
             }
 
 
+        //Sort
+        case types.ADD_SORT:
+            return {
+                ...state,
+                sorts:[...state.sorts, action.sort]
+            }
 
 
         //DataBrowser

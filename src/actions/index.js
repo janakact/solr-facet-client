@@ -143,6 +143,15 @@ export const startFilterEditing = (filter) => {
 }
 
 
+//------------ Sort
+export const addSort = (sort) => {
+    return ({
+        type:types.ADD_SORT,
+        sort
+    })
+}
+
+
 export const updateData = (data) => {
     return ({
         type: types.UPDATE_DATA,
