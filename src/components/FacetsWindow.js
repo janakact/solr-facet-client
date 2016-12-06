@@ -11,7 +11,7 @@ let FacetsWindow = ({facetsWindow, facetsList, fields, dispatch}) => {
                 <Modal.Title>Filter Options</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <label>Select a field : </label>
+                <label>Field : </label>
                 <select
                     onChange={(e) => dispatch(showFacetsWindow(e.target.value))}
                     value={facetsWindow.fieldName} defaultValue="">
@@ -21,10 +21,7 @@ let FacetsWindow = ({facetsWindow, facetsList, fields, dispatch}) => {
                 <br/>
                 <br/>
                 {(facetsWindow.fieldName===null) && "Please Select a field"}
-
-                <Row className="show-grid">
                 {(facetsList[facetsWindow.fieldName]) && <Facets facets={facetsList[facetsWindow.fieldName]} onAddFilter={()=>dispatch(hideFacetsWindow())}/>}
-                </Row>
             </Modal.Body>
         </Modal>
     )

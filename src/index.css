@@ -118,3 +118,9 @@ body {
 .react-draggable{
     z-index: 1000;
 }
+
+.map_button_group{
+    position: absolute;
+    margin: 10px;
+    z-index: 1000;
+}
