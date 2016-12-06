@@ -27,7 +27,7 @@ let PageNav = ({data, dispatch}) => {
                         <option value="10000">*10000</option>
                     </select>
                 </Col>
-                <Col xs={2} md={8}>
+                <Col xs={2} md={5}>
                     <Pagination
                         prev
                         next
@@ -41,6 +41,9 @@ let PageNav = ({data, dispatch}) => {
                         onSelect={(eventKey) => {
                             dispatch(updatePagination((eventKey - 1) * data.rows, data.rows))
                         }}/>
+                </Col>
+                <Col xs={2} md={4}>
+                    <Well bsSize="small"><a href={data.url}><code >URL</code></a></Well>
                 </Col>
             </Row>
         </div>
@@ -89,12 +92,10 @@ let TableView = ({data}) => {
 };
 
 
-let DataBrowser = ({data, fields}) => {
+let DataBrowser = ({data, fields, filters}) => {
     return (
         <Panel bsStyle="info" header="Data Browser">
             <PageNav data={data}/>
-            <Well bsSize="small">URL: <a href={data.url}><code >{data.url}</code></a></Well>
-
             <Tabs defaultActiveKey={3} id="uncontrolled-tab-example">
                 <Tab eventKey={1} title="Table">
                     <h4>Airport_Details</h4>
@@ -108,7 +109,7 @@ let DataBrowser = ({data, fields}) => {
                 </Tab>
 
                 <Tab eventKey={3} title="Map">
-                    <DataMap data={data} fields={fields}/>
+                    <DataMap data={data} fields={fields} filters={filters}/>
                 </Tab>
             </Tabs>
 

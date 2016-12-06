@@ -21,6 +21,8 @@ class HeatMap extends React.Component {
             shapes: this.state.shapes,
             type: filterTypes.GEO_SHAPE
         }))
+        if(this.props.onAddFilter)
+            this.props.onAddFilter();
     }
 
     updateShape(item){
@@ -49,8 +51,6 @@ class HeatMap extends React.Component {
     render() {
         let {counts_png,minX, minY, maxX, maxY} = this.props.facets.options;
         return(
-
-            <Col xs={12} md={12} >
                 <Panel collapsible defaultExpanded header={this.props.facets.field.name} >
 
 
@@ -87,7 +87,6 @@ class HeatMap extends React.Component {
                     <Button onClick={this.addFilter.bind(this)}> Apply Filter </Button>
                     {JSON.stringify(this.state.shapes)}
                 </Panel>
-            </Col>
         )
     }
 }

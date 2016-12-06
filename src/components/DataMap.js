@@ -1,12 +1,13 @@
 import React from "react";
 import { connect } from 'react-redux'
-import { Map, TileLayer, CircleMarker, Popup, FeatureGroup, Circle } from 'react-leaflet';
+import { Map, TileLayer, CircleMarker, Popup, FeatureGroup, Circle, Rectangle } from 'react-leaflet';
 import { EditControl } from "react-leaflet-draw"
-import {addFilter} from '../actions'
+import {addToEditingFilter, finishFilterEditing} from '../actions'
 import filterTypes from '../constants/FilterTypes'
+import {Button} from "react-bootstrap";
 
 
-const position = [0, 0];
+const center = [0, 0];
 
 const DocMarker = ({children, doc, field, fields}) => (
     <CircleMarker
@@ -30,58 +31,83 @@ const DocMarker = ({children, doc, field, fields}) => (
     </CircleMarker>
 )
 
+const GeoShapeFilter = ({filter}) => (
+    <FeatureGroup>
+        {filter.shapes.map(shape=>{
+            if(shape.type==='circle')
+                return (<Circle center={[shape.point.lat,shape.point.lng]} radius={shape.radius} />)
+            else if(shape.type==='rectangle')
+                return (<Rectangle bounds={shape.points.map((point) => [point.lat, point.lng])} />)
+        })}
+    </FeatureGroup>
+)
+
 
 class DataMapClass extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state =  {shapes:[], selectedField:'Location'};
+        this.state =  { selectedField:'Location', mapKey:0, zoom:2, center:center}; //Editing Filter index = -1 means not editing enything
     }
 
-    addFilter(){
-        console.log("add filter")
-        this.props.dispatch(addFilter({
-            field: this.props.fields[this.state.selectedField],
-            shapes: this.state.shapes,
-            type: filterTypes.GEO_SHAPE
-        }))
+    reDrawMap(){
+        this.setState({mapKey:this.state.mapKey+1});
     }
 
     updateShape(item){
-
-        console.log(item);
-        console.log('update Shape');
-        let shape;
-        let shapeElement;
-        if(item.type==="draw:created"){
-            switch (item.layerType){
-                case 'polygon':
-                    shape = {type:'polygon', points:item.layer._latlngs[0]};
-                    break;
-                case 'circle':
-                    shape = {type:'circle', point: item.layer._latlng, radius:item.layer._mRadius};
-                    shapeElement = <Circle  radius={1000} center={[6.9271, 79.8612]} />;
-
-                    break;
-                case 'rectangle':
-                    shape = {type: 'rectangle', points:item.layer._latlngs[0]};
+        console.log('update Shape------------------------------------------ ');
+        console.log(this.refs.drawFeatureGroup);
+        let layers = this.refs.drawFeatureGroup.leafletElement._layers;
+        console.log(layers);
+        let shapes = []
+        for(let layerId of Object.keys(layers)){
+            //If polygon
+            let shape;
+            if(layers[layerId]._latlngs){
+                console.log("Poly")
+                shape = {type:'rectangle', points:layers[layerId]._latlngs[0]};
             }
+            else if(layers[layerId]._latlng){
+                console.log("Circle")
+                shape = {type:'circle', point: layers[layerId]._latlng, radius:layers[layerId]._mRadius};
+            }
+            shapes.push(shape)
         }
-        this.setState({shapes:[...this.state.shapes, shape]});
-        this.addFilter();
+        console.log(shapes);
+        this.props.dispatch(addToEditingFilter({
+            field: this.props.fields[this.state.selectedField],
+            shapes: shapes,
+            type: filterTypes.GEO_SHAPE,
+            editing:true
+        }))
+        let map = this.refs.drawFeatureGroup.context.map;
+        this.setState({ zoom:map._zoom, center:[map._lastCenter.lat, map._lastCenter.lng]});
     }
+
+    finishEditing(){
+        this.props.dispatch(finishFilterEditing());
+        this.reDrawMap();
+    }
+
 
    render() {
        let data = this.props.data
        let locationSelect = "Location";
        return (<div>
-           <select onChange={(e) => this.setState({'selectedField':e.target.value})} value={this.state.selectedField}    defaultValue="Location">
+           <select onChange={(e) => {
+               this.setState({'selectedField':e.target.value});
+               this.reDrawMap();
+            }
+           } value={this.state.selectedField}    defaultValue="Location">
                {data.columnNames.map((field, index) => <option key={field} value={field}>{field}</option>)}
            </select>
            {this.state.selectedField}
+
+           <Button onClick={this.finishEditing.bind(this)}>Finish Editing</Button>
            <Map
-               center={position}
-               zoom={2}
+               key={this.state.mapKey}
+               center={this.state.center}
+               zoom={this.state.zoom}
                minZoom={1}
                animate={true}
                id='map'>
@@ -91,17 +117,7 @@ class DataMapClass extends React.Component {
                    continuousWorld={false}
                    noWrap={true}
                />
-
-               {data.docs.map((doc, index) =>
-                   <DocMarker
-                       key={index}
-                       doc={doc}
-                       field={'Location'}
-                       fields={data.columnNames}
-                   />
-               )}
-
-               <FeatureGroup color='purple'>
+               <FeatureGroup ref="drawFeatureGroup" color='red'>
                    <EditControl
                        position='topleft'
                        onCreated={this.updateShape.bind(this)}
@@ -115,7 +131,40 @@ class DataMapClass extends React.Component {
                            }
                        }}
                    />
+
+                   {/*{*/}
+                       {/*this.props.filters.map((filter) => {*/}
+                       {/*if(filter.field.name===this.state.selectedField && filter.type===filterTypes.GEO_SHAPE && filter.editing===true){*/}
+                           {/*return <GeoShapeFilter filter={filter}/>*/}
+                       {/*}*/}
+                       {/*else*/}
+                           {/*return null;*/}
+                   {/*})}*/}
+
                </FeatureGroup>
+
+               <FeatureGroup>
+                   {this.props.filters.map((filter) => {
+                       if(filter.field.name===this.state.selectedField && filter.type===filterTypes.GEO_SHAPE && filter.editing!==true){
+                            return <GeoShapeFilter filter={filter}/>
+                       }
+                       else
+                        return null;
+                   })}
+               </FeatureGroup>
+
+
+
+               {data.docs.map((doc, index) =>
+                   <DocMarker
+                       key={index}
+                       doc={doc}
+                       field={'Location'}
+                       fields={data.columnNames}
+                   />
+               )}
+
+
 
            </Map>
        </div>)

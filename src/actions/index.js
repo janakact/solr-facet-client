@@ -42,6 +42,23 @@ export const toggleSelectField = (fieldName) => {
     }
 }
 
+export const showFacetsWindow = (fieldName = null) => {
+    if (fieldName !== null)
+        setTimeout(() => {
+            solrClient.getFacets(fieldName);
+        }, 10);
+    return ({
+        type: types.TOGGLE_FACETS_WINDOW,
+        show: true,
+        fieldName
+    })
+}
+
+export const hideFacetsWindow = () => ({
+    type: types.TOGGLE_FACETS_WINDOW,
+    show: false
+})
+
 export const updateFacets = (facets) => ({
     type: types.UPDATE_FACETS,
     facets
@@ -92,6 +109,16 @@ export const addFilter = (filterObject) => {
     });
 }
 
+export const addToEditingFilter = (filterObject) => {
+    setTimeout(() => {
+        solrClient.getFacetsForAllFields();
+    }, 10);
+    return ({
+        type: types.ADD_TO_EDITING_FILTER,
+        filterObject
+    });
+}
+
 export const removeFilter = (filterObject) => {
     setTimeout(() => {
         solrClient.getFacetsForAllFields();
@@ -99,6 +126,19 @@ export const removeFilter = (filterObject) => {
     return ({
         type: types.REMOVE_FILTER,
         filterObject
+    })
+}
+
+export const finishFilterEditing = () => {
+    return ({
+        type: types.FINISH_FILTER_EDITING
+    })
+}
+
+export const startFilterEditing = (filter) => {
+    return ({
+        type: types.START_FILTER_EDITING,
+        filter
     })
 }
 

@@ -129,13 +129,14 @@ class GraphSlider extends React.Component {
             range: values,
             type: filterTypes.NUMERIC_RANGE_FILTER
         }))
+        if(this.props.onAddFilter)
+            this.props.onAddFilter();
     }
 
     render() {
         let fullRange = this.props.facets.fullRange;
         // let extraGapFromEdges = (fullRange[1] - fullRange[0]) / 50; //Add some extra gaps to edges to make sure all points are visible
         return (
-            <Col xs={12} md={12}>
                 <Panel collapsible defaultExpanded header={this.props.facets.field.name}>
                     <Graph {...this.props}  />
                     <br/>
@@ -166,7 +167,6 @@ class GraphSlider extends React.Component {
 
                     <Button onClick={this.addFilter.bind(this)}> Apply Filter </Button>
                 </Panel>
-            </Col>
         );
     }
 }

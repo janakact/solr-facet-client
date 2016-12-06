@@ -1,7 +1,7 @@
 import React from "react";
 import {connect} from "react-redux";
-import {toggleSelectField} from "../actions";
-import {Panel, OverlayTrigger, Tooltip} from "react-bootstrap";
+import {showFacetsWindow} from "../actions";
+import {Panel, OverlayTrigger, Tooltip, ListGroupItem, ListGroup} from "react-bootstrap";
 
 
 const tooltip = (stats) => {
@@ -25,19 +25,19 @@ const tooltip = (stats) => {
 const mapStateToPropsField = (state, ownProps) => ({});
 const mapDispatchToPropsField = (dispatch, ownProps) => ({
     onClick: () => {
-        dispatch(toggleSelectField(ownProps.field.name))
+        dispatch(showFacetsWindow(ownProps.field.name))
     }
 });
 let Field = ({field, onClick}) => {
     return (
-        <li
+        <ListGroupItem
             className={"tag-cloud " + (field.selected ? 'tag-cloud-item-checked' : 'tag-cloud-item')}
             onClick={onClick}>
 
             <OverlayTrigger placement="left" overlay={tooltip(field.stats)}>
                 <span><strong>{field.name}</strong> : {field.type} </span>
             </OverlayTrigger>
-        </li>
+        </ListGroupItem>
     )
 }
 Field = connect(mapStateToPropsField, mapDispatchToPropsField)(Field);
@@ -47,13 +47,13 @@ Field = connect(mapStateToPropsField, mapDispatchToPropsField)(Field);
 let FieldList = ({fields}, dispatch) => {
     return (
         <Panel bsStyle="info" header="Available Fields">
-            <ul>
+            <ListGroup>
                 {Object.keys(fields).map((fieldName, index) =>
                     <Field
                         key={fieldName}
                         field={fields[fieldName]}></Field>
                 )}
-            </ul>
+            </ListGroup>
         </Panel>
     );
 }

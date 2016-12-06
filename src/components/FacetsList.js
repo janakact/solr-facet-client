@@ -13,10 +13,12 @@ let FacetsList = ({facetsList}) => {
             <Row className="show-grid">
                 {Object.keys(facetsList).map((fieldName, index) =>
 
-                    <Facets
-                        key={fieldName}
-                        facets={facetsList[fieldName]}>
-                    </Facets>
+                    <Col xs={12} md={12}>
+                        <Facets
+                            key={fieldName}
+                            facets={facetsList[fieldName]}>
+                        </Facets>
+                    </Col>
                 )}
             </Row>
         </Panel>

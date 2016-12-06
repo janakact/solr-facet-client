@@ -3,7 +3,7 @@ import {Row, Col, Grid} from "react-bootstrap";
 import {connect} from "react-redux";
 import ConnectionInfo from "../components/ConnectionInfo";
 import FieldList from "../components/FieldList";
-import FacetsList from "../components/FacetsList";
+import FacetsWindow from "../components/FacetsWindow";
 import FilterList from "../components/FilterList";
 import DataBrowser from "../components/DataBrowser";
 
@@ -12,14 +12,15 @@ const mapStateToProps = (state, ownProps) => ({
     fields: state.fields,
     facetsList: state.facetsList,
     filters: state.filters,
-    data: state.data
+    data: state.data,
+    facetsWindow:state.facetsWindow
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
     // onClick: () => {
     //   dispatch(toggleSelectField(ownProps.field.name))
     // }
 });
-let App = ({fields, facetsList, filters, data}) => (
+let App = ({fields, facetsList, filters, data, facetsWindow}) => (
     <div>
         <Row className="show-grid">
             <Col xs={12} md={12}>
@@ -32,12 +33,12 @@ let App = ({fields, facetsList, filters, data}) => (
                 <FieldList fields={fields}/>
             </Col>
             <Col xs={12} md={10}>
-                <DataBrowser data={data} fields={fields}/>
+                <DataBrowser data={data} fields={fields} filters={filters}/>
             </Col>
         </Row>
         <Row>
             <Col>
-                <FacetsList facetsList={facetsList}/>
+                <FacetsWindow facetsList={facetsList} facetsWindow={facetsWindow} fields={fields}/>
             </Col>
         </Row>
     </div>

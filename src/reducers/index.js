@@ -1,6 +1,10 @@
 import types from "../constants/ActionTypes";
 const initialState = {
     fetching: false,
+    facetsWindow: {
+        show: false,
+        fieldName: null
+    },
     baseUrl: "http://localhost:8983/solr/gettingstarted/",
     fields: {},
     facetsList: {},
@@ -47,6 +51,9 @@ const reducer = (state = initialState, action) => {
                 fields: fields2
             }
 
+        case types.TOGGLE_FACETS_WINDOW:
+            return {...state, facetsWindow:{show:action.show, fieldName:action.fieldName}}
+
         case types.REQUEST_FACETS:
             return {...state, fetching: true}
         case types.UPDATE_FACETS:
@@ -69,20 +76,18 @@ const reducer = (state = initialState, action) => {
         // ---------------------------------------------------------------
 
         case types.ADD_FILTER:
-            let newFilters = []
-            let added = false;
-            for(let filter of state.filters){
-                if(filter.field.name===action.filterObject.field.name)
-                {
-                    newFilters.push(action.filterObject)
-                    added = true;
-                    break;
-                }
-                else
-                    newFilters.push(filter)
+            return {
+                ...state,
+                filters: [...   state.filters, action.filterObject],
+                data: {...state.data, start: 0} //Reset start
             }
-            if(!added)
-                newFilters.push(action.filterObject);
+        case types.ADD_TO_EDITING_FILTER:
+            let added = false;
+            let newFilters = [];
+            if (state.filters.filter(item=>item.editing).length === 0)
+                newFilters = [...state.filters, action.filterObject]
+            else
+                newFilters = state.filters.map((filter)=>(filter.editing ? action.filterObject : filter));
             return {
                 ...state,
                 filters: newFilters,
@@ -91,8 +96,22 @@ const reducer = (state = initialState, action) => {
         case types.REMOVE_FILTER:
             return {
                 ...state,
-                filters: [...state.filters].filter((item) => item.fieldName !== action.filterObject.fieldName)
+                filters: [...state.filters].filter((item) => item.field.name !== action.filterObject.field.name)
             }
+        case types.FINISH_FILTER_EDITING:
+            return {
+                ...state,
+                filters: state.filters.map((filter) => ({...filter, editing: false}))
+            }
+        case types.START_FILTER_EDITING:
+            return {
+                ...state,
+                filters: state.filters.map((filter, index) => ({
+                    ...filter,
+                    editing: filter == action.filter ? true : false
+                }))
+            }
+
 
 
 

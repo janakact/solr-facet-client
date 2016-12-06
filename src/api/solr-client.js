@@ -103,12 +103,6 @@ class SolrClient {
     }
 
     getFacets(fieldName) {
-        if (this.state.fields[fieldName] && !this.state.fields[fieldName].selected) {
-            console.log("Error: request facets for not selected field")
-            return
-        }
-        ;
-
         //Generate the request
         var url = this.state.baseUrl;
         let searchText = "";
