@@ -180,6 +180,7 @@ class SolrClient {
         let dataState = this.state.data;
 
         url += this.generateFilterQuery(this.state.filters);
+        url +=this.generateSortQuery(this.state.sort)
 
         url += "&rows=" + dataState.rows;
         url += "&start=" + dataState.start;
@@ -398,6 +399,14 @@ class SolrClient {
             else if(fq.type === filterTypes.GEO_SHAPE){
                 url += this.shapeToSolrQuery(fq.shapes,fq.field);
             }
+        }
+        return url;
+    }
+
+    generateSortQuery(sort){
+        let url = "";
+        if(sort.field){
+            url+="&sort="+sort.field.name+" "+sort.type
         }
         return url;
     }

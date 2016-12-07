@@ -5,11 +5,14 @@ const initialState = {
         show: false,
         fieldName: null
     },
+    timeSliderOptions:{
+        field:null
+    },
     baseUrl: "http://localhost:8983/solr/gettingstarted/",
     fields: {},
     facetsList: {},
     filters: [],
-    sorts:[],
+    sort:{field:null, type:'asc'},
     data: {
         jsonResponse: "",
         url: "",
@@ -114,11 +117,11 @@ const reducer = (state = initialState, action) => {
             }
 
 
-        //Sort
-        case types.ADD_SORT:
+        //Sort currently only one sort support
+        case types.SET_SORT:
             return {
                 ...state,
-                sorts:[...state.sorts, action.sort]
+                sort:{...state.sort,...action.sort}
             }
 
 
@@ -127,6 +130,9 @@ const reducer = (state = initialState, action) => {
             return {...state, data: action.data}
         case types.UPDATE_PAGINATION:
             return {...state, data: {...state.data, start: action.start, rows: action.rows}}
+
+        case types.SET_TIMESLIDER_OPTIONS:
+            return {...state, timeSliderOptions:action.options}
 
         default:
             return state;

@@ -32,7 +32,7 @@ export const updateStats = (stats) => ({
     stats
 })
 
-export const toggleSelectField = (fieldName) => {
+export const requestFacets = (fieldName) => {
     setTimeout(() => {
         solrClient.getFacets(fieldName);
     }, 10);
@@ -41,6 +41,7 @@ export const toggleSelectField = (fieldName) => {
         fieldName
     }
 }
+
 
 export const showFacetsWindow = (fieldName = null) => {
     if (fieldName !== null)
@@ -144,9 +145,12 @@ export const startFilterEditing = (filter) => {
 
 
 //------------ Sort
-export const addSort = (sort) => {
+export const setSort = (sort) => {
+    setTimeout(() => {
+        solrClient.getData();
+    }, 10);
     return ({
-        type:types.ADD_SORT,
+        type:types.SET_SORT,
         sort
     })
 }
@@ -167,5 +171,13 @@ export const updatePagination = (start, rows) => {
         type: types.UPDATE_PAGINATION,
         start,
         rows
+    })
+}
+
+
+export const setTimesliderOptions = (options) => {
+    return ({
+        type:types.SET_TIMESLIDER_OPTIONS,
+        options
     })
 }

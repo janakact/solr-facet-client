@@ -1,23 +1,16 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {Panel, ListGroup} from 'react-bootstrap'
-import {addSort} from '../actions'
+import {setSort} from '../actions'
 
 // List of All Fields
-let SortBy = ({sorts, fields, dispatch}) => {
+let SortBy = ({sort, fields, dispatch}) => {
     return (
-        <Panel bsStyle="info" header="Sort By">
-
-            <ListGroup>
-                {sorts.map((filter, index) =>
-                    <br/>
-                )}
-            </ListGroup>
-
-            <label>Field : </label>
+        <Panel bsStyle="info" header="Sort">
+            <label>Sort By : </label>
             <select
                 onChange={
-                    (e) => dispatch(addSort({field:fields[e.target.value], type:'asc'}))
+                    (e) => dispatch(setSort({field:fields[e.target.value]}))
                 }
                 defaultValue="">
                 <option value={null} >--Please select a field---</option>
@@ -28,14 +21,13 @@ let SortBy = ({sorts, fields, dispatch}) => {
             }
             <label>Type : </label>
             <select
+                onChange={
+                    (e) => dispatch(setSort({type:e.target.value}))
+                }
                 defaultValue="">
                 <option value="asc" >ASC</option>
                 <option value="desc" >DESC</option>
             </select>
-
-            {JSON.stringify(sorts)}<br/>
-            {/*{JSON.stringify(fields)}<br/>*/}
-
         </Panel>
     );
 }
