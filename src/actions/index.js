@@ -150,7 +150,7 @@ export const setSort = (sort) => {
         solrClient.getData();
     }, 10);
     return ({
-        type:types.SET_SORT,
+        type: types.SET_SORT,
         sort
     })
 }
@@ -176,8 +176,9 @@ export const updatePagination = (start, rows) => {
 
 
 export const setTimesliderOptions = (options) => {
+    setTimeout(() => solrClient.getData(), 10);
     return ({
-        type:types.SET_TIMESLIDER_OPTIONS,
+        type: types.SET_TIMESLIDER_OPTIONS,
         options
     })
 }

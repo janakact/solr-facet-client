@@ -160,7 +160,7 @@ class SolrClient {
         }
 
         //Add Filters
-        url += this.generateFilterQuery(this.state.filters);
+        url += this.generateFilterQuery();
 
         //make promise
         fetch(url, callConfig)
@@ -179,7 +179,7 @@ class SolrClient {
         let url = this.state.baseUrl + _DATA_SUFFIX;
         let dataState = this.state.data;
 
-        url += this.generateFilterQuery(this.state.filters);
+        url += this.generateFilterQuery();
         url +=this.generateSortQuery(this.state.sort)
 
         url += "&rows=" + dataState.rows;
@@ -386,7 +386,11 @@ class SolrClient {
 
 
     //Static Support Methods
-    generateFilterQuery(filterQueries) {
+    generateFilterQuery() {
+        let filterQueries = [...this.state.filters]
+        if(this.state.timeSliderOptions.filter)
+            filterQueries.push(this.state.timeSliderOptions.filter); //Append if there is a slider query
+
         let url = ""
         for (let fq of filterQueries) {
             if (fq.type === filterTypes.TEXT_FILTER)

@@ -132,7 +132,7 @@ const reducer = (state = initialState, action) => {
             return {...state, data: {...state.data, start: action.start, rows: action.rows}}
 
         case types.SET_TIMESLIDER_OPTIONS:
-            return {...state, timeSliderOptions:action.options}
+            return {...state, timeSliderOptions:{...state.timeSliderOptions, ...action.options}}
 
         default:
             return state;
