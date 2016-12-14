@@ -21,7 +21,7 @@ let ConnectionInfo = ({dispatch}) => {
                 <Col  xs={8} md={10}>
                 <input width={400}
                        className="form-control"
-                       defaultValue="http://localhost:8983/solr/gettingstarted/"
+                       defaultValue="http://localhost:8983/solr/air/"
                        ref={node => {
                            input = node
                        }}/>

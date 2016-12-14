@@ -1,6 +1,6 @@
 import types from "../constants/ActionTypes";
 const initialState = {
-    fetching: false,
+    fetchingList: [],
     facetsWindow: {
         show: false,
         fieldName: null
@@ -37,10 +37,11 @@ const reducer = (state = initialState, action) => {
         case types.SET_BASEURL:
             return {...state, baseUrl: action.url, fetching: true}
         case types.REQUEST_FIELDS:
-            return {...state, baseUrl: action.url, fetching: true}
+            return {...initialState, baseUrl: action.url, fetching: true}
         case types.UPDATE_FIELDS:
             return {...state, fields: action.fields, fetching: false}
         case types.TOGGLESELECT_FIELD:
+            return {...state, fetching: true}
             //Delete facets
             let newFacetsList2 = {...state.facetsList}
             delete newFacetsList2[action.fieldName]

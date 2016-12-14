@@ -19,7 +19,7 @@ let TimeSlider = ({facetsList, fields, dispatch, timeSliderOptions}) => {
                 onChange={
                     (e) => {
                         dispatch(requestFacets(e.target.value))
-                        dispatch(setTimesliderOptions({field: fields[e.target.value]}))
+                        dispatch(setTimesliderOptions({field: fields[e.target.value], filter:null}))
                     }
                 }
                 defaultValue="">
