@@ -1,7 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {Panel, ListGroup} from 'react-bootstrap'
-import {setTimesliderOptions, requestFacets, addFilter} from '../actions'
+import {Panel} from 'react-bootstrap'
+import {setTimesliderOptions, requestFacets} from '../actions'
 import filterTypes from '../constants/FilterTypes'
 import DraggableSlider from './DraggableSlider'
 
@@ -18,12 +18,13 @@ let TimeSlider = ({facetsList, fields, dispatch, timeSliderOptions}) => {
             <select
                 onChange={
                     (e) => {
-                        dispatch(requestFacets(e.target.value))
+                        if(e.target.value!=="")
+                            dispatch(requestFacets(e.target.value))
                         dispatch(setTimesliderOptions({field: fields[e.target.value], filter:null}))
                     }
                 }
                 defaultValue="">
-                <option value={null}>--Please select a field---</option>
+                <option value="">--Please select a field---</option>
                 {Object.keys(fields).map((fieldName) => <option key={fieldName} value={fieldName}>{fieldName}</option>)}
             </select>
 

@@ -1,9 +1,9 @@
 import React from "react";
 import {connect} from "react-redux";
-import {requestFields} from "../actions";
-import {Row, Col} from "react-bootstrap";
+import {requestFields, removeFetchingError} from "../actions";
+import {Row, Col, Alert} from "react-bootstrap";
 
-let ConnectionInfo = ({dispatch}) => {
+let ConnectionInfo = ({dispatch, baseUrl, fetchingErrors}) => {
     let input;//
     //input.value = "http://localhost:8983/solr/gettingstarted/";
 
@@ -21,7 +21,7 @@ let ConnectionInfo = ({dispatch}) => {
                 <Col  xs={8} md={10}>
                 <input width={400}
                        className="form-control"
-                       defaultValue="http://localhost:8983/solr/air/"
+                       defaultValue={baseUrl}
                        ref={node => {
                            input = node
                        }}/>
@@ -33,7 +33,13 @@ let ConnectionInfo = ({dispatch}) => {
                 </button>
                 </Col>
             </Row>
+
         </form>
+            {fetchingErrors.map((error)=>(
+                <Alert key={error.url} bsStyle="danger" onDismiss={()=>dispatch(removeFetchingError(error))}>
+                    <strong>{error.title}: </strong> {error.url}
+                </Alert>
+            ))}
         </div>
     )
 }

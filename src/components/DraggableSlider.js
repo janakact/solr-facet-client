@@ -37,7 +37,6 @@ class DraggableSlider extends React.Component {
 
     constructor(props) {
         super(props)
-        let dragRangeMean = (props.fullRange[0]+props.fullRange[1])/2;
         this.state = {
             // dragRange: props.dragRange ? props.dragRange : props.fullRange.map((item) => (item/8 + dragRangeMean )),
             dragRange: props.dragRange ? props.dragRange : props.fullRange,

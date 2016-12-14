@@ -1,6 +1,7 @@
 import types from "../constants/ActionTypes";
 const initialState = {
-    fetchingList: [],
+    fetchingUrls: [], //Add to this list when requesting data from Solr. If length===0 means no fetching.
+    fetchingErrors:[], //Add to this list when error occurred during fetching or passing
     facetsWindow: {
         show: false,
         fieldName: null
@@ -43,18 +44,18 @@ const reducer = (state = initialState, action) => {
         case types.TOGGLESELECT_FIELD:
             return {...state, fetching: true}
             //Delete facets
-            let newFacetsList2 = {...state.facetsList}
-            delete newFacetsList2[action.fieldName]
-
-            let fields2 = {...state.fields}
-            fields2[action.fieldName] = {...fields2[action.fieldName], selected: !fields2[action.fieldName].selected}
-
-            //toggole field Name
-            return {
-                ...state,
-                facetsList: newFacetsList2,
-                fields: fields2
-            }
+            // let newFacetsList2 = {...state.facetsList}
+            // delete newFacetsList2[action.fieldName]
+            //
+            // let fields2 = {...state.fields}
+            // fields2[action.fieldName] = {...fields2[action.fieldName], selected: !fields2[action.fieldName].selected}
+            //
+            // //toggole field Name
+            // return {
+            //     ...state,
+            //     facetsList: newFacetsList2,
+            //     fields: fields2
+            // }
 
         case types.TOGGLE_FACETS_WINDOW:
             return {...state, facetsWindow:{show:action.show, fieldName:action.fieldName}}
@@ -83,11 +84,10 @@ const reducer = (state = initialState, action) => {
         case types.ADD_FILTER:
             return {
                 ...state,
-                filters: [...   state.filters, action.filterObject],
+                filters: [...state.filters, action.filterObject],
                 data: {...state.data, start: 0} //Reset start
             }
         case types.ADD_TO_EDITING_FILTER:
-            let added = false;
             let newFilters = [];
             if (state.filters.filter(item=>item.editing).length === 0)
                 newFilters = [...state.filters, action.filterObject]
@@ -113,7 +113,7 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 filters: state.filters.map((filter, index) => ({
                     ...filter,
-                    editing: filter == action.filter ? true : false
+                    editing: filter === action.filter ? true : false
                 }))
             }
 
@@ -131,9 +131,19 @@ const reducer = (state = initialState, action) => {
             return {...state, data: action.data}
         case types.UPDATE_PAGINATION:
             return {...state, data: {...state.data, start: action.start, rows: action.rows}}
-
         case types.SET_TIMESLIDER_OPTIONS:
             return {...state, timeSliderOptions:{...state.timeSliderOptions, ...action.options}}
+
+
+        //API call tracking
+        case types.ADD_FETCHING_URL:
+            return {...state, fetchingUrls:[...state.fetchingUrls, action.url]}
+        case types.REMOVE_FETCHING_URL:
+            return {...state, fetchingUrls:state.fetchingUrls.filter((url)=>url!==action.url)}
+        case types.ADD_FETCHING_ERROR:
+            return {...state, fetchingErrors:[...state.fetchingErrors, action.e]}
+        case types.REMOVE_FETCHING_ERROR:
+            return {...state, fetchingErrors:state.fetchingErrors.filter((e)=>e.url!==action.e.url)}
 
         default:
             return state;

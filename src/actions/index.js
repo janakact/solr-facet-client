@@ -10,10 +10,10 @@ import solrClient from "../api/solr-client";
 
 //Fields
 export const requestFields = (url) => {
-    solrClient.getFields().
-    then(()=>{
-        solrClient.getFacetsForAllFields();
-    });
+    setTimeout(() => solrClient.getFields()
+        .then(()=> {
+            solrClient.getFacetsForAllFields();
+        }), 10);
     return {
         type: types.REQUEST_FIELDS,
         url
@@ -179,4 +179,32 @@ export const setTimesliderOptions = (options) => {
         type: types.SET_TIMESLIDER_OPTIONS,
         options
     })
+}
+
+export const addFetchingUrl = (url) => {
+    return {
+        type: types.ADD_FETCHING_URL,
+        url
+    }
+}
+
+export const removeFetchingUrl = (url) => {
+    return {
+        type: types.REMOVE_FETCHING_URL,
+        url
+    }
+}
+
+export const addFetchingError = (e) => {
+    return {
+        type: types.ADD_FETCHING_ERROR,
+        e
+    }
+}
+
+export const removeFetchingError = (e) => {
+    return {
+        type: types.REMOVE_FETCHING_ERROR,
+        e
+    }
 }

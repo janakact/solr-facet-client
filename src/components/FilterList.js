@@ -1,6 +1,6 @@
 import React from "react";
 import {connect} from "react-redux";
-import {removeFilter, startFilterEditing, showFacetsWindow, hideFacetsWindow} from "../actions";
+import {removeFilter, showFacetsWindow} from "../actions";
 import {Panel, ListGroupItem, ListGroup, Button} from "react-bootstrap";
 import filterTypes from "../constants/FilterTypes";
 
@@ -11,7 +11,7 @@ const getFilterText = (filterObj) => {
             return filterObj.query;
         case filterTypes.NUMERIC_RANGE_FILTER:
             let range = filterObj.range
-            if(filterObj.field.type=='date')
+            if(filterObj.field.type==='date')
                 range = filterObj.range.map((item) => (new Date(item).toISOString()))
             return '[' + range[0] + ' TO ' + range[1] + ']';
         case filterTypes.GEO_SHAPE:

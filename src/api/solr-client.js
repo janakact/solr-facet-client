@@ -65,6 +65,7 @@ class SolrClient {
 
     getFields() {
         let url = this.state.baseUrl + _FIELDS_SUFFIX;
+        this.store.dispatch(actions.addFetchingUrl(url));
         return fetch(url, callConfig)
             .then(response => {
                 return response.text()
@@ -78,14 +79,15 @@ class SolrClient {
                     fieldsObject[field.name] = field;
                 }
                 this.store.dispatch(actions.updateFields(fieldsObject));
+                this.store.dispatch(actions.removeFetchingUrl(url));
             })
             .then(()=> {
                     this.getStats(Object.keys(this.state.fields));
                 }
             )
             .catch((e)=> {
-                console.log("Connection Error:");
-                console.log(e);
+                this.store.dispatch(actions.addFetchingError({title:"Error Fetching Fields",url:url, error:e}));
+                this.store.dispatch(actions.removeFetchingUrl(url));
             });
     }
 
@@ -120,7 +122,7 @@ class SolrClient {
             let range = [this.state.fields[fieldName].stats.min, this.state.fields[fieldName].stats.max];
             if (this.state.facetsList[fieldName] && this.state.facetsList[fieldName].range) {
                 range = this.state.facetsList[fieldName].range;
-                if (this.state.fields[fieldName].type == _DATE_TYPE)
+                if (this.state.fields[fieldName].type === _DATE_TYPE)
                     range = range.map(this.mapDateToSolr);
                 console.log(range)
             }
@@ -135,7 +137,7 @@ class SolrClient {
 
             }
 
-            if (_DATE_TYPE == this.state.fields[fieldName].type) {
+            if (_DATE_TYPE === this.state.fields[fieldName].type) {
                 console.log(gap)
                 console.log(range)
                 let gapInMillis = ( Date.parse(range[1]) - Date.parse(range[0])) / _RANGE_PARTITIONS_COUNT;
@@ -163,6 +165,7 @@ class SolrClient {
         url += this.generateFilterQuery();
 
         //make promise
+        this.store.dispatch(actions.addFetchingUrl(url));
         return fetch(url, callConfig)
             .then(response => {
                 return response.text()
@@ -172,6 +175,11 @@ class SolrClient {
                 let facetFields = this.extractFacetsFromData(body);
                 facetFields[0].searchText = searchText;
                 this.store.dispatch(actions.updateFacets(facetFields[0])) // it has results only for one field. We sends only that data. No need of an array
+                this.store.dispatch(actions.removeFetchingUrl(url));
+            })
+            .catch((e)=> {
+                this.store.dispatch(actions.addFetchingError({title:"Error Fetching Facets for Field:"+fieldName,url:url, error:e}));
+                this.store.dispatch(actions.removeFetchingUrl(url));
             });
     }
 
@@ -186,6 +194,7 @@ class SolrClient {
         url += "&rows=" + dataState.rows;
         url += "&start=" + dataState.start;
 
+        this.store.dispatch(actions.addFetchingUrl(url));
         return fetch(url, callConfig)
             .then(response => {
                 return response.text()
@@ -214,7 +223,12 @@ class SolrClient {
                         columnNames: Array.from(columns)
                     })
                 );
+                this.store.dispatch(actions.removeFetchingUrl(url));
 
+            })
+            .catch((e)=> {
+                this.store.dispatch(actions.addFetchingError({title:"Error Fetching Data",url:url, error:e}));
+                this.store.dispatch(actions.removeFetchingUrl(url));
             });
     }
 
@@ -227,6 +241,7 @@ class SolrClient {
 
         // url += this.generateFilterQuery(this.state.filters);
 
+        this.store.dispatch(actions.addFetchingUrl(url));
         return fetch(url, callConfig)
             .then(response => {
                 return response.text()
@@ -234,10 +249,14 @@ class SolrClient {
                     //Todo: Add code to extract field details and send them
                     let stats = JSON.parse(body).stats.stats_fields;
                     this.store.dispatch(actions.updateStats(stats));
+                    this.store.dispatch(actions.removeFetchingUrl(url));
                 }
                 //   this.store.dispatch(actions.updateFields(fieldsObject));
-            );
-
+            )
+            .catch((e)=> {
+                this.store.dispatch(actions.addFetchingError({title:"Error Fetching Stats",url:url, error:e}));
+                this.store.dispatch(actions.removeFetchingUrl(url));
+            });
     }
 
     //
@@ -398,7 +417,7 @@ class SolrClient {
             if (fq.type === filterTypes.TEXT_FILTER)
                 url += "&fq=" + fq.field.name + ":" + this.encodeForSolr(fq.query);
             else if (fq.type === filterTypes.NUMERIC_RANGE_FILTER) {
-                if (fq.field.type == _DATE_TYPE)
+                if (fq.field.type === _DATE_TYPE)
                     fq.range = fq.range.map(this.mapDateToSolr);
                 url += "&fq=" + fq.field.name + ":[" + fq.range[0] + " TO " + fq.range[1] + "]";
             }
@@ -418,7 +437,7 @@ class SolrClient {
     }
 
     shapeToSolrQuery(shapes, field) {
-        if (shapes.length == 0) return "";
+        if (shapes.length === 0) return "";
         let url = "";
         for (let shape of shapes) {
             switch (shape.type) {
@@ -431,6 +450,8 @@ class SolrClient {
                 case 'rectangle':
                     url += " OR " + field.name + ":[" + shape.points[0].lat + "," + shape.points[0].lng + " TO " + shape.points[2].lat + "," + shape.points[2].lng + "]";
                     break;
+                default:
+                    url = "";
             }
 
         }
@@ -492,7 +513,7 @@ class SolrClient {
             }
             // ------------------------
             //Convert to Date objects if it is date type
-            if (this.state.fields[fieldName].type == 'date') {
+            if (this.state.fields[fieldName].type === 'date') {
                 fullRange = fullRange.map(Date.parse)
                 selectedRange = selectedRange.map(Date.parse)
                 options.headers = options.headers.map(Date.parse)

@@ -1,9 +1,9 @@
 import React from 'react';
-import { Col, Panel, Button } from 'react-bootstrap';
+import { Panel, Button } from 'react-bootstrap';
 import { connect } from 'react-redux'
 import { Map, TileLayer, ImageOverlay, FeatureGroup, Circle } from 'react-leaflet';
 import { EditControl } from "react-leaflet-draw"
-import {changeFacetsGeoShape, addFilter} from '../../actions'
+import {addFilter} from '../../actions'
 import filterTypes from '../../constants/FilterTypes'
 
 const position = [0,0]
@@ -30,7 +30,7 @@ class HeatMap extends React.Component {
         console.log(item);
         console.log('update Shape');
         let shape;
-        let shapeElement;
+        // let shapeElement;
         if(item.type==="draw:created"){
             switch (item.layerType){
                 case 'polygon':
@@ -38,18 +38,21 @@ class HeatMap extends React.Component {
                     break;
                 case 'circle':
                     shape = {type:'circle', point: item.layer._latlng, radius:item.layer._mRadius};
-                    shapeElement = <Circle  radius={1000} center={[6.9271, 79.8612]} />;
+                    // shapeElement = <Circle  radius={1000} center={[6.9271, 79.8612]} />;
 
                     break;
                 case 'rectangle':
                     shape = {type: 'rectangle', points:item.layer._latlngs[0]};
+                    break;
+                default:
+                    shape = null;
             }
         }
         this.setState({shapes:[...this.state.shapes, shape]});
     }
 
     render() {
-        let {counts_png,minX, minY, maxX, maxY} = this.props.facets.options;
+        let {counts_png} = this.props.facets.options;
         return(
                 <Panel collapsible defaultExpanded header={this.props.facets.field.name} >
 

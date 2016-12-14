@@ -38,6 +38,7 @@ const GeoShapeFilter = ({filter}) => (
                 return (<Circle center={[shape.point.lat, shape.point.lng]} radius={shape.radius}/>)
             else if (shape.type === 'rectangle')
                 return (<Rectangle bounds={shape.points.map((point) => [point.lat, point.lng])}/>)
+            return null;
         })}
     </FeatureGroup>
 )
@@ -93,7 +94,6 @@ class DataMapClass extends React.Component {
 
     render() {
         let data = this.props.data
-        let locationSelect = "Location";
         return (<div>
             <Map
                 key={this.state.mapKey}
@@ -168,7 +168,7 @@ class DataMapClass extends React.Component {
                                 this.setState({'selectedField': e.target.value});
                                 this.reDrawMap();
                             }
-                            } value={this.state.selectedField} defaultValue="Location">
+                            } value={this.state.selectedField}>
                                 {data.columnNames.map((field, index) => <option key={field}
                                                                                 value={field}>{field}</option>)}
                             </select>

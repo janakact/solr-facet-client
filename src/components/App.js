@@ -1,5 +1,5 @@
 import React from "react";
-import {Row, Col, Grid} from "react-bootstrap";
+import {Row, Col} from "react-bootstrap";
 import {connect} from "react-redux";
 import ConnectionInfo from "../components/ConnectionInfo";
 import FieldList from "../components/FieldList";
@@ -17,18 +17,21 @@ const mapStateToProps = (state, ownProps) => ({
     data: state.data,
     facetsWindow: state.facetsWindow,
     sort: state.sort,
-    timeSliderOptions:state.timeSliderOptions
+    timeSliderOptions:state.timeSliderOptions,
+    baseUrl:state.baseUrl,
+    fetchingUrls:state.fetchingUrls,
+    fetchingErrors:state.fetchingErrors
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
     // onClick: () => {
     //   dispatch(toggleSelectField(ownProps.field.name))
     // }
 });
-let App = ({fields, facetsList, filters, data, facetsWindow, sort, timeSliderOptions}) => (
+let App = ({fields, facetsList, filters, data, facetsWindow, sort, timeSliderOptions, baseUrl, fetchingErrors, fetchingUrls }) => (
     <div>
         <Row className="show-grid">
             <Col xs={12} md={12}>
-                <ConnectionInfo/>
+                <ConnectionInfo baseUrl={baseUrl} fetchingErrors={fetchingErrors} fetchingUrls={fetchingUrls}/>
             </Col>
         </Row>
         <Row>

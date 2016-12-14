@@ -1,6 +1,5 @@
 import React from 'react';
-import Draggable from 'react-draggable'; // The default
-import {ListGroup, ListGroupItem, Badge, Panel, Col} from 'react-bootstrap';
+import {ListGroup, ListGroupItem, Badge, Panel} from 'react-bootstrap';
 import {connect} from 'react-redux'
 import {changeFacetsSearchText, addFilter} from '../../actions'
 import filterTypes from '../../constants/FilterTypes'

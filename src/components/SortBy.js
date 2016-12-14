@@ -1,6 +1,6 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {Panel, ListGroup} from 'react-bootstrap'
+import {Panel} from 'react-bootstrap'
 import {setSort} from '../actions'
 
 // List of All Fields

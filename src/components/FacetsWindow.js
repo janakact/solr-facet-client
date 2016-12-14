@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux'
-import {Modal, Row} from 'react-bootstrap'
+import {Modal} from 'react-bootstrap'
 import Facets from './facets/'
 import {hideFacetsWindow, showFacetsWindow} from "../actions";
 

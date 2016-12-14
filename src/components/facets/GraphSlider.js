@@ -1,5 +1,5 @@
 import React from 'react';
-import {Col, Panel, Button} from 'react-bootstrap';
+import {Panel, Button} from 'react-bootstrap';
 import {connect} from 'react-redux'
 import Rcslider from 'rc-slider';
 import {changeFacetsNumericRange, addFilter} from '../../actions'
@@ -78,9 +78,6 @@ let Graph = ({facets}) => {
 
 
 // -------------------------------------------------------------------------------------------------
-const mapSelectedRange = (selectedRange) => {
-    return {min: selectedRange[0], max: selectedRange[1]};
-}
 class GraphSlider extends React.Component {
 
     constructor(props) {
