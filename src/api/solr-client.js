@@ -31,24 +31,24 @@ const callConfig = {
 };
 
 const mapMillisToIsoDate = (gap) => {
-    if(gap<1000)
-        return Math.ceil(gap)+'MILLISECOND';
-    gap/=1000;
+    if (gap < 1000)
+        return Math.ceil(gap) + 'MILLISECOND';
+    gap /= 1000;
 
-    if(gap<60)
+    if (gap < 60)
         return Math.ceil(gap) + 'SECOND';
 
-    gap/=60;
-    if(gap<60)
-        return Math.ceil(gap) +'MINUTE';
+    gap /= 60;
+    if (gap < 60)
+        return Math.ceil(gap) + 'MINUTE';
 
-    gap/=60;
-    if(gap<24)
-        return Math.ceil(gap) +'HOUR';
+    gap /= 60;
+    if (gap < 24)
+        return Math.ceil(gap) + 'HOUR';
 
-    gap/=24;
-    if(gap<30)
-        return Math.ceil(gap) +'DAY';
+    gap /= 24;
+    if (gap < 30)
+        return Math.ceil(gap) + 'DAY';
 }
 
 class SolrClient {
@@ -65,24 +65,28 @@ class SolrClient {
 
     getFields() {
         let url = this.state.baseUrl + _FIELDS_SUFFIX;
-        fetch(url, callConfig)
+        return fetch(url, callConfig)
             .then(response => {
                 return response.text()
-            }).then(body => {
-            //Todo: Add code to extract field details and send them
-            var fields = JSON.parse(body).fields;
-            fields = fields.map(field => ({...field, selected: false}));
-            var fieldsObject = {}
-            for (let field of fields) {
-                fieldsObject[field.name] = field;
-
-            }
-            this.store.dispatch(actions.updateFields(fieldsObject));
-
-            setTimeout(() => {
-                this.getStats(Object.keys(this.state.fields))
+            })
+            .then(body => {
+                //Todo: Add code to extract field details and send them
+                var fields = JSON.parse(body).fields;
+                fields = fields.map(field => ({...field, selected: false}));
+                var fieldsObject = {}
+                for (let field of fields) {
+                    fieldsObject[field.name] = field;
+                }
+                this.store.dispatch(actions.updateFields(fieldsObject));
+            })
+            .then(()=> {
+                    this.getStats(Object.keys(this.state.fields));
+                }
+            )
+            .catch((e)=> {
+                console.log("Connection Error:");
+                console.log(e);
             });
-        });
     }
 
     getFacetsForAllFields() {
@@ -90,16 +94,12 @@ class SolrClient {
         let i = 1;
         for (let fieldName of Object.keys(this.state.fields)) {
             let field = this.state.fields[fieldName];
-            if (field.selected === false) continue;
-            setTimeout(() => this.getFacets(field.name), 10 * i)
-            i += 1;
+            if (field.selected === false)
+                continue;
+            this.getFacets(field.name);
         }
-
-        setTimeout(() => {
-            this.getStats(Object.keys(this.state.fields))
-        });
-        setTimeout(() => this.getData(), 10);
-
+        this.getStats(Object.keys(this.state.fields))
+        this.getData();
     }
 
     getFacets(fieldName) {
@@ -138,10 +138,10 @@ class SolrClient {
             if (_DATE_TYPE == this.state.fields[fieldName].type) {
                 console.log(gap)
                 console.log(range)
-                let gapInMillis = ( Date.parse(range[1]) -  Date.parse(range[0]))/_RANGE_PARTITIONS_COUNT;
+                let gapInMillis = ( Date.parse(range[1]) - Date.parse(range[0])) / _RANGE_PARTITIONS_COUNT;
                 console.log(gapInMillis);
                 console.log("------------ gap");
-                gap = '%2B'+mapMillisToIsoDate(gapInMillis);
+                gap = '%2B' + mapMillisToIsoDate(gapInMillis);
                 console.log(gap);
 
             }
@@ -163,15 +163,16 @@ class SolrClient {
         url += this.generateFilterQuery();
 
         //make promise
-        fetch(url, callConfig)
+        return fetch(url, callConfig)
             .then(response => {
                 return response.text()
-            }).then(body => {
-            //Convert data into a object list list
-            let facetFields = this.extractFacetsFromData(body);
-            facetFields[0].searchText = searchText;
-            this.store.dispatch(actions.updateFacets(facetFields[0])) // it has results only for one field. We sends only that data. No need of an array
-        });
+            })
+            .then(body => {
+                //Convert data into a object list list
+                let facetFields = this.extractFacetsFromData(body);
+                facetFields[0].searchText = searchText;
+                this.store.dispatch(actions.updateFacets(facetFields[0])) // it has results only for one field. We sends only that data. No need of an array
+            });
     }
 
 
@@ -180,40 +181,41 @@ class SolrClient {
         let dataState = this.state.data;
 
         url += this.generateFilterQuery();
-        url +=this.generateSortQuery(this.state.sort)
+        url += this.generateSortQuery(this.state.sort)
 
         url += "&rows=" + dataState.rows;
         url += "&start=" + dataState.start;
 
-        fetch(url, callConfig)
+        return fetch(url, callConfig)
             .then(response => {
                 return response.text()
-            }).then(body => {
-            //console.log("data recieved"+new Date()+new Date().getMilliseconds());
-            let jsonObject = JSON.parse(body);
-            //Find columns
-            let columns = new Set();
-            for (let record of jsonObject.response.docs) {
-                for (let fieldName in record) {
-                    if (record.hasOwnProperty(fieldName))
-                        columns.add(fieldName)
+            })
+            .then(body => {
+                //console.log("data recieved"+new Date()+new Date().getMilliseconds());
+                let jsonObject = JSON.parse(body);
+                //Find columns
+                let columns = new Set();
+                for (let record of jsonObject.response.docs) {
+                    for (let fieldName in record) {
+                        if (record.hasOwnProperty(fieldName))
+                            columns.add(fieldName)
+                    }
+                    //console.log(JSON.stringify(Array.from(columns)));
                 }
-                //console.log(JSON.stringify(Array.from(columns)));
-            }
-            //console.log(jsonObject.response.docs.length);
-            //console.log("Returning data:"+new Date()+new Date().getMilliseconds());
-            this.store.dispatch(actions.updateData({
-                    jsonResponse: body,
-                    url: url,
-                    numFound: jsonObject.response.numFound,
-                    start: dataState.start,
-                    rows: dataState.rows,
-                    docs: jsonObject.response.docs,
-                    columnNames: Array.from(columns)
-                })
-            );
+                //console.log(jsonObject.response.docs.length);
+                //console.log("Returning data:"+new Date()+new Date().getMilliseconds());
+                this.store.dispatch(actions.updateData({
+                        jsonResponse: body,
+                        url: url,
+                        numFound: jsonObject.response.numFound,
+                        start: dataState.start,
+                        rows: dataState.rows,
+                        docs: jsonObject.response.docs,
+                        columnNames: Array.from(columns)
+                    })
+                );
 
-        });
+            });
     }
 
     getStats(fieldNameList) {
@@ -225,16 +227,16 @@ class SolrClient {
 
         // url += this.generateFilterQuery(this.state.filters);
 
-        fetch(url, callConfig)
+        return fetch(url, callConfig)
             .then(response => {
                 return response.text()
             }).then(body => {
-                //Todo: Add code to extract field details and send them
-                let stats = JSON.parse(body).stats.stats_fields;
-                this.store.dispatch(actions.updateStats(stats));
-            }
-            //   this.store.dispatch(actions.updateFields(fieldsObject));
-        );
+                    //Todo: Add code to extract field details and send them
+                    let stats = JSON.parse(body).stats.stats_fields;
+                    this.store.dispatch(actions.updateStats(stats));
+                }
+                //   this.store.dispatch(actions.updateFields(fieldsObject));
+            );
 
     }
 
@@ -388,7 +390,7 @@ class SolrClient {
     //Static Support Methods
     generateFilterQuery() {
         let filterQueries = [...this.state.filters]
-        if(this.state.timeSliderOptions.filter)
+        if (this.state.timeSliderOptions.filter)
             filterQueries.push(this.state.timeSliderOptions.filter); //Append if there is a slider query
 
         let url = ""
@@ -396,46 +398,45 @@ class SolrClient {
             if (fq.type === filterTypes.TEXT_FILTER)
                 url += "&fq=" + fq.field.name + ":" + this.encodeForSolr(fq.query);
             else if (fq.type === filterTypes.NUMERIC_RANGE_FILTER) {
-                if(fq.field.type == _DATE_TYPE)
+                if (fq.field.type == _DATE_TYPE)
                     fq.range = fq.range.map(this.mapDateToSolr);
                 url += "&fq=" + fq.field.name + ":[" + fq.range[0] + " TO " + fq.range[1] + "]";
             }
-            else if(fq.type === filterTypes.GEO_SHAPE){
-                url += this.shapeToSolrQuery(fq.shapes,fq.field);
+            else if (fq.type === filterTypes.GEO_SHAPE) {
+                url += this.shapeToSolrQuery(fq.shapes, fq.field);
             }
         }
         return url;
     }
 
-    generateSortQuery(sort){
+    generateSortQuery(sort) {
         let url = "";
-        if(sort.field){
-            url+="&sort="+sort.field.name+" "+sort.type
+        if (sort.field) {
+            url += "&sort=" + sort.field.name + " " + sort.type
         }
         return url;
     }
 
-    shapeToSolrQuery(shapes, field){
-        if(shapes.length==0) return "";
+    shapeToSolrQuery(shapes, field) {
+        if (shapes.length == 0) return "";
         let url = "";
-        for(let shape of shapes)
-        {
-            switch (shape.type){
-            case 'circle':
-                url+= " OR {!geofilt sfield="+this.encodeForSolr(field.name)+"}&pt="+shape.point.lat+","+shape.point.lng+"&d="+shape.radius/1000+"";
-                break;
-            case 'polygon':
-                url+= " OR {!field f="+field.name+"}Intersects(POLYGON(("+(shape.points.reduce((txt,point)=> (txt+","+point.lat+" "+point.lng), "").substring(2))+"))";
-                break;
-            case 'rectangle':
-                url+= " OR "+field.name+":["+shape.points[0].lat+","+shape.points[0].lng+" TO "+shape.points[2].lat+","+shape.points[2].lng+"]";
-                break;
+        for (let shape of shapes) {
+            switch (shape.type) {
+                case 'circle':
+                    url += " OR {!geofilt sfield=" + this.encodeForSolr(field.name) + "}&pt=" + shape.point.lat + "," + shape.point.lng + "&d=" + shape.radius / 1000 + "";
+                    break;
+                case 'polygon':
+                    url += " OR {!field f=" + field.name + "}Intersects(POLYGON((" + (shape.points.reduce((txt, point)=> (txt + "," + point.lat + " " + point.lng), "").substring(2)) + "))";
+                    break;
+                case 'rectangle':
+                    url += " OR " + field.name + ":[" + shape.points[0].lat + "," + shape.points[0].lng + " TO " + shape.points[2].lat + "," + shape.points[2].lng + "]";
+                    break;
             }
 
         }
         console.log('Shape to solr query')
         console.log(url)
-        return "&fq="+url.substring(4)+"";
+        return "&fq=" + url.substring(4) + "";
     }
 
     extractFacetsFromData(data) {
@@ -449,15 +450,15 @@ class SolrClient {
         {
             if (facetsData.hasOwnProperty(facetField)) {
                 let facetArray = facetsData[facetField];
-                let options = { headers:[], counts: []};
+                let options = {headers: [], counts: []};
                 for (var i = 0; i < facetArray.length; i += 2)  //loop through facet data array and convert them to (value,count) pairs
                 {
-                    if (facetArray[i + 1] > 0){
+                    if (facetArray[i + 1] > 0) {
                         options.headers.push(facetArray[i]);
                         options.counts.push(facetArray[i + 1])
                     }
                 }
-                facetFields.push( facetsTypes.generators.text(this.state.fields[facetField],data.responseHeader.params.facet.contaions, options  ) );
+                facetFields.push(facetsTypes.generators.text(this.state.fields[facetField], data.responseHeader.params.facet.contaions, options));
             }
         }
 
@@ -484,20 +485,20 @@ class SolrClient {
             let stats = this.state.fields[fieldName].stats;
             let fullRange = [stats.min, stats.max];
             let selectedRange = [facets.start, facets.end];
-            let options = {headers:[], counts:[], gap:1};
+            let options = {headers: [], counts: [], gap: 1};
             for (let i = 0; i < facets.counts.length; i += 2) {
                 options.headers.push(facets.counts[i]);
-                options.counts.push(facets.counts[i+1]);
+                options.counts.push(facets.counts[i + 1]);
             }
             // ------------------------
             //Convert to Date objects if it is date type
             if (this.state.fields[fieldName].type == 'date') {
                 fullRange = fullRange.map(Date.parse)
                 selectedRange = selectedRange.map(Date.parse)
-                options.headers =options.headers.map(Date.parse)
+                options.headers = options.headers.map(Date.parse)
             }
             //-----------------------------------------
-            facetFields.push(facetsTypes.generators.numericRange(this.state.fields[fieldName], fullRange, selectedRange,options));
+            facetFields.push(facetsTypes.generators.numericRange(this.state.fields[fieldName], fullRange, selectedRange, options));
         }
 
 

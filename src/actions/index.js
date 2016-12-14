@@ -10,12 +10,10 @@ import solrClient from "../api/solr-client";
 
 //Fields
 export const requestFields = (url) => {
-    setTimeout(() => {
-        solrClient.getFields();
-    }, 10);
-    setTimeout(() => {
+    solrClient.getFields().
+    then(()=>{
         solrClient.getFacetsForAllFields();
-    }, 10);
+    });
     return {
         type: types.REQUEST_FIELDS,
         url
