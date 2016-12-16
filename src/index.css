@@ -129,6 +129,10 @@ body {
 
 /*Time Slider */
 
+.rc-slider .rc-slider-track{
+    background-color: rgba(0,0,0,0.1);
+    height: 40px;
+}
 .drag-slider .rc-slider-track{
     background-color: transparent;
 }

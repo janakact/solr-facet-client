@@ -32,6 +32,7 @@ let App = ({fields, facetsList, filters, data, facetsWindow, sort, timeSliderOpt
         <Row className="show-grid">
             <Col xs={12} md={12}>
                 <ConnectionInfo baseUrl={baseUrl} fetchingErrors={fetchingErrors} fetchingUrls={fetchingUrls}/>
+                <br/>
             </Col>
         </Row>
         <Row>

@@ -83,6 +83,7 @@ class DataMapClass extends React.Component {
         }))
         let map = this.refs.drawFeatureGroup.context.map;
         this.setState({zoom: map._zoom, center: [map._lastCenter.lat, map._lastCenter.lng], editing: true});
+        this.finishEditing();
     }
 
     finishEditing() {
@@ -152,7 +153,7 @@ class DataMapClass extends React.Component {
                     <DocMarker
                         key={index}
                         doc={doc}
-                        field={'Location'}
+                        field={this.state.selectedField}
                         fields={data.columnNames}
                     />
                 )}
@@ -166,7 +167,7 @@ class DataMapClass extends React.Component {
 
                             <select onChange={(e) => {
                                 this.setState({'selectedField': e.target.value});
-                                this.reDrawMap();
+                                {/*this.reDrawMap();*/}
                             }
                             } value={this.state.selectedField}>
                                 {data.columnNames.map((field, index) => <option key={field}
