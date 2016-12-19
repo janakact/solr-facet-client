@@ -7,14 +7,6 @@ import filterTypes from '../../constants/FilterTypes'
 
 var LineChart = require("react-chartjs").Line;
 
-
-// var MyComponent = React.createClass({
-//   render: function() {
-//     return <LineChart data={chartData} options={chartOptions} width="600" height="250"/>
-//   }
-// });
-
-
 const getData = (facets) => {
     if (!facets) return []
     let labels = []
@@ -26,7 +18,6 @@ const getData = (facets) => {
         })
         labels.push(facets.options.headers[i]);
     }
-
 
     return {
         labels: labels,

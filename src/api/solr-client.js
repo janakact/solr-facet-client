@@ -30,6 +30,7 @@ const callConfig = {
     withCredentials: true
 };
 
+// Map time gap to a solr competible Date Range ISO
 const mapMillisToIsoDate = (gap) => {
     if (gap < 1000)
         return Math.ceil(gap) + 'MILLISECOND';
@@ -55,13 +56,13 @@ class SolrClient {
     state = {};
     store = {};
 
+    //When initiate set the store to subscribe for state changes
     setStore(store) {
         this.store = store;
         store.subscribe(() => {
             this.state = this.store.getState();
         });
     }
-
 
     getFields() {
         let url = this.state.baseUrl + _FIELDS_SUFFIX;
@@ -91,6 +92,7 @@ class SolrClient {
             });
     }
 
+    //Call getFacest(), getData()
     getFacetsForAllFields() {
         console.log("All")
         let i = 1;
@@ -100,7 +102,6 @@ class SolrClient {
                 continue;
             this.getFacets(field.name);
         }
-        this.getStats(Object.keys(this.state.fields))
         this.getData();
     }
 
@@ -259,154 +260,8 @@ class SolrClient {
             });
     }
 
-    //
-    //   getFacetsForAllFields(fields,filterQueries)
-    //   {
-    //       var promise = new Promise(resolve => {
-    //       //Generate the request
-    //       var url = this._FACETS_SUFFIX;
-    //       for(let field of fields)
-    //       facetText+="&facet.field="+field;
-    //       facetText+="&facet.limit=10";
-    //
-    //       //Add Filters
-    //       facetText+=this.generateFilterQuery(filterQueries);
-    //
-    //       //make promise
-    //         fetch(this.baseUrl+facetText,this.callConfig)
-    //         .then(response => {
-    //           return response.text()
-    //         }).then(body =>{
-    //           //Convert data into a object list list
-    //           let facetFields = this.extractFacetsFromData(body);
-    //           resolve(facetFields)
-    //         });
-    //       });
-    //       return promise;
-    //   }
-    //
-    //   generateFilterQuery(filterQueries)
-    //   {
-    //       let facetText = ""
-    //       for(let fq of filterQueries)
-    //       {
-    //           facetText+="&fq="+fq.field+":"+ this.encodeForSolr(fq.value);
-    //       }
-    //       return facetText;
-    //   }
-    //
-    //   extractFacetsFromData(data)
-    //   {
-    //       var facetsData = JSON.parse(data).facet_counts.facet_fields;
-    //       var facetFields = [];
-    //       for(let facetField in facetsData)   //take facet data for a specific field
-    //       {
-    //           if(facetsData.hasOwnProperty(facetField))
-    //           {
-    //               let facetArray = facetsData[facetField];
-    //               let facets = [];
-    //               for(var i=0; i<facetArray.length;i+=2)  //loop through facet data array and convert them to (value,count) pairs
-    //               {
-    //                   if(facetArray[i+1]>0)
-    //                       facets.push({value:facetArray[i],count:facetArray[i+1]})
-    //               }
-    //               facetFields.push({field:facetField,facets:facets, searchText:""});
-    //           }
-    //       }
-    //       return facetFields;
-    //   }
-    //
-    //   getData(filterQueries,start,rows)
-    //   {
-    //
-    //       var promise = new Promise(resolve => {
-    //           let dataText = this._DATA_SUFFIX;
-    //
-    //           dataText+=this.generateFilterQuery(filterQueries);
-    //
-    //           dataText+="&rows="+rows;
-    //           dataText+="&start="+start;
-    //
-    //         fetch(this.baseUrl+dataText,this.callConfig)
-    //         .then(response => {
-    //           return response.text()
-    //         }).then(body =>{
-    //           //Todo: Add code to extract field details and send them
-    //           //console.log("data recieved"+new Date()+new Date().getMilliseconds());
-    //           let jsonObject = JSON.parse(body);
-    //           //Find columns
-    //           let columns = new Set();
-    //           for(let record of jsonObject.response.docs)
-    //           {
-    //               for(let fieldName in record)
-    //               {
-    //                   if(record.hasOwnProperty(fieldName))
-    //                       columns.add(fieldName)
-    //               }
-    //               //console.log(JSON.stringify(Array.from(columns)));
-    //           }
-    //           //console.log(jsonObject.response.docs.length);
-    //           //console.log("Returning data:"+new Date()+new Date().getMilliseconds());
-    //           resolve({
-    //               text:body,
-    //               url:this.baseUrl+dataText,
-    //               numFound:jsonObject.response.numFound,
-    //               start:start,
-    //               rows:rows,
-    //               docs:jsonObject.response.docs,
-    //               columnNames:Array.from(columns) })
-    //         });
-    //       });
-    //       return promise;
-    //   }
-    //
-    //   getGeoOverview(filterQueries, heatField)
-    //   {
-    //       var promise = new Promise(resolve => {
-    //           let geoText = this._HEATMAP_SUFFIX;
-    //           geoText+=this.generateFilterQuery(filterQueries);
-    //           geoText+="&facet.heatmap="+heatField;
-    //
-    //           fetch(this.baseUrl+geoText,this.callConfig)
-    //           .then(response => {
-    //             return response.text()
-    //           }).then(body =>{
-    //               //--- todo
-    //               //console.log(body)
-    //               let heatMap = JSON.parse(body).facet_counts.facet_heatmaps[heatField];
-    //
-    //               //console.log(heatMap);
-    //               resolve(heatMap)
-    //           });
-    //
-    //
-    //       });
-    //       return promise;
-    //   }
-    //
-    //
-    // getQuery(url)
-    // {
-    //   var promise = new Promise(resolve => {
-    //   fetch(this.baseUrl+url,this.callConfig)
-    //   .then(response => {
-    //     return response.text()
-    //   }).then(body =>{
-    //     resolve(body)
-    //   });
-    //   });
-    //   return promise;
-    // }
-    //
-    // setBaseUrl(url)
-    // {
-    //     this.baseUrl = url;
-    // }
-    //
-    //
-
-
-    //Static Support Methods
+    //  URL Generation methods ---------------------------------------------------------------------------
+    //  --------------------------------------------------------------------------------------------------
     generateFilterQuery() {
         let filterQueries = [...this.state.filters]
         if (this.state.timeSliderOptions.filter)
@@ -460,6 +315,17 @@ class SolrClient {
         return "&fq=" + url.substring(4) + "";
     }
 
+    encodeForSolr(str) {
+        let newStr = "";
+        for (let ch of str) {
+            if (_SPECIAL_CHARS.has(ch))
+                newStr += "\\";
+            newStr += ch;
+        }
+        return newStr;
+    }
+
+    // To generate facet objects using solr response -----------------------------------------------------------------------------------
     extractFacetsFromData(data) {
         data = JSON.parse(data);
         let facetsDataAll = data.facet_counts;
@@ -526,16 +392,7 @@ class SolrClient {
         return facetFields;
     }
 
-    encodeForSolr(str) {
-        let newStr = "";
-        for (let ch of str) {
-            if (_SPECIAL_CHARS.has(ch))
-                newStr += "\\";
-            newStr += ch;
-        }
-        return newStr;
-    }
-
+    //Map JS Date object to Solr ISO date format
     mapDateToSolr(date) {
         date = new Date(date);
         console.log(date)
@@ -544,5 +401,7 @@ class SolrClient {
 
 
 }
+
+//This library do not export the static class, this exports the object of the class.
 const solrClient = new SolrClient()
 export default solrClient;
