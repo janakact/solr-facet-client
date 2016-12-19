@@ -35,36 +35,13 @@ const reducer = (state = initialState, action) => {
     console.log("\n\n")
 
     switch (action.type) {
+        //Schema and Conection
         case types.SET_BASEURL:
             return {...initialState, baseUrl: action.url}
         case types.UPDATE_FIELDS:
             return {...state, fields: action.fields}
         case types.TOGGLESELECT_FIELD:
             return {...state, fetching: true}
-            //Delete facets
-            // let newFacetsList2 = {...state.facetsList}
-            // delete newFacetsList2[action.fieldName]
-            //
-            // let fields2 = {...state.fields}
-            // fields2[action.fieldName] = {...fields2[action.fieldName], selected: !fields2[action.fieldName].selected}
-            //
-            // //toggole field Name
-            // return {
-            //     ...state,
-            //     facetsList: newFacetsList2,
-            //     fields: fields2
-            // }
-
-        case types.TOGGLE_FACETS_WINDOW:
-            return {...state, facetsWindow:{show:action.show, fieldName:action.fieldName}}
-
-        case types.REQUEST_FACETS:
-            return {...state, fetching: true}
-        case types.UPDATE_FACETS:
-            let newFacetsList = {...state.facetsList}
-            newFacetsList[action.facets.field.name] = action.facets;
-            return {...state, fetching: false, facetsList: newFacetsList}
-
         case types.UPDATE_STATS:
             let newFields = state.fields;
             for (let fieldName of Object.keys(action.stats)) {
@@ -72,13 +49,21 @@ const reducer = (state = initialState, action) => {
             }
             return {...state, fields: newFields}
 
-        //----------------------------------------------- changeing facets
+        //Facets
+        case types.TOGGLE_FACETS_WINDOW:
+            return {...state, facetsWindow:{show:action.show, fieldName:action.fieldName}}
+        case types.REQUEST_FACETS:
+            return {...state, fetching: true}
+        case types.UPDATE_FACETS:
+            let newFacetsList = {...state.facetsList}
+            newFacetsList[action.facets.field.name] = action.facets;
+            return {...state, fetching: false, facetsList: newFacetsList}
         case types.CHANGE_FACETS_OPTIONS:
             let newFacetsListSearch = {...state.facetsList}
             newFacetsListSearch[action.fieldName] = {...newFacetsListSearch[action.fieldName], ...action.options};
             return {...state, fetching: true, facetsList: newFacetsListSearch}
-        // ---------------------------------------------------------------
 
+        //Filters
         case types.ADD_FILTER:
             return {
                 ...state,
@@ -114,23 +99,21 @@ const reducer = (state = initialState, action) => {
                     editing: filter === action.filter ? true : false
                 }))
             }
+        case types.SET_TIMESLIDER_OPTIONS: //this is also a filter
+            return {...state, timeSliderOptions:{...state.timeSliderOptions, ...action.options}}
 
-
-        //Sort currently only one sort support
+        //Sort
         case types.SET_SORT:
             return {
                 ...state,
                 sort:{...state.sort,...action.sort}
             }
 
-
         //DataBrowser
         case types.UPDATE_DATA:
             return {...state, data: action.data}
         case types.UPDATE_PAGINATION:
             return {...state, data: {...state.data, start: action.start, rows: action.rows}}
-        case types.SET_TIMESLIDER_OPTIONS:
-            return {...state, timeSliderOptions:{...state.timeSliderOptions, ...action.options}}
 
 
         //API call tracking
