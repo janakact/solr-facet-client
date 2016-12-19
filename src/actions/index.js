@@ -1,35 +1,37 @@
 import types from "../constants/ActionTypes";
 import solrClient from "../api/solr-client";
-// export const setBaseUrl = url => {
-//     setTimeout(() => {solrClient.getFields();}, 100);
-//     return {
-//         type: types.SET_BASEURL,
-//         url:url
-//     }
-// };
 
-//Fields
-export const requestFields = (url) => {
+// Connection and Schema related actions -----------------------------
+// -------------------------------------------------------------------
+//Set the base Url for solr instance. This removes all filters and facets.
+//and then call getField() and getData() in background to load data from the new url
+export const setBaseurl = (url) => {
     setTimeout(() => solrClient.getFields()
         .then(()=> {
-            solrClient.getFacetsForAllFields();
+            solrClient.getData();
         }), 10);
     return {
-        type: types.REQUEST_FIELDS,
+        type: types.SET_BASEURL,
         url
     }
 };
 
+// Called by SolrClient, when field data is fetched this is called to update the application state.
 export const updateFields = (fields) => ({
     type: types.UPDATE_FIELDS,
     fields
 })
 
+// Called by SolrClient, when stats data is fetched this is called to update the application state.
+// Stats contain min, max and avg values of each field
 export const updateStats = (stats) => ({
     type: types.UPDATE_STATS,
     stats
 })
 
+// Facets related actions --------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
+// Request facets data for a particular field. Field is marked as selected
 export const requestFacets = (fieldName) => {
     setTimeout(() => {
         solrClient.getFacets(fieldName);
@@ -40,7 +42,7 @@ export const requestFacets = (fieldName) => {
     }
 }
 
-
+//Show popup window, when user clicks on a field it is called.
 export const showFacetsWindow = (fieldName = null) => {
     if (fieldName !== null)
         setTimeout(() => {
@@ -53,18 +55,21 @@ export const showFacetsWindow = (fieldName = null) => {
     })
 }
 
+//Hide the window
 export const hideFacetsWindow = () => ({
     type: types.TOGGLE_FACETS_WINDOW,
     show: false
 })
 
+// Called by SolrClient, when facets data is fetched this is called to update the application state.
 export const updateFacets = (facets) => ({
     type: types.UPDATE_FACETS,
     facets
 })
 
 
-//----------------------------------------------- Change facets
+//When user types a query on the facets list this is called to add the text as a filter for facets.
+//Then getFacets is called to request filtered facets.
 export const changeFacetsSearchText = (fieldName, searchText) => {
     setTimeout(() => {
         solrClient.getFacets(fieldName);
@@ -76,6 +81,9 @@ export const changeFacetsSearchText = (fieldName, searchText) => {
     });
 }
 
+//For Numeric fields
+//Called when the selected range is changed. When user selected a new range, it is set and
+//then call the getFacets() to request facets for new range
 export const changeFacetsNumericRange = (fieldName, range) => {
     setTimeout(() => {
         solrClient.getFacets(fieldName);
@@ -87,6 +95,8 @@ export const changeFacetsNumericRange = (fieldName, range) => {
     });
 }
 
+// TODO This is not used. Can be removed.
+//When the shape of the particular field is changed.
 export const changeFacetsGeoShape = (fieldName, shape) => {
     // setTimeout(() => {
     //     solrClient.getFacets(fieldName);
@@ -97,7 +107,12 @@ export const changeFacetsGeoShape = (fieldName, shape) => {
         options: {shape}
     });
 }
-// ------------------------------------------------------------------------
+
+
+// Filters Related Actions -------------------------------------------------
+// -------------------------------------------------------------------------
+// add the particular filter to filter list
+// then request data and facets
 export const addFilter = (filterObject) => {
     setTimeout(() => {
         solrClient.getFacetsForAllFields();
@@ -108,6 +123,8 @@ export const addFilter = (filterObject) => {
     });
 }
 
+//TODO should be removed or updated
+// Add to the current editing filter. THis is to be used to edit functionality of Filters. Currently not supported.
 export const addToEditingFilter = (filterObject) => {
     setTimeout(() => {
         solrClient.getFacetsForAllFields();
@@ -118,6 +135,7 @@ export const addToEditingFilter = (filterObject) => {
     });
 }
 
+//Remove a particular filter
 export const removeFilter = (filterObject) => {
     setTimeout(() => {
         solrClient.getFacetsForAllFields();

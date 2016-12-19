@@ -17,7 +17,7 @@ store.subscribe(()=>{console.log(store.getState())}); //To log all changes
 
 solrClient.setStore(store);
 
-store.dispatch(actions.requestFields("http://localhost:8983/solr/air3/"))
+store.dispatch(actions.setBaseurl("http://localhost:8983/solr/air3/"))
 ReactDOM.render(
     <Provider store={store}>
         <div className="container_all">

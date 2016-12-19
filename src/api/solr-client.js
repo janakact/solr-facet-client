@@ -16,7 +16,7 @@ const _NUMERIC_TYPES = ['long', 'double', 'int', 'date'];
 const _NUMERIC_INT_TYPES = ['long', 'int']; //Used in calculating gap. If it is an Int field gap has to be rounded
 const _STAT_NOT_SUPPORTED_TYPES = ['location_rpt', 'text_general']
 
-const _RANGE_PARTITIONS_COUNT = 50;
+const _RANGE_PARTITIONS_COUNT = 500;
 
 const _DATE_TYPE = 'date'
 

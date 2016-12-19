@@ -1,6 +1,6 @@
 import React from "react";
 import {connect} from "react-redux";
-import {requestFields, removeFetchingError} from "../actions";
+import {setBaseurl, removeFetchingError} from "../actions";
 import {Row, Col, Alert} from "react-bootstrap";
 
 let ConnectionInfo = ({dispatch, baseUrl, fetchingErrors}) => {
@@ -15,7 +15,7 @@ let ConnectionInfo = ({dispatch, baseUrl, fetchingErrors}) => {
                     if (!input.value.trim()) {
                         return
                     }
-                    dispatch(requestFields(input.value))
+                    dispatch(setBaseurl(input.value))
                 }}>
             <Row>
                 <Col  xs={8} md={10}>

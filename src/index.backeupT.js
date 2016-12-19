@@ -16,7 +16,7 @@ store.subscribe(() => {
 
 solrClient.setStore(store);
 
-store.dispatch(actions.requestFields("http://localhost:8983/solr/gettingstarted/"))
+store.dispatch(actions.setBaseurl("http://localhost:8983/solr/gettingstarted/"))
 
 
 const div = document.createElement('div');
