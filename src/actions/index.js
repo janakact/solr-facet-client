@@ -146,12 +146,15 @@ export const removeFilter = (filterObject) => {
     })
 }
 
+// TODO should be use to improve filter editing functionality
+//Mark the filter as not editing
 export const finishFilterEditing = () => {
     return ({
         type: types.FINISH_FILTER_EDITING
     })
 }
 
+//Mark the filter as editing
 export const startFilterEditing = (filter) => {
     return ({
         type: types.START_FILTER_EDITING,
@@ -159,8 +162,16 @@ export const startFilterEditing = (filter) => {
     })
 }
 
+// Set the time-slider filter and field.
+export const setTimesliderOptions = (options) => {
+    setTimeout(() => solrClient.getData(), 10);
+    return ({
+        type: types.SET_TIMESLIDER_OPTIONS,
+        options
+    })
+}
 
-//------------ Sort
+//Set the sort field, and type
 export const setSort = (sort) => {
     setTimeout(() => {
         solrClient.getData();
@@ -171,7 +182,9 @@ export const setSort = (sort) => {
     })
 }
 
-
+//Data and pagination related actions ----------------------------------------------------
+//----------------------------------------------------------------------------------------
+// Called by SolrClient when data is fetched
 export const updateData = (data) => {
     return ({
         type: types.UPDATE_DATA,
@@ -179,6 +192,8 @@ export const updateData = (data) => {
     })
 }
 
+// Set paginnation called from UI,
+// then calls the getData() to retrieve data for new pagination
 export const updatePagination = (start, rows) => {
     setTimeout(() => {
         solrClient.getData();
@@ -191,14 +206,9 @@ export const updatePagination = (start, rows) => {
 }
 
 
-export const setTimesliderOptions = (options) => {
-    setTimeout(() => solrClient.getData(), 10);
-    return ({
-        type: types.SET_TIMESLIDER_OPTIONS,
-        options
-    })
-}
-
+// Fetching and API calls tracking ---------------------------------------------
+// -----------------------------------------------------------------------------
+//calls when a new api call is initiated
 export const addFetchingUrl = (url) => {
     return {
         type: types.ADD_FETCHING_URL,
@@ -206,6 +216,7 @@ export const addFetchingUrl = (url) => {
     }
 }
 
+//Once the data is recieved the url is removed from the list
 export const removeFetchingUrl = (url) => {
     return {
         type: types.REMOVE_FETCHING_URL,
@@ -213,6 +224,7 @@ export const removeFetchingUrl = (url) => {
     }
 }
 
+//If an error occured it will be added to a list
 export const addFetchingError = (e) => {
     return {
         type: types.ADD_FETCHING_ERROR,
@@ -220,6 +232,7 @@ export const addFetchingError = (e) => {
     }
 }
 
+//Once the close button in UI is clicked it is removed from the list
 export const removeFetchingError = (e) => {
     return {
         type: types.REMOVE_FETCHING_ERROR,
