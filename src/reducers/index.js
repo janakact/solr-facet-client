@@ -126,6 +126,11 @@ const reducer = (state = initialState, action) => {
         case types.REMOVE_FETCHING_ERROR:
             return {...state, fetchingErrors:state.fetchingErrors.filter((e)=>e.url!==action.e.url)}
 
+        //Load from file
+        case types.LOAD_FROM_FILE:
+            return {...initialState, ...JSON.parse(action.fileContent)}
+
+
         default:
             return state;
     }

@@ -9,6 +9,15 @@ import DataBrowser from "../components/DataBrowser";
 import SortBy from './SortBy'
 import TimeSlider from './TimeSlider'
 
+const generateQueryObject = (state) => {
+    let queryState = {
+        baseUrl: state.baseUrl,
+        filters: state.filters,
+        sort: state.sort,
+        timeSliderOptions:state.timeSliderOptions
+    }
+    return queryState;
+}
 
 const mapStateToProps = (state, ownProps) => ({
     fields: state.fields,
@@ -20,18 +29,19 @@ const mapStateToProps = (state, ownProps) => ({
     timeSliderOptions:state.timeSliderOptions,
     baseUrl:state.baseUrl,
     fetchingUrls:state.fetchingUrls,
-    fetchingErrors:state.fetchingErrors
+    fetchingErrors:state.fetchingErrors,
+    generateQueryObject:() => generateQueryObject(state)
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
     // onClick: () => {
     //   dispatch(toggleSelectField(ownProps.field.name))
     // }
 });
-let App = ({fields, facetsList, filters, data, facetsWindow, sort, timeSliderOptions, baseUrl, fetchingErrors, fetchingUrls }) => (
+let App = ({fields, facetsList, filters, data, facetsWindow, sort, timeSliderOptions, baseUrl, fetchingErrors, fetchingUrls, generateQueryObject }) => (
     <div>
         <Row className="show-grid">
             <Col xs={12} md={12}>
-                <ConnectionInfo baseUrl={baseUrl} fetchingErrors={fetchingErrors} fetchingUrls={fetchingUrls}/>
+                <ConnectionInfo baseUrl={baseUrl} fetchingErrors={fetchingErrors} fetchingUrls={fetchingUrls} generateQueryObject={generateQueryObject}/>
                 <br/>
             </Col>
         </Row>

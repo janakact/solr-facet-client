@@ -1,11 +1,12 @@
 import React from "react";
 import {connect} from "react-redux";
-import {setBaseurl, removeFetchingError} from "../actions";
+import {setBaseurl, removeFetchingError, loadFromFile} from "../actions";
 import {Row, Col, Alert} from "react-bootstrap";
 
-let ConnectionInfo = ({dispatch, baseUrl, fetchingErrors}) => {
+let ConnectionInfo = ({dispatch, baseUrl, fetchingErrors, generateQueryObject}) => {
     let input;//
     //input.value = "http://localhost:8983/solr/gettingstarted/";
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(generateQueryObject()));
 
     return (
         <div>
@@ -25,6 +26,32 @@ let ConnectionInfo = ({dispatch, baseUrl, fetchingErrors}) => {
                        ref={node => {
                            input = node
                        }}/>
+                    <br/>
+                    <a download={"query.json"} href={dataStr}>Download current query state as a file</a>
+                    <input type="file" onChange={e => {
+                        try
+                        {
+                            var file = e.target.files[0];
+
+                            if (file) {
+                                var reader = new FileReader();
+                                reader.readAsText(file, "UTF-8");
+                                reader.onload = function(evt)
+                                {
+                                    console.log(evt.target.result);
+                                    dispatch(loadFromFile(evt.target.result));
+                                }
+                                reader.onerror = function (evt) {
+                                    console.log("Error reading file");
+                                }
+                            }
+                        }
+                        catch (Exception)
+                        {
+                                console.log("Fail to load");
+                        }
+
+                    }} id="input"/>
                 </Col>
 
                 <Col  xs={4} md={2}>

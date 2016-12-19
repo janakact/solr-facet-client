@@ -239,3 +239,14 @@ export const removeFetchingError = (e) => {
         e
     }
 }
+
+export const loadFromFile = (fileContent) => {
+    setTimeout(() => {
+        solrClient.getFacetsForAllFields();
+        solrClient.getFields();
+    }, 100);
+    return {
+        type:types.LOAD_FROM_FILE,
+        fileContent
+    }
+}
