@@ -36,11 +36,9 @@ const reducer = (state = initialState, action) => {
 
     switch (action.type) {
         case types.SET_BASEURL:
-            return {...state, baseUrl: action.url, fetching: true}
-        case types.REQUEST_FIELDS:
-            return {...initialState, baseUrl: action.url, fetching: true}
+            return {...initialState, baseUrl: action.url}
         case types.UPDATE_FIELDS:
-            return {...state, fields: action.fields, fetching: false}
+            return {...state, fields: action.fields}
         case types.TOGGLESELECT_FIELD:
             return {...state, fetching: true}
             //Delete facets
@@ -101,7 +99,7 @@ const reducer = (state = initialState, action) => {
         case types.REMOVE_FILTER:
             return {
                 ...state,
-                filters: [...state.filters].filter((item) => item.field.name !== action.filterObject.field.name)
+                filters: [...state.filters].filter((item) => item != action.filterObject)
             }
         case types.FINISH_FILTER_EDITING:
             return {
