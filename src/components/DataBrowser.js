@@ -11,7 +11,7 @@ let PageNav = ({data, dispatch}) => {
     return (
         <div>
             <Row className="show-grid">
-                <Col xs={2} md={3}>
+                <Col xs={2} md={8}>
                     <label>
                         Records per Page:
                     </label>
@@ -26,8 +26,6 @@ let PageNav = ({data, dispatch}) => {
                         <option value="1000">1000</option>
                         <option value="10000">*10000</option>
                     </select>
-                </Col>
-                <Col xs={2} md={5}>
                     <Pagination
                         prev
                         next
@@ -95,7 +93,6 @@ let TableView = ({data}) => {
 let DataBrowser = ({data, fields, filters}) => {
     return (
         <Panel bsStyle="info" header="Data Browser">
-            <PageNav data={data}/>
             <Tabs defaultActiveKey={3} id="uncontrolled-tab-example">
                 <Tab eventKey={1} title="Table">
                     <TableView data={data}/>
@@ -111,6 +108,9 @@ let DataBrowser = ({data, fields, filters}) => {
                     <DataMap data={data} fields={fields} filters={filters}/>
                 </Tab>
             </Tabs>
+            <br/>
+
+            <PageNav data={data}/>
 
 
         </Panel>

@@ -35,7 +35,7 @@ let Field = ({field, onClick}) => {
             onClick={onClick}>
 
             <OverlayTrigger placement="left" overlay={tooltip(field.stats)}>
-                <span><strong>{field.name}</strong> : {field.type} </span>
+                <span><strong>{field.name}</strong></span>
             </OverlayTrigger>
         </ListGroupItem>
     )
