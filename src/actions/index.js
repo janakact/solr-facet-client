@@ -242,11 +242,12 @@ export const removeFetchingError = (e) => {
 
 export const loadFromFile = (fileContent) => {
     setTimeout(() => {
-        solrClient.getFacetsForAllFields();
-        solrClient.getFields();
+        solrClient.getFields().then(
+            () => solrClient.getFacetsForAllFields()
+        )
     }, 100);
     return {
-        type:types.LOAD_FROM_FILE,
+        type: types.LOAD_FROM_FILE,
         fileContent
     }
 }

@@ -23,11 +23,16 @@ let TimeSlider = ({facetsList, fields, dispatch, timeSliderOptions}) => {
                 onChange={
                     (e) => {
                         if(e.target.value!=="")
+                        {
                             dispatch(requestFacets(e.target.value))
-                        dispatch(setTimesliderOptions({field: fields[e.target.value], filter:null}))
+                            dispatch(setTimesliderOptions({field: fields[e.target.value], filter:null}))
+                        }
+                        else{
+                            dispatch(setTimesliderOptions({field:{name:"", type:""}, filter:null}))
+                        }
                     }
                 }
-                defaultValue="">
+                value={timeSliderOptions.field.name}>
                 <option value="">--Please select a field---</option>
                 {Object.keys(fields).filter((fieldName)=>isSlidable(fieldName,fields)).map((fieldName) => <option key={fieldName} value={fieldName}>{fieldName}</option>)}
             </select>
@@ -38,6 +43,7 @@ let TimeSlider = ({facetsList, fields, dispatch, timeSliderOptions}) => {
             {
                 facets &&
                 <DraggableSlider
+                    dragRange={timeSliderOptions.filter?timeSliderOptions.filter.range:facets.fullRange}
                     fullRange={facets.fullRange}
                     tipFormatter={ facets.field.type === 'date' ? (item)=> new Date(item).toString() : item=>item}
                     type={facets.field.type === 'date'?'time':'int'}

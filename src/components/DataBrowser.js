@@ -57,8 +57,8 @@ let TableView = ({data}) => {
         <Table
             rowHeight={30}
             rowsCount={data.docs.length}
-            width={1100}
-            height={340}
+            width={1430}
+            height={600}
             headerHeight={40}>
 
             <Column
@@ -84,7 +84,7 @@ let TableView = ({data}) => {
                             {data.docs[rowIndex][columnName]}
                         </Cell>
                     )}
-                    width={100}
+                    width={150}
                 />
             )}
         </Table>
@@ -98,7 +98,6 @@ let DataBrowser = ({data, fields, filters}) => {
             <PageNav data={data}/>
             <Tabs defaultActiveKey={3} id="uncontrolled-tab-example">
                 <Tab eventKey={1} title="Table">
-                    <h4>Airport_Details</h4>
                     <TableView data={data}/>
                 </Tab>
 

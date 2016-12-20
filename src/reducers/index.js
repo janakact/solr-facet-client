@@ -7,7 +7,7 @@ const initialState = {
         fieldName: null
     },
     timeSliderOptions:{
-        field:null
+        field:{name:"", type:""}
     },
     baseUrl: "http://localhost:8983/solr/gettingstarted/",
     fields: {},
