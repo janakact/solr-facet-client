@@ -25,6 +25,7 @@
     "react-bootstrap-select": "^0.14.0",
     "react-bootstrap-typeahead": "^0.10.2",
     "react-chartjs": "git://github.com/reactjs/react-chartjs.git#chartjs-v2",
+    "react-datetime": "^2.7.5",
     "react-dom": "^15.4.0",
     "react-draggable": "^2.2.3",
     "react-input-range": "^0.9.3",

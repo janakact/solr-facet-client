@@ -83,7 +83,7 @@ class DraggableSlider extends React.Component {
         this.state = {
             // dragRange: props.dragRange ? props.dragRange : props.fullRange.map((item) => (item/8 + dragRangeMean )),
             dragRange: props.dragRange ? props.dragRange : props.fullRange,
-            fullRange: props.fullRange,
+            fullRange: props.fullRange
         }
     }
 
@@ -100,6 +100,13 @@ class DraggableSlider extends React.Component {
         this.setState({dragRange: getMarginFixedRange(values, this.props.fullRange)})
         if(this.props.onAfterChange) this.props.onAfterChange(values);
         this.setZoomedRange();
+    }
+
+
+    componentWillReceiveProps(props){
+        this.setState({
+            dragRange: props.dragRange ? props.dragRange : props.fullRange,
+            fullRange: props.fullRange,})
     }
 
     handleDrag(value){
