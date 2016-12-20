@@ -102,7 +102,9 @@ class SolrClient {
                 continue;
             this.getFacets(field.name);
         }
-        this.getFacets(this.state.timeSliderOptions.field.name);
+        //By default timeSliderOptions has a fild with name = ""
+        if(this.state.timeSliderOptions.field.name!=="")
+            this.getFacets(this.state.timeSliderOptions.field.name);
         this.getData();
     }
 
@@ -110,8 +112,6 @@ class SolrClient {
         //Generate the request
         var url = this.state.baseUrl;
         let searchText = "";
-        console.log(fieldName);
-        console.log(this.state.fields[fieldName]);
         let fieldType = this.state.fields[fieldName].type;
 
         //   if(_HEATMAP_TYPES.indexOf(this.state.fields[fieldName].type) > 0){

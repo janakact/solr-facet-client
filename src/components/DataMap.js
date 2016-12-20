@@ -33,11 +33,11 @@ const DocMarker = ({children, doc, field, fields}) => (
 
 const GeoShapeFilter = ({filter}) => (
     <FeatureGroup>
-        {filter.shapes.map(shape=> {
+        {filter.shapes.map((shape,index)=> {
             if (shape.type === 'circle')
-                return (<Circle center={[shape.point.lat, shape.point.lng]} radius={shape.radius}/>)
+                return (<Circle key={index} center={[shape.point.lat, shape.point.lng]} radius={shape.radius}/>)
             else if (shape.type === 'rectangle')
-                return (<Rectangle bounds={shape.points.map((point) => [point.lat, point.lng])}/>)
+                return (<Rectangle key={index} bounds={shape.points.map((point) => [point.lat, point.lng])}/>)
             return null;
         })}
     </FeatureGroup>

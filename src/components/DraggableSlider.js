@@ -8,13 +8,13 @@ const handleStyle = {
     transform: 'translate(-50%, -100%)',
     cursor: 'pointer',
     padding: '2px',
-    border: '2px solid #abe2fb',
-    borderRadius: '3px',
-    background: 'rgb(171, 226, 251)',
+    border: 'solid 2px #96dbfa',
+    borderRadius: '30px',
+    background: 'rgb(255, 255, 255)',
     fontSize: '14px',
     textAlign: 'center',
-    width:'100px',
-    height:'15px'
+    width:'30px',
+    height:'30px'
 };
 
 const CustomHandle = React.createClass({
@@ -160,6 +160,7 @@ class DraggableSlider extends React.Component {
                     onChange={this.handleDrag.bind(this)}
                     onAfterChange={this.handleDragComplete.bind(this)}
                     tipFormatter={this.props.tipFormatter}
+                    handle={<CustomHandle/>}
                 />
 
 
