@@ -1,24 +1,27 @@
 import React from "react";
 import {connect} from "react-redux";
 import {showFacetsWindow} from "../actions";
-import {Panel, OverlayTrigger, Tooltip, ListGroupItem, ListGroup} from "react-bootstrap";
+import {Panel, OverlayTrigger, Tooltip, ListGroupItem, ListGroup, Popover} from "react-bootstrap";
 
 
 const tooltip = (stats) => {
         if (!stats) return (<Tooltip id="tooltip"><span><strong>No Stats Available</strong></span></Tooltip>)
         else
             return (
-                <Tooltip id="tooltip"><span><strong>Stats</strong> <br/>
-
+                <Popover id="tooltip"
+                         title="Stats">
       <ul>
   {stats && Object.keys(stats).map((key) => (<li key={key }> {key} : {stats[key]}  </li>))}
   </ul>
-</span>
 
-                </Tooltip>
+                </Popover>
             )
     }
     ;
+
+const tooltip2 = (
+    <Tooltip id="tooltip"><strong>Holy guacamole!</strong> Check this info.</Tooltip>
+);
 
 
 // Single Field
@@ -30,14 +33,13 @@ const mapDispatchToPropsField = (dispatch, ownProps) => ({
 });
 let Field = ({field, onClick}) => {
     return (
+        <OverlayTrigger placement="right" overlay={tooltip(field.stats)}>
         <ListGroupItem
-            className={"tag-cloud " + (field.selected ? 'tag-cloud-item-checked' : 'tag-cloud-item')}
             onClick={onClick}>
 
-            <OverlayTrigger placement="left" overlay={tooltip(field.stats)}>
                 <span><strong>{field.name}</strong></span>
-            </OverlayTrigger>
         </ListGroupItem>
+        </OverlayTrigger>
     )
 }
 Field = connect(mapStateToPropsField, mapDispatchToPropsField)(Field);
@@ -49,9 +51,10 @@ let FieldList = ({fields}, dispatch) => {
         <Panel bsStyle="info" header="Available Fields">
             <ListGroup>
                 {Object.keys(fields).map((fieldName, index) =>
-                    <Field
-                        key={fieldName}
-                        field={fields[fieldName]}></Field>
+
+                        <Field
+                            key={fieldName}
+                            field={fields[fieldName]}></Field>
                 )}
             </ListGroup>
         </Panel>

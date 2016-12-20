@@ -86,28 +86,30 @@ let TimeSlider = ({facetsList, fields, dispatch, timeSliderOptions}) => {
                 </Col>}
             </Row>
 
-            <br/>
-            <br/>
 
             <div>
                 {
                     facets &&
-                    <DraggableSlider
-                        dragRange={filterRange}
-                        fullRange={facets.fullRange}
-                        tipFormatter={ facets.field.type === 'date' ? (item)=> new Date(item).toString() : item=>item}
-                        type={facets.field.type === 'date' ? 'time' : 'int'}
-                        onAfterChange={
-                            (values)=> {
-                                dispatch(setTimesliderOptions({
-                                    filter: {
-                                        field: timeSliderOptions.field,
-                                        range: values,
-                                        type: filterTypes.NUMERIC_RANGE_FILTER
-                                    }
-                                }))
-                            }}
-                    />
+                    <div style={{padding:20}}>
+                        <br/>
+                        <br/>
+                        <DraggableSlider
+                            dragRange={filterRange}
+                            fullRange={facets.fullRange}
+                            tipFormatter={ facets.field.type === 'date' ? (item)=> new Date(item).toString() : item=>item}
+                            type={facets.field.type === 'date' ? 'time' : 'int'}
+                            onAfterChange={
+                                (values)=> {
+                                    dispatch(setTimesliderOptions({
+                                        filter: {
+                                            field: timeSliderOptions.field,
+                                            range: values,
+                                            type: filterTypes.NUMERIC_RANGE_FILTER
+                                        }
+                                    }))
+                                }}
+                        />
+                    </div>
 
                 }
             </div>
