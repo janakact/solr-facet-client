@@ -47,13 +47,12 @@ let App = ({fields, facetsList, filters, data, facetsWindow, sort, timeSliderOpt
         </Row>
         <Row>
             <Col xs={12} md={2}>
-                <SortBy fields={fields} sort={sort}/>
                 <FilterList filters={filters}/>
                 <FieldList fields={fields}/>
             </Col>
             <Col xs={12} md={10}>
                 <TimeSlider facetsList={facetsList} fields={fields} timeSliderOptions={timeSliderOptions}/>
-                <DataBrowser data={data} fields={fields} filters={filters}/>
+                <DataBrowser data={data} fields={fields} filters={filters} sort={sort}/>
             </Col>
         </Row>
         <Row>
