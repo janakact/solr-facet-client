@@ -99,14 +99,16 @@ class DraggableSlider extends React.Component {
     handleSlideChangeComplete(values) {
         this.setState({dragRange: getMarginFixedRange(values, this.props.fullRange)})
         if(this.props.onAfterChange) this.props.onAfterChange(values);
-        this.setZoomedRange();
+        //this.setZoomedRange();
     }
 
 
     componentWillReceiveProps(props){
         this.setState({
             dragRange: props.dragRange ? props.dragRange : props.fullRange,
-            fullRange: props.fullRange,})
+            fullRange: props.fullRange,
+            })
+        // this.setZoomedRange();
     }
 
     handleDrag(value){
@@ -149,7 +151,6 @@ class DraggableSlider extends React.Component {
                 <Rcslider
                     marks={getMarks(this.state.zoomedRange, this.props.type)}
                     range={2}
-                    defaultValue={this.state.dragRange}
                     min={this.state.zoomedRange[0]}
                     max={this.state.zoomedRange[1]}
                     value={this.state.dragRange}
@@ -160,10 +161,9 @@ class DraggableSlider extends React.Component {
 
                 <Rcslider
                     className="drag-slider"
-                    defaultValue={this.state.dragRange}
                     min={this.state.zoomedRange[0]}
                     max={this.state.zoomedRange[1]}
-                    value={(this.state.dragRange[0]+this.state.dragRange[1])/2}
+                    value={Math.ceil(this.state.dragRange.reduce((a,b) => a+b, 0 )/2)}
                     onChange={this.handleDrag.bind(this)}
                     onAfterChange={this.handleDragComplete.bind(this)}
                     tipFormatter={this.props.tipFormatter}

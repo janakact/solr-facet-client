@@ -84,13 +84,63 @@ let TimeSlider = ({facetsList, fields, dispatch, timeSliderOptions}) => {
                         </Col>
                     </Row>
                 </Col>}
+
+                {
+                    facets && facets.field.type !== 'date' &&
+                    <Col xs={12} md={8}>
+                        <Row>
+                            <Col xs={6} md={3}>
+                                <label>
+                                    From:
+                                </label>
+                                <input
+                                    type="number"
+                                    value={filterRange[0]}
+                                    onChange={(e)=> {
+                                        let value = e.target.value;
+                                        if (value >= facets.fullRange[0] && value <= filterRange[1])
+                                            dispatch(setTimesliderOptions({
+                                                filter: {
+                                                    field: timeSliderOptions.field,
+                                                    range: [value, filterRange[1]],
+                                                    type: filterTypes.NUMERIC_RANGE_FILTER
+                                                }
+                                            }))
+                                    }}
+                                />
+                            </Col>
+
+                            <Col xs={6} md={3}>
+                                <label>
+                                    To:
+                                </label>
+                                <input
+                                    type="number"
+                                    value={filterRange[1]}
+                                    onChange={(e)=> {
+                                        let value = e.target.value;
+                                        if (value <= facets.fullRange[1] && value >= filterRange[0])
+                                            dispatch(setTimesliderOptions({
+                                                filter: {
+                                                    field: timeSliderOptions.field,
+                                                    range: [filterRange[0], value],
+                                                    type: filterTypes.NUMERIC_RANGE_FILTER
+                                                }
+                                            }))
+                                    }}
+                                />
+                            </Col>
+                        </Row>
+                    </Col>
+
+                }
             </Row>
 
 
             <div>
                 {
                     facets &&
-                    <div style={{padding:20}}>
+                    <div style={{padding: 20}}>
                         <br/>
                         <br/>
                         <DraggableSlider
