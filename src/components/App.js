@@ -8,6 +8,7 @@ import FilterList from "../components/FilterList";
 import DataBrowser from "../components/DataBrowser";
 import SortBy from './SortBy'
 import TimeSlider from './TimeSlider'
+import SavedQueryView from './SavedQueryView'
 
 const generateQueryObject = (state) => {
     let queryState = {
@@ -30,6 +31,7 @@ const mapStateToProps = (state, ownProps) => ({
     baseUrl:state.baseUrl,
     fetchingUrls:state.fetchingUrls,
     fetchingErrors:state.fetchingErrors,
+    savedQueries:state.savedQueries,
     generateQueryObject:() => generateQueryObject(state)
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -37,7 +39,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     //   dispatch(toggleSelectField(ownProps.field.name))
     // }
 });
-let App = ({fields, facetsList, filters, data, facetsWindow, sort, timeSliderOptions, baseUrl, fetchingErrors, fetchingUrls, generateQueryObject }) => (
+let App = ({fields, facetsList, filters, data, facetsWindow, sort, timeSliderOptions, baseUrl, fetchingErrors, fetchingUrls, generateQueryObject, savedQueries }) => (
     <div>
         <Row className="show-grid">
             <Col xs={12} md={12}>
@@ -47,6 +49,7 @@ let App = ({fields, facetsList, filters, data, facetsWindow, sort, timeSliderOpt
         </Row>
         <Row>
             <Col xs={12} md={2}>
+                <SavedQueryView savedQueries={savedQueries} />
                 <FilterList filters={filters}/>
                 <FieldList fields={fields}/>
             </Col>

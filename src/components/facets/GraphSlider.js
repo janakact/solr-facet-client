@@ -7,6 +7,35 @@ import filterTypes from '../../constants/FilterTypes'
 
 var LineChart = require("react-chartjs").Line;
 
+const getMarks = (range, type="int", labelFormatter=a=>a) => {
+    let points = {};
+    if(!range) return points;
+
+    let gap =  (range[1]-range[0])/10 //Generate a gap depending on the range
+
+    if(type==='time' || type=='date'){
+        gap -= gap%Math.pow(10,Math.floor(Math.log10(gap)));
+        let min = range[0]+gap
+        min = min - min%gap;
+        for(let i=min; i<range[1]; i+=gap)
+        {
+            points[i] = new Date(i).toString();
+        }
+    }
+    else{
+        gap -= gap%Math.pow(10,Math.floor(Math.log10(gap)));
+        let min = range[0]+gap
+        min = min - min%gap;
+        for(let i=min; i<range[1]; i+=gap)
+        {
+            points[i] = labelFormatter(i);
+        }
+    }
+
+    return points;
+}
+
+
 const getData = (facets) => {
     if (!facets) return []
     let labels = []
@@ -89,8 +118,7 @@ class GraphSlider extends React.Component {
         let range = nextProps.facets.selectedRange;
         this.setState(
             {
-                selectedRange: range,
-                selectingRange: range
+                selectedRange: range
             });
     }
 
@@ -127,22 +155,26 @@ class GraphSlider extends React.Component {
         return (
                 <Panel collapsible defaultExpanded header={this.props.facets.field.name}>
                     <Graph {...this.props}  />
-                    <br/>
+
+                    {/*<label>Selected Range:</label>*/}
+                    {/*<br/>*/}
+                    {/*<Rcslider*/}
+                        {/*marks={getMarks(this.state.selectedRange, this.props.facets.field.type)}*/}
+                        {/*range={true}*/}
+                        {/*defaultValue={this.state.selectedRange}*/}
+                        {/*min={this.state.selectedRange[0]}*/}
+                        {/*max={this.state.selectedRange[1]}*/}
+                        {/*value={this.state.selectingRange}*/}
+                        {/*onChange={this.handleSlideChange.bind(this)}*/}
+                        {/*onAfterChange={this.handleSlideChangeComplete.bind(this)}*/}
+                        {/*tipFormatter={this.props.facets.field.type === 'date' ? (item)=> new Date(item).toString() : item=>item}*/}
+                    {/*/>*/}
+
+
+
+                    <label>Full Range:</label>
                     <Rcslider
-                        range={true}
-                        defaultValue={this.state.selectedRange}
-                        min={this.state.selectedRange[0]}
-                        max={this.state.selectedRange[1]}
-                        value={this.state.selectingRange}
-                        onChange={this.handleSlideChange.bind(this)}
-                        onAfterChange={this.handleSlideChangeComplete.bind(this)}
-                        tipFormatter={this.props.facets.field.type === 'date' ? (item)=> new Date(item).toString() : item=>item}
-                    />
-
-
-                    <br/>
-
-                    <Rcslider
+                        marks={getMarks(fullRange, this.props.facets.field.type)}
                         range={true}
                         min={fullRange[0] }
                         max={fullRange[1] }
@@ -151,6 +183,12 @@ class GraphSlider extends React.Component {
                         onAfterChange={this.handleSlideChangeComplete.bind(this)}
                         tipFormatter={this.props.facets.field.type === 'date' ? (item)=> new Date(item).toString() : item=>item}
                     />
+
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
 
 
                     <Button onClick={this.addFilter.bind(this)}> Apply Filter </Button>

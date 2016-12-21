@@ -2,6 +2,7 @@ import types from "../constants/ActionTypes";
 const initialState = {
     fetchingUrls: [], //Add to this list when requesting data from Solr. If length===0 means no fetching.
     fetchingErrors:[], //Add to this list when error occurred during fetching or passing
+    savedQueries:[],
     facetsWindow: {
         show: false,
         fieldName: null

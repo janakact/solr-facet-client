@@ -8,6 +8,7 @@ const _FACETS_SUFFIX = "select?facet=on&indent=on&q=*:*&wt=json&rows=0";
 const _HEATMAP_SUFFIX = "select?facet=on&indent=on&q=*:*&wt=json&rows=0&facet.heatmap.format=png&facet.heatmap.distErrPct=0.04";
 const _NUMERIC_RANGE_SUFFIX = 'select?facet=on&indent=on&q=*:*&wt=json&rows=0';
 const _DATA_SUFFIX = "select?indent=on&q=*:*&wt=json";
+const _DATA_SUFFIX_CSV = "select?indent=on&q=*:*&wt=csv";
 const _STATS_SUFFIX = 'select?q=*:*&indent=on&wt=json&rows=0&stats=true'
 const _SPECIAL_CHARS = new Set(['+', '-', '&', '|', '!', '(', ')', '{', '}', '[', ']', '^', '"', '~', '*', '?', ':', '\\', ' ']);
 
@@ -87,7 +88,7 @@ class SolrClient {
                 }
             )
             .catch((e)=> {
-                this.store.dispatch(actions.addFetchingError({title:"Error Fetching Fields",url:url, error:e}));
+                this.store.dispatch(actions.addFetchingError({title: "Error Fetching Fields", url: url, error: e}));
                 this.store.dispatch(actions.removeFetchingUrl(url));
             });
     }
@@ -103,7 +104,7 @@ class SolrClient {
             this.getFacets(field.name);
         }
         //By default timeSliderOptions has a fild with name = ""
-        if(this.state.timeSliderOptions.field.name!=="")
+        if (this.state.timeSliderOptions.field.name !== "")
             this.getFacets(this.state.timeSliderOptions.field.name);
         this.getData();
     }
@@ -181,21 +182,34 @@ class SolrClient {
                 this.store.dispatch(actions.removeFetchingUrl(url));
             })
             .catch((e)=> {
-                this.store.dispatch(actions.addFetchingError({title:"Error Fetching Facets for Field:"+fieldName,url:url, error:e}));
+                this.store.dispatch(actions.addFetchingError({
+                    title: "Error Fetching Facets for Field:" + fieldName,
+                    url: url,
+                    error: e
+                }));
                 this.store.dispatch(actions.removeFetchingUrl(url));
             });
     }
 
-
-    getData() {
-        let url = this.state.baseUrl + _DATA_SUFFIX;
+    getData(promptDownload = false) {
+        let url = this.state.baseUrl + (promptDownload?_DATA_SUFFIX_CSV:_DATA_SUFFIX);
         let dataState = this.state.data;
 
         url += this.generateFilterQuery();
         url += this.generateSortQuery(this.state.sort)
 
-        url += "&rows=" + dataState.rows;
-        url += "&start=" + dataState.start;
+        if(!promptDownload)
+        {
+            url += "&rows=" + dataState.rows;
+            url += "&start=" + dataState.start;
+        }
+        else
+        {
+            url += "&rows="+dataState.numFound;
+            url += "&start="+0;
+            window.open(url)
+            return;
+        }
 
         this.store.dispatch(actions.addFetchingUrl(url));
         return fetch(url, callConfig)
@@ -215,22 +229,23 @@ class SolrClient {
                     //console.log(JSON.stringify(Array.from(columns)));
                 }
                 //console.log(jsonObject.response.docs.length);
-                //console.log("Returning data:"+new Date()+new Date().getMilliseconds());
-                this.store.dispatch(actions.updateData({
-                        jsonResponse: body,
-                        url: url,
-                        numFound: jsonObject.response.numFound,
-                        start: dataState.start,
-                        rows: dataState.rows,
-                        docs: jsonObject.response.docs,
-                        columnNames: Array.from(columns)
-                    })
-                );
+                //console.log("Returning data:"+new Date()+new Date().getMilliseconds())
+                // ;
+                let data = {
+                    jsonResponse: body,
+                    url: url,
+                    numFound: jsonObject.response.numFound,
+                    start: dataState.start,
+                    rows: dataState.rows,
+                    docs: jsonObject.response.docs,
+                    columnNames: Array.from(columns)
+                };
+                this.store.dispatch(actions.updateData(data));
                 this.store.dispatch(actions.removeFetchingUrl(url));
 
             })
             .catch((e)=> {
-                this.store.dispatch(actions.addFetchingError({title:"Error Fetching Data",url:url, error:e}));
+                this.store.dispatch(actions.addFetchingError({title: "Error Fetching Data", url: url, error: e}));
                 this.store.dispatch(actions.removeFetchingUrl(url));
             });
     }
@@ -257,7 +272,7 @@ class SolrClient {
                 //   this.store.dispatch(actions.updateFields(fieldsObject));
             )
             .catch((e)=> {
-                this.store.dispatch(actions.addFetchingError({title:"Error Fetching Stats",url:url, error:e}));
+                this.store.dispatch(actions.addFetchingError({title: "Error Fetching Stats", url: url, error: e}));
                 this.store.dispatch(actions.removeFetchingUrl(url));
             });
     }
@@ -400,8 +415,6 @@ class SolrClient {
         console.log(date)
         return date.toISOString();
     }
-
-
 }
 
 //This library do not export the static class, this exports the object of the class.

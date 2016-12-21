@@ -54,7 +54,7 @@ const getMarks = (range, type="int", labelFormatter=a=>a) => {
 
     let gap =  (range[1]-range[0])/10 //Generate a gap depending on the range
 
-    if(type==='time'){
+    if(type==='time' || type=='date'){
         gap -= gap%Math.pow(10,Math.floor(Math.log10(gap)));
         let min = range[0]+gap
         min = min - min%gap;
@@ -160,6 +160,7 @@ class DraggableSlider extends React.Component {
                 />
 
                 <Rcslider
+
                     className="drag-slider"
                     min={this.state.zoomedRange[0]}
                     max={this.state.zoomedRange[1]}

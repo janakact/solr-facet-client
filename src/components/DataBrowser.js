@@ -1,6 +1,6 @@
 import React from "react";
 import {connect} from "react-redux";
-import {updatePagination, setSort} from "../actions";
+import {updatePagination, setSort, promptDownload} from "../actions";
 import {Panel, Well, Pagination, Row, Col, Tab, Tabs, FormGroup, FormControl, ControlLabel} from "react-bootstrap";
 import {Table, Column, Cell} from "fixed-data-table";
 import DataMap from "./DataMap";
@@ -83,6 +83,10 @@ let PageNav = ({data, dispatch, fields, sort}) => {
                 &nbsp;
 
                 <a href={data.url}>Solr Response</a>
+                &nbsp;
+                &nbsp;
+                &nbsp;
+                <a href="#" onClick={promptDownload} >Download All Data</a>
 
             </form>
         </div>
@@ -133,7 +137,7 @@ let TableView = ({data}) => {
 
 let DataBrowser = ({data, fields, filters, sort}) => {
     return (
-        <Panel bsStyle="info" header="Data Browser">
+        <Panel bsStyle="info" header={"Data Browser ("+data.numFound+" results found)"}>
             <Tabs defaultActiveKey={3} id="uncontrolled-tab-example">
                 <Tab eventKey={1} title="Table">
                     <TableView data={data}/>

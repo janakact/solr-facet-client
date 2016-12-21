@@ -48,7 +48,7 @@ let TimeSlider = ({facetsList, fields, dispatch, timeSliderOptions}) => {
                         <Col xs={6} md={3}>
                             <label>
                                 From:
-                            </label>
+                            </label><br/>
                             <DateTime
                                 value={filterRange[0]}
                                 onChange={(value)=> {
@@ -67,7 +67,7 @@ let TimeSlider = ({facetsList, fields, dispatch, timeSliderOptions}) => {
                         <Col xs={6} md={3}>
                             <label>
                                 To:
-                            </label>
+                            </label><br/>
                             <DateTime
                                 value={filterRange[1]}
                                 onChange={(value)=> {
@@ -92,7 +92,7 @@ let TimeSlider = ({facetsList, fields, dispatch, timeSliderOptions}) => {
                             <Col xs={6} md={3}>
                                 <label>
                                     From:
-                                </label>
+                                </label><br/>
                                 <input
                                     type="number"
                                     value={filterRange[0]}
@@ -113,7 +113,7 @@ let TimeSlider = ({facetsList, fields, dispatch, timeSliderOptions}) => {
                             <Col xs={6} md={3}>
                                 <label>
                                     To:
-                                </label>
+                                </label><br/>
                                 <input
                                     type="number"
                                     value={filterRange[1]}

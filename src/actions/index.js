@@ -251,3 +251,10 @@ export const loadFromFile = (fileContent) => {
         fileContent
     }
 }
+
+
+//Load and Save Queries
+
+export const promptDownload = () => {
+    solrClient.getData(true);
+}

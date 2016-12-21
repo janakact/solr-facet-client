@@ -82,7 +82,8 @@ class DataMapClass extends React.Component {
             editing: true
         }))
         let map = this.refs.drawFeatureGroup.context.map;
-        this.setState({zoom: map._zoom, center: [map._lastCenter.lat, map._lastCenter.lng], editing: true});
+        if(map._zoom && map._lastCenter )
+            this.setState({zoom: map._zoom, center: [map._lastCenter.lat, map._lastCenter.lng], editing: true});
         this.finishEditing();
     }
 
