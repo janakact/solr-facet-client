@@ -1,48 +1,112 @@
+/*
+ *  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ *
+ */
 import React from "react";
 import {connect} from "react-redux";
-import {updatePagination} from "../actions";
-import {Panel, Well, Pagination, Row, Col, Tab, Tabs} from "react-bootstrap";
+import {updatePagination, setSort, promptDownload} from "../actions";
+import {Panel, Well, Pagination, Row, Col, Tab, Tabs, FormGroup, FormControl, ControlLabel} from "react-bootstrap";
 import {Table, Column, Cell} from "fixed-data-table";
 import DataMap from "./DataMap";
 
-
 // Data Browser
-let PageNav = ({data, dispatch}) => {
+let PageNav = ({data, dispatch, fields, sort}) => {
     return (
         <div>
-            <Row className="show-grid">
-                <Col xs={2} md={3}>
-                    <label>
-                        Records per Page:
-                    </label>
-                    <select
-                        defaultValue={data.rows}
-                        onChange={(event) => {
-                            dispatch(updatePagination(data.start - data.start % event.target.value, event.target.value))
-                        }}>
-                        <option value="1">1</option>
-                        <option value="10">10</option>
-                        <option value="100">100</option>
-                        <option value="1000">1000</option>
-                        <option value="10000">*10000</option>
-                    </select>
-                </Col>
-                <Col xs={2} md={8}>
-                    <Pagination
-                        prev
-                        next
-                        first
-                        last
-                        ellipsis
-                        boundaryLinks
-                        items={Math.ceil(data.numFound / data.rows)}
-                        maxButtons={5}
-                        activePage={1 + (Math.ceil(data.start / data.rows))}
-                        onSelect={(eventKey) => {
-                            dispatch(updatePagination((eventKey - 1) * data.rows, data.rows))
-                        }}/>
-                </Col>
-            </Row>
+            <form className="form-inline">
+                <label>
+                    Records per Page:
+                </label>
+                <FormControl
+                    inline
+                    bsSize="small"
+                    componentClass="select"
+                    placeholder="select"
+                    defaultValue={data.rows}
+                    onChange={(event) => {
+                        dispatch(updatePagination(data.start - data.start % event.target.value, event.target.value))
+                    }}>
+
+                    <option value="1">1</option>
+                    <option value="10">10</option>
+                    <option value="100">100</option>
+                    <option value="1000">1000</option>
+                    <option value="10000">*10000</option>
+                </FormControl>
+                &nbsp;
+                &nbsp;
+                &nbsp;
+                &nbsp;
+                <Pagination
+                    className="form-control"
+                    style={{padding: 0}}
+                    inline
+                    prev
+                    next
+                    first
+                    last
+                    ellipsis
+                    boundaryLinks
+                    items={Math.ceil(data.numFound / data.rows)}
+                    maxButtons={5}
+                    activePage={1 + (Math.ceil(data.start / data.rows))}
+                    onSelect={(eventKey) => {
+                        dispatch(updatePagination((eventKey - 1) * data.rows, data.rows))
+                    }}/>
+                &nbsp;
+                &nbsp;
+                &nbsp;
+                &nbsp;
+
+                <label>Sort By : </label>
+                <select
+                    onChange={
+                        (e) => dispatch(setSort({field: fields[e.target.value]}))
+                    }
+                    value={sort.field?sort.field.name:""}>
+                    <option value="">--Please select a field---</option>
+                    {Object.keys(fields).map((fieldName) => <option key={fieldName}
+                                                                    value={fieldName}>{fieldName}</option>)}
+                </select>
+                &nbsp;
+                &nbsp;
+                &nbsp;
+                &nbsp;
+                <label>Type : </label>
+                <select
+                    onChange={
+                        (e) => dispatch(setSort({type: e.target.value}))
+                    }
+                    value={sort.type}>
+                    <option value="asc">ASC</option>
+                    <option value="desc">DESC</option>
+                </select>
+                &nbsp;
+                &nbsp;
+                &nbsp;
+                &nbsp;
+
+                <a href={data.url}>Solr Response</a>
+                &nbsp;
+                &nbsp;
+                &nbsp;
+                <a href="#" onClick={promptDownload} >Download All Data</a>
+
+            </form>
         </div>
     );
 }
@@ -54,8 +118,8 @@ let TableView = ({data}) => {
         <Table
             rowHeight={30}
             rowsCount={data.docs.length}
-            width={1100}
-            height={340}
+            width={1430}
+            height={600}
             headerHeight={40}>
 
             <Column
@@ -81,7 +145,7 @@ let TableView = ({data}) => {
                             {data.docs[rowIndex][columnName]}
                         </Cell>
                     )}
-                    width={100}
+                    width={150}
                 />
             )}
         </Table>
@@ -89,15 +153,11 @@ let TableView = ({data}) => {
 };
 
 
-let DataBrowser = ({data}) => {
+let DataBrowser = ({data, fields, filters, sort}) => {
     return (
-        <Panel bsStyle="info" header="Data Browser">
-            <PageNav data={data}/>
-            <Well bsSize="small">URL: <a href={data.url}><code >{data.url}</code></a></Well>
-
-            <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
+        <Panel bsStyle="info" header={"Data Browser ("+data.numFound+" results found)"}>
+            <Tabs defaultActiveKey={3} id="uncontrolled-tab-example">
                 <Tab eventKey={1} title="Table">
-                    <h4>Airport_Details</h4>
                     <TableView data={data}/>
                 </Tab>
 
@@ -108,9 +168,13 @@ let DataBrowser = ({data}) => {
                 </Tab>
 
                 <Tab eventKey={3} title="Map">
-                    <DataMap data={data}/>
+                    <DataMap data={data} fields={fields} filters={filters}/>
                 </Tab>
             </Tabs>
+            <br/>
+
+            <PageNav data={data} sort={sort} fields={fields}/>
+
 
         </Panel>
     );

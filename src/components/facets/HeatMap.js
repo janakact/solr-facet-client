@@ -1,9 +1,27 @@
+/*
+ *  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ *
+ */
 import React from 'react';
-import { Col, Panel, Button } from 'react-bootstrap';
+import { Panel, Button } from 'react-bootstrap';
 import { connect } from 'react-redux'
 import { Map, TileLayer, ImageOverlay, FeatureGroup, Circle } from 'react-leaflet';
 import { EditControl } from "react-leaflet-draw"
-import {changeFacetsGeoShape, addFilter} from '../../actions'
+import {addFilter} from '../../actions'
 import filterTypes from '../../constants/FilterTypes'
 
 const position = [0,0]
@@ -21,6 +39,8 @@ class HeatMap extends React.Component {
             shapes: this.state.shapes,
             type: filterTypes.GEO_SHAPE
         }))
+        if(this.props.onAddFilter)
+            this.props.onAddFilter();
     }
 
     updateShape(item){
@@ -28,7 +48,7 @@ class HeatMap extends React.Component {
         console.log(item);
         console.log('update Shape');
         let shape;
-        let shapeElement;
+        // let shapeElement;
         if(item.type==="draw:created"){
             switch (item.layerType){
                 case 'polygon':
@@ -36,21 +56,22 @@ class HeatMap extends React.Component {
                     break;
                 case 'circle':
                     shape = {type:'circle', point: item.layer._latlng, radius:item.layer._mRadius};
-                    shapeElement = <Circle  radius={1000} center={[6.9271, 79.8612]} />;
+                    // shapeElement = <Circle  radius={1000} center={[6.9271, 79.8612]} />;
 
                     break;
                 case 'rectangle':
                     shape = {type: 'rectangle', points:item.layer._latlngs[0]};
+                    break;
+                default:
+                    shape = null;
             }
         }
         this.setState({shapes:[...this.state.shapes, shape]});
     }
 
     render() {
-        let {counts_png,minX, minY, maxX, maxY} = this.props.facets.options;
+        let {counts_png} = this.props.facets.options;
         return(
-
-            <Col xs={12} md={12} >
                 <Panel collapsible defaultExpanded header={this.props.facets.field.name} >
 
 
@@ -87,7 +108,6 @@ class HeatMap extends React.Component {
                     <Button onClick={this.addFilter.bind(this)}> Apply Filter </Button>
                     {JSON.stringify(this.state.shapes)}
                 </Panel>
-            </Col>
         )
     }
 }

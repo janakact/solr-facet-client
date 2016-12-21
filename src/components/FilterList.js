@@ -1,7 +1,25 @@
+/*
+ *  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ *
+ */
 import React from "react";
 import {connect} from "react-redux";
-import {removeFilter} from "../actions";
-import {Panel} from "react-bootstrap";
+import {removeFilter, showFacetsWindow} from "../actions";
+import {Panel, ListGroupItem, ListGroup, Button} from "react-bootstrap";
 import filterTypes from "../constants/FilterTypes";
 
 
@@ -11,11 +29,11 @@ const getFilterText = (filterObj) => {
             return filterObj.query;
         case filterTypes.NUMERIC_RANGE_FILTER:
             let range = filterObj.range
-            if(filterObj.field.type=='date')
+            if(filterObj.field.type==='date')
                 range = filterObj.range.map((item) => (new Date(item).toISOString()))
             return '[' + range[0] + ' TO ' + range[1] + ']';
         case filterTypes.GEO_SHAPE:
-            return JSON.stringify(filterObj.shapes);
+            return JSON.stringify(filterObj.shapes.map(shape=>shape.type));
         default:
             return "<Undefined Filter>"
 
@@ -32,27 +50,32 @@ const mapDispatchToPropsField = (dispatch, ownProps) => ({
 });
 let Filter = ({filterObject, onClick}) => {
     return (
-        <li className="tag-cloud tag-cloud-item"
-            onClick={onClick}>
+        <ListGroupItem
+            className="tag-cloud tag-cloud-item"
+            onClick={onClick} >
             <strong>{filterObject.field.name}</strong> : {getFilterText(filterObject)}
-        </li>
+        </ListGroupItem>
     )
 }
 Filter = connect(mapStateToPropsField, mapDispatchToPropsField)(Filter);
 
 
 // List of All Fields
-let FilterList = ({filters}, dispatch) => {
+let FilterList = ({filters, dispatch}) => {
     return (
-        <Panel bsStyle="info" header="Available Filters">
-            <ul>
+        <Panel bsStyle="info" header="Applied Filters">
+
+            <ListGroup>
                 {filters.map((filter, index) =>
                     <Filter
                         key={index}
                         filterObject={filter}></Filter>
                 )}
-            </ul>
+            </ListGroup>
+
+            <Button onClick={()=> dispatch(showFacetsWindow())}>Add Filter</Button>
         </Panel>
     );
 }
+FilterList = connect()(FilterList);
 export default FilterList;

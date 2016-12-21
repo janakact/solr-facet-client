@@ -24,11 +24,15 @@ To Solve
 
 
 TODO
-Send updates to engineering group
-talk to Mohan CEP http://wso2.com/about/team/vivekanandalingam-mohanadarshan/
+Add Marks to Slider
+Send an Update to Engineering Group ;)
+
 
 
 In the morning convert to a data model
 --- Make a full data model
 --- add onChange functionality for solr client
 --- read async load in redux
+
+
+// TODO

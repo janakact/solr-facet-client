@@ -16,28 +16,22 @@
  *  under the License.
  *
  */
-import React from 'react';
-import TextOptions from './TextOptions'
-import HeatMap from './HeatMap'
-import GraphSlider from './GraphSlider'
-import facetsTypes from '../../constants/FacetsTypes'
+import React from 'react'
+import {connect} from 'react-redux'
+import {Panel} from 'react-bootstrap'
+import {setSort} from '../actions'
 
-//Facets results for a single field
-let Facets = (props) => {
+let SavedQueryView = ({savedQueries, dispatch}) => {
+    if (savedQueries.length > 0)
+        return (
+            <Panel bsStyle="info" header="Saved Queries">
 
-    let type = props.facets.type;
-    switch( type){
-        case  facetsTypes.TEXT:
-            return( <TextOptions {...props} /> );
-        case facetsTypes.HEAT_MAP:
-            return <HeatMap {...props} />
-        case facetsTypes.NUMERIC_RANGE:
-            return <GraphSlider {...props} />
-        default:
-            return null;
+            </Panel>)
 
-    }
-
+    else
+        return null;
 }
 
-export default Facets;
+SavedQueryView = connect()(SavedQueryView);
+
+export default SavedQueryView;
