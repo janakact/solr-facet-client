@@ -23,9 +23,17 @@ import {EditControl} from "react-leaflet-draw"
 import {addToEditingFilter, finishFilterEditing} from '../actions'
 import filterTypes from '../constants/FilterTypes'
 import {Button} from "react-bootstrap";
+import solrConsts from '../constants/Solr'
 
 
 const center = [0, 0];
+
+const isALocationField = (field) => {
+    let type = field.type;
+    // return true;
+    return solrConsts.LOCATION_TYPES.indexOf(type) > -1 ;
+
+}
 
 const DocMarker = ({children, doc, field, fields}) => (
     <CircleMarker
@@ -189,7 +197,7 @@ class DataMapClass extends React.Component {
                                 {/*this.reDrawMap();*/}
                             }
                             } value={this.state.selectedField}>
-                                {data.columnNames.map((field, index) => <option key={field}
+                                {data.columnNames.filter((fieldName)=>isALocationField(this.props.fields[fieldName])).map((field, index) => <option key={field}
                                                                                 value={field}>{field}</option>)}
                             </select>
                             <br/>
