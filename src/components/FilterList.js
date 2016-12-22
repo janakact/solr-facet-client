@@ -34,6 +34,8 @@ const getFilterText = (filterObj) => {
             return '[' + range[0] + ' TO ' + range[1] + ']';
         case filterTypes.GEO_SHAPE:
             return JSON.stringify(filterObj.shapes.map(shape=>shape.type));
+        case filterTypes.CUSTOM:
+            return filterObj.content;
         default:
             return "<Undefined Filter>"
 
@@ -51,7 +53,7 @@ const mapDispatchToPropsField = (dispatch, ownProps) => ({
 let Filter = ({filterObject, onClick}) => {
     return (
         <ListGroupItem>
-            <strong>{filterObject.field.name}</strong> : {getFilterText(filterObject)}
+            <strong>{filterObject.field?filterObject.field.name+" : ":""}</strong>{getFilterText(filterObject)}
             <a href="#">
                 <span className="glyphicon glyphicon-remove pull-right" aria-hidden="true" onClick={onClick}></span>
             </a>

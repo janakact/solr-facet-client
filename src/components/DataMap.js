@@ -159,7 +159,7 @@ class DataMapClass extends React.Component {
 
                 <FeatureGroup>
                     {this.props.filters.map((filter) => {
-                        if (filter.field.name === this.state.selectedField && filter.type === filterTypes.GEO_SHAPE && filter.editing !== true) {
+                        if (filter.field && filter.field.name === this.state.selectedField && filter.type === filterTypes.GEO_SHAPE && filter.editing !== true) {
                             return <GeoShapeFilter filter={filter}/>
                         }
                         else

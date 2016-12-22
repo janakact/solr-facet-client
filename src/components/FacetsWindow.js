@@ -20,9 +20,11 @@ import React from 'react';
 import {connect} from 'react-redux'
 import {Modal} from 'react-bootstrap'
 import Facets from './facets/'
-import {hideFacetsWindow, showFacetsWindow} from "../actions";
+import {hideFacetsWindow, showFacetsWindow, addFilter} from "../actions";
+import filterTypes from '../constants/FilterTypes'
 
 let FacetsWindow = ({facetsWindow, facetsList, fields, dispatch}) => {
+    let input;
     return (
         <Modal bsSize="large" show={facetsWindow.show} onHide={()=>dispatch(hideFacetsWindow())}>
             <Modal.Header closeButton>
@@ -33,13 +35,42 @@ let FacetsWindow = ({facetsWindow, facetsList, fields, dispatch}) => {
                 <select
                     onChange={(e) => dispatch(showFacetsWindow(e.target.value))}
                     value={facetsWindow.fieldName} defaultValue="">
-                    <option value={null} >--Please select a field---</option>
-                    {Object.keys(fields).map((fieldName) => <option key={fieldName} value={fieldName}>{fieldName}</option>)}
+                    <option value={null}>--Please select a field---</option>
+                    {Object.keys(fields).map((fieldName) => <option key={fieldName}
+                                                                    value={fieldName}>{fieldName}</option>)}
                 </select>
                 <br/>
                 <br/>
-                {(facetsWindow.fieldName===null) && "Please Select a field"}
-                {(facetsList[facetsWindow.fieldName]) && <Facets facets={facetsList[facetsWindow.fieldName]} onAddFilter={()=>dispatch(hideFacetsWindow())}/>}
+                {((!facetsWindow.fieldName) || facetsWindow.fieldName === '--Please select a field---') &&
+                <div>
+                    <form
+                        className="form-inline"
+                        onSubmit={e => {
+                            e.preventDefault()
+                            if (!input.value.trim()) {
+                                return;
+                            }
+                            dispatch(addFilter({type:filterTypes.CUSTOM, content:input.value}))
+                            dispatch(hideFacetsWindow());
+                        }}>
+
+
+                        <label>Enter Custom Query: fq=</label>
+                        <input width={400}
+                               className="form-control"
+                               defaultValue=""
+                               ref={node => {
+                                   input = node
+                               }}/>
+
+                        <button type="submit">
+                            Add
+                        </button>
+                    </form>
+                </div>
+                }
+                {(facetsList[facetsWindow.fieldName]) &&
+                <Facets facets={facetsList[facetsWindow.fieldName]} onAddFilter={()=>dispatch(hideFacetsWindow())}/>}
             </Modal.Body>
         </Modal>
     )
