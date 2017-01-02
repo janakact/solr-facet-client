@@ -27,17 +27,18 @@ import DataBrowser from "../components/DataBrowser";
 import SortBy from './SortBy'
 import TimeSlider from './TimeSlider'
 import SavedQueryView from './SavedQueryView'
+import filterTypes from '../constants/FilterTypes'
 
 
 //Actions
-import {showFacetsWindow, removeFilter} from "../actions";
+import {hideFacetsWindow, showFacetsWindow, removeFilter, addFilter, removeFetchingError, setBaseurl} from "../actions/index";
 
 const generateQueryObject = (state) => {
     let queryState = {
         baseUrl: state.baseUrl,
         filters: state.filters,
         sort: state.sort,
-        timeSliderOptions:state.timeSliderOptions
+        timeSliderOptions: state.timeSliderOptions
     }
     return queryState;
 }
@@ -49,26 +50,42 @@ const mapStateToProps = (state, ownProps) => ({
     data: state.data,
     facetsWindow: state.facetsWindow,
     sort: state.sort,
-    timeSliderOptions:state.timeSliderOptions,
-    baseUrl:state.baseUrl,
-    fetchingUrls:state.fetchingUrls,
-    fetchingErrors:state.fetchingErrors,
-    savedQueries:state.savedQueries,
-    generateQueryObject:() => generateQueryObject(state)
+    timeSliderOptions: state.timeSliderOptions,
+    baseUrl: state.baseUrl,
+    fetchingUrls: state.fetchingUrls,
+    fetchingErrors: state.fetchingErrors,
+    savedQueries: state.savedQueries,
+    generateQueryObject: () => generateQueryObject(state)
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
     onClickField: (field) => {
         dispatch(showFacetsWindow(field.name))
     },
-    onClickAddFilterInFilterList:(filter) => {
+    onClickAddFilterInFilterList: (filter) => {
         dispatch(showFacetsWindow())
     },
     onClickFilterRemove: (filterObject) => {
         dispatch(removeFilter(filterObject))
+    },
+    onHideFacetsWindow: () => {
+        dispatch(hideFacetsWindow());
+    },
+    onSelectFieldInFacetsWindow: (fieldName) => {
+        dispatch(showFacetsWindow(fieldName))
+    },
+    onAddCustomFilterInFacetsWindow: (content) => {
+        dispatch(addFilter({type: filterTypes.CUSTOM, content: content}))
+    },
+    onSubmitConnectionInfo: (url) => {
+        dispatch(setBaseurl(url))
+    },
+    onClickFetchingErrorCloseIcon: (error) => {
+        dispatch(removeFetchingError(error))
     }
 
 });
-let App = ({fields,
+let App = ({
+    fields,
     facetsList,
     filters,
     data,
@@ -83,23 +100,33 @@ let App = ({fields,
 
     onClickField,
     onClickAddFilterInFilterList,
-    onClickFilterRemove}) => {
-
+    onClickFilterRemove,
+    onHideFacetsWindow,
+    onSelectFieldInFacetsWindow,
+    onAddCustomFilterInFacetsWindow,
+    onSubmitConnectionInfo,
+    onClickFetchingErrorCloseIcon
+}) => {
 
 
     return (
         <div>
             <Row className="show-grid">
                 <Col xs={12} md={12}>
-                    <ConnectionInfo baseUrl={baseUrl} fetchingErrors={fetchingErrors} fetchingUrls={fetchingUrls}
-                                    generateQueryObject={generateQueryObject}/>
+                    <ConnectionInfo baseUrl={baseUrl}
+                                    fetchingErrors={fetchingErrors}
+                                    fetchingUrls={fetchingUrls}
+                                    generateQueryObject={generateQueryObject}
+                                    onSubmit={onSubmitConnectionInfo}
+                                    onRemoveFetchingError={onClickFetchingErrorCloseIcon}/>
                     <br/>
                 </Col>
             </Row>
             <Row>
                 <Col xs={12} md={2}>
                     <SavedQueryView savedQueries={savedQueries}/>
-                    <FilterList filters={filters} onClickAddFilter={onClickAddFilterInFilterList} onClickFilterRemove={onClickFilterRemove}/>
+                    <FilterList filters={filters} onClickAddFilter={onClickAddFilterInFilterList}
+                                onClickFilterRemove={onClickFilterRemove}/>
                     <FieldList fields={fields} onClickField={onClickField}/>
                 </Col>
                 <Col xs={12} md={10}>
@@ -109,7 +136,12 @@ let App = ({fields,
             </Row>
             <Row>
                 <Col>
-                    <FacetsWindow facetsList={facetsList} facetsWindow={facetsWindow} fields={fields}/>
+                    <FacetsWindow facetsList={facetsList}
+                                  facetsWindow={facetsWindow}
+                                  fields={fields}
+                                  onHide={onHideFacetsWindow}
+                                  onSelectField={onSelectFieldInFacetsWindow}
+                                  onAddCustomFilter={onAddCustomFilterInFacetsWindow}/>
                 </Col>
             </Row>
         </div>

@@ -17,23 +17,20 @@
  *
  */
 import React from 'react';
-import {connect} from 'react-redux'
 import {Modal} from 'react-bootstrap'
 import Facets from './facets/'
-import {hideFacetsWindow, showFacetsWindow, addFilter} from "../actions";
-import filterTypes from '../constants/FilterTypes'
 
-let FacetsWindow = ({facetsWindow, facetsList, fields, dispatch}) => {
+let FacetsWindow = ({facetsWindow, facetsList, fields, onHide, onSelectField, onAddCustomFilter}) => {
     let input;
     return (
-        <Modal bsSize="large" show={facetsWindow.show} onHide={()=>dispatch(hideFacetsWindow())}>
+        <Modal bsSize="large" show={facetsWindow.show} onHide={onHide}>
             <Modal.Header closeButton>
                 <Modal.Title>Filter Options</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <label>Field : </label>
                 <select
-                    onChange={(e) => dispatch(showFacetsWindow(e.target.value))}
+                    onChange={(e) => onSelectField(e.target.value)}
                     value={facetsWindow.fieldName} defaultValue="">
                     <option value={null}>--Please select a field---</option>
                     {Object.keys(fields).map((fieldName) => <option key={fieldName}
@@ -50,8 +47,8 @@ let FacetsWindow = ({facetsWindow, facetsList, fields, dispatch}) => {
                             if (!input.value.trim()) {
                                 return;
                             }
-                            dispatch(addFilter({type:filterTypes.CUSTOM, content:input.value}))
-                            dispatch(hideFacetsWindow());
+                            onAddCustomFilter(input.value);
+                            onHide();
                         }}>
 
 
@@ -70,10 +67,9 @@ let FacetsWindow = ({facetsWindow, facetsList, fields, dispatch}) => {
                 </div>
                 }
                 {(facetsList[facetsWindow.fieldName]) &&
-                <Facets facets={facetsList[facetsWindow.fieldName]} onAddFilter={()=>dispatch(hideFacetsWindow())}/>}
+                <Facets facets={facetsList[facetsWindow.fieldName]} onAddFilter={onHide}/>}
             </Modal.Body>
         </Modal>
     )
 }
-FacetsWindow = connect()(FacetsWindow);
 export default FacetsWindow;

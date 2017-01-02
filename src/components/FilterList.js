@@ -17,8 +17,6 @@
  *
  */
 import React from "react";
-import {connect} from "react-redux";
-import {removeFilter, showFacetsWindow} from "../actions";
 import {Panel, ListGroupItem, ListGroup, Button} from "react-bootstrap";
 import filterTypes from "../constants/FilterTypes";
 

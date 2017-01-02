@@ -17,54 +17,10 @@
  *
  */
 import React from "react";
-import {connect} from "react-redux";
-import {setBaseurl, removeFetchingError, loadFromFile} from "../actions";
 import {Row, Col, Alert} from "react-bootstrap";
 
-
-
-//A view to down load and re upload current query.
-const DownloadQueryView = ({dataStr, dispatch}) =>
-        <Col>
-            <Row>
-                <Col xs={4} md={3}>
-                    <label>Download current query:</label><br/>
-                    <a download={"query.json"} href={dataStr}>query.json</a>
-                </Col>
-                <Col xs={4} md={3}>
-                    <label>Load from a file:</label>
-                    <input type="file" onChange={e => {
-                        try {
-                            var file = e.target.files[0];
-
-                            if (file) {
-                                var reader = new FileReader();
-                                reader.readAsText(file, "UTF-8");
-                                reader.onload = function (evt) {
-                                    console.log(evt.target.result);
-                                    dispatch(loadFromFile(evt.target.result));
-                                }
-                                reader.onerror = function (evt) {
-                                    console.log("Error reading file");
-                                }
-                            }
-                        }
-                        catch (Exception) {
-                            console.log("Fail to load");
-                        }
-
-                    }} id="input"/>
-
-                </Col>
-            </Row>
-        </Col>
-    ;
-
-let ConnectionInfo = ({dispatch, baseUrl, fetchingErrors, generateQueryObject}) => {
-    let input;//
-    //input.value = "http://localhost:8983/solr/gettingstarted/";
-    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(generateQueryObject()));
-
+let ConnectionInfo = ({baseUrl, fetchingErrors, onSubmit, onRemoveFetchingError}) => {
+    let input;
     return (
         <div>
 
@@ -77,7 +33,7 @@ let ConnectionInfo = ({dispatch, baseUrl, fetchingErrors, generateQueryObject}) 
                             if (!input.value.trim()) {
                                 return
                             }
-                            dispatch(setBaseurl(input.value))
+                            onSubmit(input.value);
                         }}>
 
                         <input width={400}
@@ -96,13 +52,11 @@ let ConnectionInfo = ({dispatch, baseUrl, fetchingErrors, generateQueryObject}) 
             </Row>
 
             {fetchingErrors.map((error)=>(
-                <Alert key={error.url} bsStyle="danger" onDismiss={()=>dispatch(removeFetchingError(error))}>
+                <Alert key={error.url} bsStyle="danger" onDismiss={()=>onRemoveFetchingError(error)}>
                     <strong>{error.title}: </strong> {error.url}
                 </Alert>
             ))}
         </div>
     )
 }
-ConnectionInfo = connect()(ConnectionInfo)
-
 export default ConnectionInfo
