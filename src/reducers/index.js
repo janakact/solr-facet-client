@@ -28,7 +28,7 @@ const initialState = {
     timeSliderOptions:{
         field:{name:"", type:""}
     },
-    baseUrl: "http://localhost:8983/solr/gettingstarted/",
+    baseUrl: "",
     fields: {},
     facetsList: {},
     filters: [],

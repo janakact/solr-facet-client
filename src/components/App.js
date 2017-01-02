@@ -28,6 +28,10 @@ import SortBy from './SortBy'
 import TimeSlider from './TimeSlider'
 import SavedQueryView from './SavedQueryView'
 
+
+//Actions
+import {showFacetsWindow, removeFilter} from "../actions";
+
 const generateQueryObject = (state) => {
     let queryState = {
         baseUrl: state.baseUrl,
@@ -53,37 +57,65 @@ const mapStateToProps = (state, ownProps) => ({
     generateQueryObject:() => generateQueryObject(state)
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    // onClick: () => {
-    //   dispatch(toggleSelectField(ownProps.field.name))
-    // }
-});
-let App = ({fields, facetsList, filters, data, facetsWindow, sort, timeSliderOptions, baseUrl, fetchingErrors, fetchingUrls, generateQueryObject, savedQueries }) => (
-    <div>
-        <Row className="show-grid">
-            <Col xs={12} md={12}>
-                <ConnectionInfo baseUrl={baseUrl} fetchingErrors={fetchingErrors} fetchingUrls={fetchingUrls} generateQueryObject={generateQueryObject}/>
-                <br/>
-            </Col>
-        </Row>
-        <Row>
-            <Col xs={12} md={2}>
-                <SavedQueryView savedQueries={savedQueries} />
-                <FilterList filters={filters}/>
-                <FieldList fields={fields}/>
-            </Col>
-            <Col xs={12} md={10}>
-                <TimeSlider facetsList={facetsList} fields={fields} timeSliderOptions={timeSliderOptions}/>
-                <DataBrowser data={data} fields={fields} filters={filters} sort={sort}/>
-            </Col>
-        </Row>
-        <Row>
-            <Col>
-                <FacetsWindow facetsList={facetsList} facetsWindow={facetsWindow} fields={fields}/>
-            </Col>
-        </Row>
-    </div>
+    onClickField: (field) => {
+        dispatch(showFacetsWindow(field.name))
+    },
+    onClickAddFilterInFilterList:(filter) => {
+        dispatch(showFacetsWindow())
+    },
+    onClickFilterRemove: (filterObject) => {
+        dispatch(removeFilter(filterObject))
+    }
 
-)
+});
+let App = ({fields,
+    facetsList,
+    filters,
+    data,
+    facetsWindow,
+    sort,
+    timeSliderOptions,
+    baseUrl,
+    fetchingErrors,
+    fetchingUrls,
+    generateQueryObject,
+    savedQueries,
+
+    onClickField,
+    onClickAddFilterInFilterList,
+    onClickFilterRemove}) => {
+
+
+
+    return (
+        <div>
+            <Row className="show-grid">
+                <Col xs={12} md={12}>
+                    <ConnectionInfo baseUrl={baseUrl} fetchingErrors={fetchingErrors} fetchingUrls={fetchingUrls}
+                                    generateQueryObject={generateQueryObject}/>
+                    <br/>
+                </Col>
+            </Row>
+            <Row>
+                <Col xs={12} md={2}>
+                    <SavedQueryView savedQueries={savedQueries}/>
+                    <FilterList filters={filters} onClickAddFilter={onClickAddFilterInFilterList} onClickFilterRemove={onClickFilterRemove}/>
+                    <FieldList fields={fields} onClickField={onClickField}/>
+                </Col>
+                <Col xs={12} md={10}>
+                    <TimeSlider facetsList={facetsList} fields={fields} timeSliderOptions={timeSliderOptions}/>
+                    <DataBrowser data={data} fields={fields} filters={filters} sort={sort}/>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <FacetsWindow facetsList={facetsList} facetsWindow={facetsWindow} fields={fields}/>
+                </Col>
+            </Row>
+        </div>
+
+    )
+}
 App = connect(mapStateToProps, mapDispatchToProps)(App);
 
 export default App

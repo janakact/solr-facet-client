@@ -17,8 +17,6 @@
  *
  */
 import React from "react";
-import {connect} from "react-redux";
-import {showFacetsWindow} from "../actions";
 import {Panel, OverlayTrigger, Tooltip, ListGroupItem, ListGroup, Popover} from "react-bootstrap";
 
 
@@ -43,34 +41,28 @@ const tooltip2 = (
 
 
 // Single Field
-const mapStateToPropsField = (state, ownProps) => ({});
-const mapDispatchToPropsField = (dispatch, ownProps) => ({
-    onClick: () => {
-        dispatch(showFacetsWindow(ownProps.field.name))
-    }
-});
 let Field = ({field, onClick}) => {
     return (
         <OverlayTrigger placement="right" overlay={tooltip(field.stats)}>
         <ListGroupItem
-            onClick={onClick}>
+            onClick={()=>onClick(field)}>
 
                 <span><strong>{field.name}</strong></span>
         </ListGroupItem>
         </OverlayTrigger>
     )
 }
-Field = connect(mapStateToPropsField, mapDispatchToPropsField)(Field);
 
 
 // List of All Fields
-let FieldList = ({fields}, dispatch) => {
+let FieldList = ({fields, onClickField}) => {
     return (
         <Panel bsStyle="info" header="Available Fields">
             <ListGroup>
                 {Object.keys(fields).map((fieldName, index) =>
 
                         <Field
+                            onClick={onClickField}
                             key={fieldName}
                             field={fields[fieldName]}></Field>
                 )}

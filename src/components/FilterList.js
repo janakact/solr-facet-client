@@ -42,26 +42,19 @@ const getFilterText = (filterObj) => {
 
 
 // Single Field
-const mapStateToPropsField = (state, ownProps) => ({});
-const mapDispatchToPropsField = (dispatch, ownProps) => ({
-    onClick: () => {
-        dispatch(removeFilter(ownProps.filterObject))
-    }
-});
-let Filter = ({filterObject, onClick}) => {
+let Filter = ({filterObject, onClick, onClickFilter, onClickFilterRemove}) => {
     return (
         <ListGroupItem
             className="tag-cloud tag-cloud-item"
-            onClick={onClick} >
+            onClick={()=>onClickFilterRemove(filterObject)} >
             <strong>{filterObject.field.name}</strong> : {getFilterText(filterObject)}
         </ListGroupItem>
     )
 }
-Filter = connect(mapStateToPropsField, mapDispatchToPropsField)(Filter);
 
 
 // List of All Fields
-let FilterList = ({filters, dispatch}) => {
+let FilterList = ({filters, onClickAddFilter, onClickFilter, onClickFilterRemove}) => {
     return (
         <Panel bsStyle="info" header="Applied Filters">
 
@@ -69,13 +62,13 @@ let FilterList = ({filters, dispatch}) => {
                 {filters.map((filter, index) =>
                     <Filter
                         key={index}
-                        filterObject={filter}></Filter>
+                        filterObject={filter}
+                        onClickFilterRemove={onClickFilterRemove}></Filter>
                 )}
             </ListGroup>
 
-            <Button onClick={()=> dispatch(showFacetsWindow())}>Add Filter</Button>
+            <Button onClick={onClickAddFilter}>Add Filter</Button>
         </Panel>
     );
 }
-FilterList = connect()(FilterList);
 export default FilterList;
