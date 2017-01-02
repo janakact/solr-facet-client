@@ -29,11 +29,13 @@ const getFilterText = (filterObj) => {
             return filterObj.query;
         case filterTypes.NUMERIC_RANGE_FILTER:
             let range = filterObj.range
-            if(filterObj.field.type==='date')
+            if (filterObj.field.type === 'date')
                 range = filterObj.range.map((item) => (new Date(item).toISOString()))
             return '[' + range[0] + ' TO ' + range[1] + ']';
         case filterTypes.GEO_SHAPE:
             return JSON.stringify(filterObj.shapes.map(shape=>shape.type));
+        case filterTypes.CUSTOM:
+            return filterObj.content;
         default:
             return "<Undefined Filter>"
 
@@ -44,10 +46,12 @@ const getFilterText = (filterObj) => {
 // Single Field
 let Filter = ({filterObject, onClick, onClickFilter, onClickFilterRemove}) => {
     return (
-        <ListGroupItem
-            className="tag-cloud tag-cloud-item"
-            onClick={()=>onClickFilterRemove(filterObject)} >
-            <strong>{filterObject.field.name}</strong> : {getFilterText(filterObject)}
+        <ListGroupItem>
+            <strong>{filterObject.field?filterObject.field.name+" : ":""}</strong>{getFilterText(filterObject)}
+            <a href="#">
+                <span className="glyphicon glyphicon-remove pull-right" aria-hidden="true"
+                      onClick={()=>onClickFilterRemove(filterObject)}></span>
+            </a>
         </ListGroupItem>
     )
 }

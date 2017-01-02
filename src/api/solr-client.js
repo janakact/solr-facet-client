@@ -210,16 +210,22 @@ class SolrClient {
     }
 
     getData(promptDownload = false) {
-        let url = this.state.baseUrl + (promptDownload?_DATA_SUFFIX_CSV:_DATA_SUFFIX);
+        let url = "";
+
         let dataState = this.state.data;
 
         url += this.generateFilterQuery();
         url += this.generateSortQuery(this.state.sort)
 
+
+        let urlAll = this.state.baseUrl + _DATA_SUFFIX_CSV + url;
+        url = this.state.baseUrl + (promptDownload?_DATA_SUFFIX_CSV:_DATA_SUFFIX) + url;
+
         if(!promptDownload)
         {
             url += "&rows=" + dataState.rows;
             url += "&start=" + dataState.start;
+
         }
         else
         {
@@ -249,6 +255,9 @@ class SolrClient {
                 //console.log(jsonObject.response.docs.length);
                 //console.log("Returning data:"+new Date()+new Date().getMilliseconds())
                 // ;
+
+                urlAll += "&rows="+jsonObject.response.numFound;
+                urlAll += "&start="+0;
                 let data = {
                     jsonResponse: body,
                     url: url,
@@ -256,7 +265,8 @@ class SolrClient {
                     start: dataState.start,
                     rows: dataState.rows,
                     docs: jsonObject.response.docs,
-                    columnNames: Array.from(columns)
+                    columnNames: Array.from(columns),
+                    urlAllData:urlAll
                 };
                 this.store.dispatch(actions.updateData(data));
                 this.store.dispatch(actions.removeFetchingUrl(url));
@@ -313,6 +323,9 @@ class SolrClient {
             }
             else if (fq.type === filterTypes.GEO_SHAPE) {
                 url += this.shapeToSolrQuery(fq.shapes, fq.field);
+            }
+            else if(fq.type===filterTypes.CUSTOM){
+                url += "&fq=" + fq.content;
             }
         }
         return url;

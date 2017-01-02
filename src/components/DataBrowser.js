@@ -104,7 +104,8 @@ let PageNav = ({data, dispatch, fields, sort}) => {
                 &nbsp;
                 &nbsp;
                 &nbsp;
-                <a href="#" onClick={promptDownload} >Download All Data</a>
+                {/*<a href="#" onClick={promptDownload} >Download All Data</a>*/}
+                <a href={data.urlAllData}  target="_blank" download>Download All Data</a>
 
             </form>
         </div>

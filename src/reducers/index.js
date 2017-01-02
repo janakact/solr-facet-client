@@ -40,7 +40,8 @@ const initialState = {
         start: 0,
         rows: 10,
         docs: [],
-        columnNames: []
+        columnNames: [],
+        urlAllData:""
     }
 }
 
